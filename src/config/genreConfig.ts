@@ -4,6 +4,8 @@ export interface GenreDefinition {
   key: AppGenre;
   label: string;
   proOnly: boolean;
+  /** 無料でも1回だけ試せる（実際の可否は planRules.validateGenerationGate と localStorage） */
+  freeTrialOnce?: boolean;
   hasDifficulty: boolean;
   hasCustomInput: boolean;
   hasGojuonMode: boolean;
@@ -39,6 +41,7 @@ export const genreConfig: Record<AppGenre, GenreDefinition> = {
     key: 'maze_hiragana',
     label: 'ひらがな迷路',
     proOnly: true,
+    freeTrialOnce: true,
     hasDifficulty: true,
     hasCustomInput: false,
     hasGojuonMode: false,

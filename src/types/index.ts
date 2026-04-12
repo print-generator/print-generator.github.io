@@ -49,6 +49,8 @@ export interface PlanGateInput {
   difficulty: Difficulty;
   freeGenerationsUsed: number;
   premiumGenreTrialConsumed: boolean;
+  /** ひらがな迷路の無料1回体験を使い切ったか（app.js localStorage と同期） */
+  mazeHiraganaTrialConsumed: boolean;
 }
 
 export type PlanGateResult =

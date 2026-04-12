@@ -49,7 +49,7 @@ export function validatePlan(options: GenerateOptions): void {
   if (!meta) {
     throw new PlanRuleError('未対応ジャンル', 'UNKNOWN_GENRE');
   }
-  if (meta.proOnly && !o.isPro) {
+  if (meta.proOnly && !o.isPro && !meta.freeTrialOnce) {
     throw new PlanRuleError('このジャンルは有料版です', 'PRO_REQUIRED');
   }
   if (o.questionCount < 1) {
@@ -92,8 +92,12 @@ export function validateGenerationGate(input: PlanGateInput): PlanGateResult {
     if (input.genre === 'custom') {
       return { ok: false, kind: 'custom_locked' };
     }
-    if (input.genre === 'maze_hiragana') {
-      return { ok: false, kind: 'maze_hiragana_locked', message: 'ひらがな迷路は有料版で利用できます' };
+    if (input.genre === 'maze_hiragana' && input.mazeHiraganaTrialConsumed) {
+      return {
+        ok: false,
+        kind: 'maze_hiragana_locked',
+        message: 'ひらがな迷路の無料体験は終了しました。有料版でいつでもご利用いただけます。',
+      };
     }
     if (
       (input.genre === 'sentence' || input.genre === 'narabikae') &&

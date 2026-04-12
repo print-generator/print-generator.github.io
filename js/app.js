@@ -61,6 +61,26 @@ const LS_FREE_GEN_DATE_KEY = 'homePrint_freeGenDateJst_v2';
 const LS_PREMIUM_GENRE_TRIAL_KEY = 'homePrint_premiumGenreTrialConsumed_v1';
 const LS_SENTENCE_TRIAL_COUNT_KEY = 'homePrint_sentenceTrialCount_v1';
 const LS_NARABIKAE_TRIAL_COUNT_KEY = 'homePrint_narabikaeTrialCount_v1';
+/** ひらがな迷路：無料1回体験済み（'1'） */
+const LS_MAZE_HIRAGANA_TRIAL_KEY = 'homePrint_mazeHiraganaTrialConsumed_v1';
+
+function isMazeHiraganaTrialConsumed() {
+  if (isProUser) return false;
+  try {
+    return localStorage.getItem(LS_MAZE_HIRAGANA_TRIAL_KEY) === '1';
+  } catch (_e) {
+    return false;
+  }
+}
+
+function markMazeHiraganaTrialConsumed() {
+  if (isProUser) return;
+  try {
+    localStorage.setItem(LS_MAZE_HIRAGANA_TRIAL_KEY, '1');
+  } catch (_e) {
+    /* ignore */
+  }
+}
 
 function getJstDateKey() {
   try {
@@ -537,8 +557,9 @@ function applyPlanTierToUI() {
   }
   const hiraMazeBtn = document.getElementById('contentBtnMazeHiragana');
   if (hiraMazeBtn) {
-    hiraMazeBtn.classList.toggle('content-btn--locked', !isProUser);
-    hiraMazeBtn.setAttribute('aria-disabled', !isProUser ? 'true' : 'false');
+    const mazeLocked = !isProUser && isMazeHiraganaTrialConsumed();
+    hiraMazeBtn.classList.toggle('content-btn--locked', mazeLocked);
+    hiraMazeBtn.setAttribute('aria-disabled', mazeLocked ? 'true' : 'false');
   }
 }
 
@@ -547,8 +568,10 @@ function applyPlanTierToUI() {
 ════════════════════════════════════════ */
 document.querySelectorAll('.content-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    if (!isProUser && btn.dataset.value === 'maze_hiragana') {
-      openPlanModal('ひらがな迷路は有料版で利用できます');
+    if (!isProUser && btn.dataset.value === 'maze_hiragana' && isMazeHiraganaTrialConsumed()) {
+      openPlanModal(
+        'ひらがな迷路の無料体験は終了しました。有料版でいつでもご利用いただけます。'
+      );
       return;
     }
     if (!isProUser && btn.dataset.value === 'custom') {
@@ -646,6 +669,7 @@ function generatePrint() {
       difficulty: level,
       freeGenerationsUsed: getFreeGenerationsUsed(),
       premiumGenreTrialConsumed: isPremiumGenreTrialConsumed(),
+      mazeHiraganaTrialConsumed: isMazeHiraganaTrialConsumed(),
     });
     if (!gate.ok) {
       if (gate.kind === 'quota') {
@@ -684,8 +708,10 @@ function generatePrint() {
       openFeatureLockedModal('custom');
       return;
     }
-    if (content === 'maze_hiragana') {
-      openPlanModal('ひらがな迷路は有料版で利用できます');
+    if (content === 'maze_hiragana' && isMazeHiraganaTrialConsumed()) {
+      openPlanModal(
+        'ひらがな迷路の無料体験は終了しました。有料版でいつでもご利用いただけます。'
+      );
       return;
     }
     if ((content === 'sentence' || content === 'narabikae') && isPremiumGenreTrialConsumed()) {
@@ -759,6 +785,10 @@ function generatePrint() {
       ) {
         markPremiumGenreTrialConsumed();
         updateTrialNotice(true, '', 'after-first-use');
+      }
+      if (!isProUser && content === 'maze_hiragana') {
+        markMazeHiraganaTrialConsumed();
+        applyPlanTierToUI();
       }
       updateFreeGenQuotaUI();
     } catch (e) {
