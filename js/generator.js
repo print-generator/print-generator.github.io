@@ -22,6 +22,20 @@ function pickRandom(arr, n) {
   return shuffle([...arr]).slice(0, k);
 }
 
+/**
+ * ひらがな初級：beginner_sets を data.js の配列順（あ行→…→わ行→濁音…の教材順）で使用する。
+ * ランダムにしない。件数がプール長を超えるときだけ先頭から循環する。
+ */
+function pickHiraganaBeginnerSetsOrdered(sets, count) {
+  if (!sets || !sets.length || count <= 0) return [];
+  if (count <= sets.length) return sets.slice(0, count);
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    out.push(sets[i % sets.length]);
+  }
+  return out;
+}
+
 function hasKatakana(text) {
   return /[\u30A0-\u30FF]/.test(String(text || ''));
 }
@@ -555,7 +569,7 @@ function buildJoshiAdvanced(count, _cw) {
    ==================================================== */
 
 function buildHiraganaBeginner(count, _cw, allowKatakana, kanaMode) {
-  const rawSets = pickRandom(APP_DATA.hiragana.beginner_sets, count);
+  const rawSets = pickHiraganaBeginnerSetsOrdered(APP_DATA.hiragana.beginner_sets, count);
   const mode = allowKatakana ? (kanaMode || 'mix') : 'hiragana';
   const sets = rawSets.map((set, i) => {
     if (mode === 'katakana') return mapBeginnerSetToKatakana(set);

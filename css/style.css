@@ -56,16 +56,18 @@ body {
   vertical-align: middle;
 }
 
-/* 生成プリント内ロゴは #printSheet 先頭に挿入。プレビューは右上に小さく（本文フロー外） */
+/* 生成プリント内ロゴは #printSheet 先頭に挿入。プレビューは右下に小さく（本文フロー外） */
 .a4-sheet#printSheet > img.print-logo {
   display: block;
   position: absolute;
-  top: 4mm;
-  right: 5mm;
-  width: 20mm;
-  max-width: 32%;
+  bottom: 8mm;
+  right: 8mm;
+  top: auto;
+  left: auto;
+  width: 18mm;
+  max-width: 30%;
   height: auto;
-  opacity: 0.92;
+  opacity: 0.88;
   z-index: 5;
   pointer-events: none;
 }
@@ -2887,20 +2889,22 @@ body.lp-pricing-page {
 
   /*
    * 印刷ロゴ（#printSheet 先頭の img.print-logo）：最後に指定して他ルールに負けないようにする。
-   * position:fixed はページ座標。問題ブロックのフロー外のため改ページ・余白は変わらない。
+   * position:fixed はページ座標。本文フロー外のため改ページ・余白は変わらない。
    */
   img.print-logo {
     display: block !important;
     visibility: visible !important;
     position: fixed !important;
-    top: 10mm !important;
+    bottom: 10mm !important;
     right: 10mm !important;
+    top: auto !important;
     left: auto !important;
-    width: 25mm !important;
+    width: 22mm !important;
     height: auto !important;
     max-width: none !important;
     opacity: 0.8 !important;
     z-index: 9999 !important;
+    pointer-events: none !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

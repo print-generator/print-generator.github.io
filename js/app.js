@@ -641,8 +641,8 @@ function generatePrint() {
   const levelRaw = document.querySelector('.level-btn.active')?.dataset.value || selectedLevel;
   const content  = document.querySelector('.content-btn.active')?.dataset.value || selectedContent;
   const level = getEffectiveLevelForContent(content, levelRaw);
-  const showName = document.getElementById('studentName').value === 'yes';
-  const showDate = document.getElementById('dateField').value === 'yes';
+  const showName = true;
+  const showDate = true;
 
   if (!isProUser) {
     if (getFreeGenerationsUsed() >= FREE_GENERATION_LIMIT) {
@@ -850,9 +850,11 @@ function appendMobilePdfLogoOverlay(wrap, sheet) {
   logo.className = 'pdf-mobile-page-logo';
   logo.style.cssText = [
     'position:absolute',
-    'top:10mm',
+    'bottom:10mm',
     'right:10mm',
-    'width:25mm',
+    'top:auto',
+    'left:auto',
+    'width:22mm',
     'height:auto',
     'opacity:0.8',
     'z-index:99',
