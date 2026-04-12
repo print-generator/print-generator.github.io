@@ -74,7 +74,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
   ]},
   { grade: 1, kanji: '金', entries: [
     { sentence: 'お金を つかいます', reading: 'かね' },
-    { sentence: 'お金を しまいます', reading: 'かね' },
+    { sentence: 'お金を たいせつに します', reading: 'かね' },
   ]},
   { grade: 1, kanji: '空', entries: [
     { sentence: '空が あおいです', reading: 'そら' },

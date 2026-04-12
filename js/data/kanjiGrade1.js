@@ -66,7 +66,7 @@
     ]},
     { char: '金', grade: 1, entries: [
       { sentence: 'お金を つかいます', reading: 'かね' },
-      { sentence: 'お金を しまいます', reading: 'かね' },
+      { sentence: 'お金を たいせつに します', reading: 'かね' },
     ]},
     { char: '空', grade: 1, entries: [
       { sentence: '空が あおいです', reading: 'そら' },
