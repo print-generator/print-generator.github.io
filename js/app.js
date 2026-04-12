@@ -672,25 +672,33 @@ function generatePrint() {
       mazeHiraganaTrialConsumed: isMazeHiraganaTrialConsumed(),
     });
     if (!gate.ok) {
-      if (gate.kind === 'quota') {
-        openPlanModal(gate.message || '');
-        return;
-      }
-      if (gate.kind === 'advanced_locked') {
-        openPlanModal(gate.message || '');
-        return;
-      }
-      if (gate.kind === 'custom_locked') {
-        openFeatureLockedModal('custom');
-        return;
-      }
-      if (gate.kind === 'maze_hiragana_locked') {
-        openPlanModal(gate.message || '');
-        return;
-      }
-      if (gate.kind === 'premium_trial_exhausted') {
-        updateTrialNotice(true, '文章問題・並び替え', 'limit');
-        return;
+      /* 旧 plan-core.bundle では迷路を無条件ブロックしていた場合の救済（体験未使用なら続行） */
+      const allowMazeFreeTrialDespiteStaleBundle =
+        gate.kind === 'maze_hiragana_locked' &&
+        !isProUser &&
+        content === 'maze_hiragana' &&
+        !isMazeHiraganaTrialConsumed();
+      if (!allowMazeFreeTrialDespiteStaleBundle) {
+        if (gate.kind === 'quota') {
+          openPlanModal(gate.message || '');
+          return;
+        }
+        if (gate.kind === 'advanced_locked') {
+          openPlanModal(gate.message || '');
+          return;
+        }
+        if (gate.kind === 'custom_locked') {
+          openFeatureLockedModal('custom');
+          return;
+        }
+        if (gate.kind === 'maze_hiragana_locked') {
+          openPlanModal(gate.message || '');
+          return;
+        }
+        if (gate.kind === 'premium_trial_exhausted') {
+          updateTrialNotice(true, '文章問題・並び替え', 'limit');
+          return;
+        }
       }
     }
   } else if (!isProUser) {
