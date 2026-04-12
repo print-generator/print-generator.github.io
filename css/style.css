@@ -1123,6 +1123,65 @@ select.setting-select--locked {
 }
 .choice-sentence { font-size: 1.25rem; font-weight: 600; margin-bottom: 6px; line-height: 1.45; }
 .kanji-sentence-line { letter-spacing: 0.02em; }
+/* 漢字短文：初級・上級は補助を字の真上に置くため本文をやや大きく */
+.kanji-sentence-line--prominent {
+  font-size: clamp(1.35rem, 4.2vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+/* ターゲット1字の直上に補助（なぞり読み・（　））／ flex 縦積みでズレにくくする */
+.kanji-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  vertical-align: baseline;
+  margin: 0 0.04em;
+  gap: 0.2em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.kanji-stack__top {
+  display: block;
+  font-size: 0.72em;
+  line-height: 1.25;
+  min-height: 1.25em;
+  text-align: center;
+  white-space: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* 薄いオレンジ寄り（補助のなぞり用） */
+.kanji-stack__top--trace {
+  color: #d4a574;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.kanji-stack__top--blank {
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.kanji-stack__bottom--kanji {
+  font-weight: 900;
+  font-size: 1em;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+  text-decoration-thickness: 2px;
+  text-align: center;
+}
+.kanji-stack__bottom--slot {
+  font-weight: 700;
+  font-size: 1em;
+  text-align: center;
+}
+.kanji-write-advanced-row {
+  justify-content: center;
+  margin-top: 12px;
+}
 .kanji-drill-target {
   font-weight: 900;
   text-decoration: underline;
@@ -2621,6 +2680,19 @@ body.lp-pricing-page {
     margin-bottom: 0.7pt !important;
     font-size: 9.7pt !important;
     line-height: 1.22 !important;
+  }
+
+  .question-card .kanji-sentence-line--prominent {
+    font-size: 11.2pt !important;
+    line-height: 1.45 !important;
+    margin-bottom: 2mm !important;
+  }
+  .question-card .kanji-stack__top {
+    font-size: 8pt !important;
+    min-height: 1.1em !important;
+  }
+  .question-card .kanji-stack__top--trace {
+    color: #b8956a !important;
   }
 
   .question-card .hint-line {

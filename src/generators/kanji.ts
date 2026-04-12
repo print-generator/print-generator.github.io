@@ -1,5 +1,6 @@
 import type { Difficulty, GenerateOptions, KanjiGrade, KanjiMode, Problem } from '../types';
 import { getKanjiPool } from '../data/kanji/pools';
+import { resolveKanjiContextReading } from '../data/kanji/numeralReadings';
 import type { KanjiEntry, KanjiSentenceEntry } from '../data/kanji/types';
 
 function esc(s: string): string {
@@ -34,7 +35,6 @@ function pickContext(entry: KanjiEntry): KanjiSentenceEntry | null {
   return list[Math.floor(Math.random() * list.length)] ?? null;
 }
 
-/** プール内のすべての reading（中級・読みの誤答用） */
 function collectAllReadings(pool: KanjiEntry[]): string[] {
   const set = new Set<string>();
   for (const e of pool) {
@@ -45,22 +45,52 @@ function collectAllReadings(pool: KanjiEntry[]): string[] {
   return [...set];
 }
 
-/** 文中の対象漢字1字をマーク（1箇所のみ） */
-function htmlSentenceReading(sentence: string, char: string): string {
+function splitAtTarget(sentence: string, char: string): { before: string; after: string } | null {
   const i = sentence.indexOf(char);
-  if (i === -1) return esc(sentence);
-  const before = sentence.slice(0, i);
-  const after = sentence.slice(i + char.length);
-  return `${esc(before)}<span class="kanji-drill-target">${esc(char)}</span>${esc(after)}`;
+  if (i === -1) return null;
+  return { before: sentence.slice(0, i), after: sentence.slice(i + char.length) };
 }
 
-/** 書き：対象漢字をひらがな（よみ）に置き換えた文 */
-function htmlSentenceWriting(sentence: string, char: string, yomi: string): string {
-  const i = sentence.indexOf(char);
-  if (i === -1) return esc(sentence);
-  const before = sentence.slice(0, i);
-  const after = sentence.slice(i + char.length);
-  return `${esc(before)}（${esc(yomi)}）${esc(after)}`;
+/** 読み・中級：ターゲットのみ下線 */
+function htmlReadingIntermediate(sentence: string, char: string): string {
+  const p = splitAtTarget(sentence, char);
+  if (!p) return esc(sentence);
+  return `${esc(p.before)}<span class="kanji-drill-target">${esc(char)}</span>${esc(p.after)}`;
+}
+
+/** 読み・初級：上段＝薄い読み、下段＝漢字 */
+function htmlReadingBeginner(sentence: string, char: string, reading: string): string {
+  const p = splitAtTarget(sentence, char);
+  if (!p) return esc(sentence);
+  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--trace">${esc(reading)}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${esc(char)}</span></span>${esc(p.after)}`;
+}
+
+/** 読み・上級：上段＝（　）、下段＝漢字 */
+function htmlReadingAdvanced(sentence: string, char: string): string {
+  const p = splitAtTarget(sentence, char);
+  if (!p) return esc(sentence);
+  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank">（　）</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${esc(char)}</span></span>${esc(p.after)}`;
+}
+
+/** 書き・中級：（よみ）に置換（従来どおり） */
+function htmlWritingIntermediate(sentence: string, char: string, yomi: string): string {
+  const p = splitAtTarget(sentence, char);
+  if (!p) return esc(sentence);
+  return `${esc(p.before)}（${esc(yomi)}）${esc(p.after)}`;
+}
+
+/** 書き・初級：上段＝薄い漢字、下段＝（よみ） */
+function htmlWritingBeginner(sentence: string, char: string, yomi: string): string {
+  const p = splitAtTarget(sentence, char);
+  if (!p) return esc(sentence);
+  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--trace">${esc(char)}</span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${esc(yomi)}）</span></span>${esc(p.after)}`;
+}
+
+/** 書き・上級：上段＝（　）、下段＝（よみ）＋書きマス */
+function htmlWritingAdvanced(sentence: string, char: string, yomi: string): string {
+  const p = splitAtTarget(sentence, char);
+  if (!p) return esc(sentence);
+  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank">（　）</span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${esc(yomi)}）</span></span>${esc(p.after)}`;
 }
 
 function questionCard(num: number, inner: string): string {
@@ -81,19 +111,17 @@ function buildReading(
   pool: KanjiEntry[],
   difficulty: Difficulty
 ): { html: string; answer: string; choices?: string[]; format: string } {
-  const marked = htmlSentenceReading(sentence, entry.char);
-  const line = `<div class="choice-sentence kanji-sentence-line">${marked}</div>`;
+  const lineClass = 'choice-sentence kanji-sentence-line kanji-sentence-line--prominent';
 
   if (difficulty === 'beginner') {
-    const inner = `${line}
-      <div class="emoji-question-prompt">「${esc(entry.char)}」の よみかたを なぞりましょう。</div>
-      <div class="trace-area kanji-yomi-trace">
-        <span class="trace-target">${esc(reading)}</span>
-      </div>`;
+    const marked = htmlReadingBeginner(sentence, entry.char, reading);
+    const inner = `<div class="${lineClass}">${marked}</div>`;
     return { html: inner, answer: reading, format: formatKey('beginner', 'reading') };
   }
 
   if (difficulty === 'intermediate') {
+    const marked = htmlReadingIntermediate(sentence, entry.char);
+    const line = `<div class="${lineClass}">${marked}</div>`;
     const answer = reading;
     const poolReadings = collectAllReadings(pool);
     const wrong = shuffle(poolReadings.filter((r) => r !== answer))
@@ -110,10 +138,8 @@ function buildReading(
     return { html: inner, answer, choices, format: formatKey('intermediate', 'reading') };
   }
 
-  /* advanced */
-  const inner = `${line}
-    <div class="desc-sentence">「${esc(entry.char)}」の よみかたを （　　　）に かきましょう。</div>
-    <div class="answer-line"></div>`;
+  const marked = htmlReadingAdvanced(sentence, entry.char);
+  const inner = `<div class="${lineClass}">${marked}</div>`;
   return { html: inner, answer: reading, format: formatKey('advanced', 'reading') };
 }
 
@@ -124,22 +150,17 @@ function buildWriting(
   pool: KanjiEntry[],
   difficulty: Difficulty
 ): { html: string; answer: string; choices?: string[]; format: string } {
-  const hiraganaLine = htmlSentenceWriting(sentence, entry.char, reading);
-  const line = `<div class="choice-sentence kanji-sentence-line">${hiraganaLine}</div>`;
+  const lineClass = 'choice-sentence kanji-sentence-line kanji-sentence-line--prominent';
 
   if (difficulty === 'beginner') {
-    const inner = `${line}
-      <div class="emoji-question-prompt">□に 入る かんじを なぞりましょう。</div>
-      <div class="emoji-question-row emoji-question-row--tight">
-        <div class="seikatsu-char-col">
-          <span class="seikatsu-trace">${esc(entry.char)}</span>
-          <div class="hira-write"></div>
-        </div>
-      </div>`;
+    const marked = htmlWritingBeginner(sentence, entry.char, reading);
+    const inner = `<div class="${lineClass}">${marked}</div>`;
     return { html: inner, answer: entry.char, format: formatKey('beginner', 'writing') };
   }
 
   if (difficulty === 'intermediate') {
+    const marked = htmlWritingIntermediate(sentence, entry.char, reading);
+    const line = `<div class="${lineClass}">${marked}</div>`;
     const answer = entry.char;
     const wrong = shuffle(pool.filter((e) => e.char !== answer))
       .map((e) => e.char)
@@ -156,10 +177,10 @@ function buildWriting(
     return { html: inner, answer, choices, format: formatKey('intermediate', 'writing') };
   }
 
-  const inner = `${line}
-    <div class="emoji-question-prompt">□に かんじを かきましょう。</div>
-    <div class="trace-area" style="justify-content:center;margin-top:8px;">
-      <div class="write-box" style="width:56px;height:56px;"></div>
+  const marked = htmlWritingAdvanced(sentence, entry.char, reading);
+  const inner = `<div class="${lineClass}">${marked}</div>
+    <div class="trace-area kanji-write-advanced-row">
+      <div class="write-box kanji-write-box-advanced"></div>
     </div>`;
   return { html: inner, answer: entry.char, format: formatKey('advanced', 'writing') };
 }
@@ -179,7 +200,8 @@ export function generateKanji(options: GenerateOptions): Problem[] {
   return picked.map((entry, i) => {
     const ctx = pickContext(entry);
     const sentence = ctx?.sentence ?? '';
-    const reading = ctx?.reading ?? '';
+    const rawReading = ctx?.reading ?? '';
+    const reading = resolveKanjiContextReading(entry.char, sentence, rawReading);
     if (!ctx || !sentence || !reading || sentence.indexOf(entry.char) === -1) {
       return {
         id: `kanji-${grade}-${i + 1}`,
