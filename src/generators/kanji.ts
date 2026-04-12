@@ -1,6 +1,6 @@
 import type { Difficulty, GenerateOptions, KanjiGrade, KanjiMode, Problem } from '../types';
 import { getKanjiPool } from '../data/kanji/pools';
-import type { KanjiEntry } from '../data/kanji/types';
+import type { KanjiEntry, KanjiSentenceEntry } from '../data/kanji/types';
 
 function esc(s: string): string {
   return String(s)
@@ -28,10 +28,21 @@ function pickRandom<T>(arr: T[], n: number): T[] {
   return shuffle(arr).slice(0, Math.min(n, arr.length));
 }
 
-function pickSentence(entry: KanjiEntry): string {
-  const list = entry.sentences;
-  if (!list || !list.length) return '';
-  return list[Math.floor(Math.random() * list.length)] || '';
+function pickContext(entry: KanjiEntry): KanjiSentenceEntry | null {
+  const list = entry.entries;
+  if (!list || !list.length) return null;
+  return list[Math.floor(Math.random() * list.length)] ?? null;
+}
+
+/** プール内のすべての reading（中級・読みの誤答用） */
+function collectAllReadings(pool: KanjiEntry[]): string[] {
+  const set = new Set<string>();
+  for (const e of pool) {
+    for (const line of e.entries) {
+      set.add(line.reading);
+    }
+  }
+  return [...set];
 }
 
 /** 文中の対象漢字1字をマーク（1箇所のみ） */
@@ -66,6 +77,7 @@ function formatKey(diff: Difficulty, mode: KanjiMode): string {
 function buildReading(
   entry: KanjiEntry,
   sentence: string,
+  reading: string,
   pool: KanjiEntry[],
   difficulty: Difficulty
 ): { html: string; answer: string; choices?: string[]; format: string } {
@@ -76,16 +88,16 @@ function buildReading(
     const inner = `${line}
       <div class="emoji-question-prompt">「${esc(entry.char)}」の よみかたを なぞりましょう。</div>
       <div class="trace-area kanji-yomi-trace">
-        <span class="trace-target">${esc(entry.yomi)}</span>
+        <span class="trace-target">${esc(reading)}</span>
       </div>`;
-    return { html: inner, answer: entry.yomi, format: formatKey('beginner', 'reading') };
+    return { html: inner, answer: reading, format: formatKey('beginner', 'reading') };
   }
 
   if (difficulty === 'intermediate') {
-    const answer = entry.yomi;
-    const wrong = shuffle(pool.filter((e) => e.char !== entry.char && e.yomi !== answer))
-      .map((e) => e.yomi)
-      .filter((y, idx, a) => a.indexOf(y) === idx)
+    const answer = reading;
+    const poolReadings = collectAllReadings(pool);
+    const wrong = shuffle(poolReadings.filter((r) => r !== answer))
+      .filter((r, idx, a) => a.indexOf(r) === idx)
       .slice(0, 3);
     const choices = shuffle([answer, ...wrong]).slice(0, 4);
     const choicesHtml = choices.map((c) => `<span class="choice-item">${esc(c)}</span>`).join('');
@@ -102,16 +114,17 @@ function buildReading(
   const inner = `${line}
     <div class="desc-sentence">「${esc(entry.char)}」の よみかたを （　　　）に かきましょう。</div>
     <div class="answer-line"></div>`;
-  return { html: inner, answer: entry.yomi, format: formatKey('advanced', 'reading') };
+  return { html: inner, answer: reading, format: formatKey('advanced', 'reading') };
 }
 
 function buildWriting(
   entry: KanjiEntry,
   sentence: string,
+  reading: string,
   pool: KanjiEntry[],
   difficulty: Difficulty
 ): { html: string; answer: string; choices?: string[]; format: string } {
-  const hiraganaLine = htmlSentenceWriting(sentence, entry.char, entry.yomi);
+  const hiraganaLine = htmlSentenceWriting(sentence, entry.char, reading);
   const line = `<div class="choice-sentence kanji-sentence-line">${hiraganaLine}</div>`;
 
   if (difficulty === 'beginner') {
@@ -164,8 +177,10 @@ export function generateKanji(options: GenerateOptions): Problem[] {
   if (!picked.length) return [];
 
   return picked.map((entry, i) => {
-    const sentence = pickSentence(entry);
-    if (!sentence || sentence.indexOf(entry.char) === -1) {
+    const ctx = pickContext(entry);
+    const sentence = ctx?.sentence ?? '';
+    const reading = ctx?.reading ?? '';
+    if (!ctx || !sentence || !reading || sentence.indexOf(entry.char) === -1) {
       return {
         id: `kanji-${grade}-${i + 1}`,
         type: 'kanji.sentence.error',
@@ -177,8 +192,8 @@ export function generateKanji(options: GenerateOptions): Problem[] {
 
     const built =
       mode === 'writing'
-        ? buildWriting(entry, sentence, pool, difficulty)
-        : buildReading(entry, sentence, pool, difficulty);
+        ? buildWriting(entry, sentence, reading, pool, difficulty)
+        : buildReading(entry, sentence, reading, pool, difficulty);
 
     return {
       id: `kanji-${grade}-${i + 1}`,
@@ -194,6 +209,7 @@ export function generateKanji(options: GenerateOptions): Problem[] {
         kanjiFormat: built.format,
         char: entry.char,
         sentence,
+        reading,
       },
     };
   });

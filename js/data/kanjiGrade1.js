@@ -1,28 +1,329 @@
 /**
- * 小学1年生の漢字＋例文（印刷エンジン用）
- * ソース・オブ・トゥルース: src/data/kanji/kanjiGrade1.ts（内容を手動で同期すること）
+ * 小学1年生漢字（印刷エンジン用）
+ * 各 entries は { sentence, reading }。src/data/kanji/kanjiGrade1.ts と同期すること。
  */
 (function (g) {
   g.KANJI_GRADE_1 = [
-    { char: '日', yomi: 'ひ', grade: 1, sentences: ['きょうはいい日です', '日がのぼりました'] },
-    { char: '月', yomi: 'つき', grade: 1, sentences: ['よるに月が見えます', '月がきれいです'] },
-    { char: '火', yomi: 'ひ', grade: 1, sentences: ['火をつけます', '火に気をつけましょう'] },
-    { char: '水', yomi: 'みず', grade: 1, sentences: ['水をのみます', 'つめたい水です'] },
-    { char: '木', yomi: 'き', grade: 1, sentences: ['こうえんに大きな木があります', '木の下であそびます'] },
-    { char: '金', yomi: 'かね', grade: 1, sentences: ['金をたいせつにします', 'お金をつかいます'] },
-    { char: '土', yomi: 'つち', grade: 1, sentences: ['土をほります', '土であそびます'] },
-    { char: '人', yomi: 'ひと', grade: 1, sentences: ['たくさんの人がいます', '人にあいさつします'] },
-    { char: '山', yomi: 'やま', grade: 1, sentences: ['山にのぼります', '大きな山です'] },
-    { char: '川', yomi: 'かわ', grade: 1, sentences: ['川であそびます', 'きれいな川です'] },
-    { char: '空', yomi: 'そら', grade: 1, sentences: ['空を見あげます', '青い空です'] },
-    { char: '雨', yomi: 'あめ', grade: 1, sentences: ['雨がふっています', '雨の日です'] },
-    { char: '上', yomi: 'うえ', grade: 1, sentences: ['つくえの上にあります', '上を見ます'] },
-    { char: '下', yomi: 'した', grade: 1, sentences: ['つくえの下にあります', '下を見ます'] },
-    { char: '中', yomi: 'なか', grade: 1, sentences: ['はこの中にあります', 'なかを見ます'] },
-    { char: '大', yomi: 'おお', grade: 1, sentences: ['大きないぬです', '大きな木があります'] },
-    { char: '小', yomi: 'ちい', grade: 1, sentences: ['小さなねこです', '小さなはこです'] },
-    { char: '学', yomi: 'がく', grade: 1, sentences: ['学校に行きます', 'がくしゅうをします'] },
-    { char: '校', yomi: 'こう', grade: 1, sentences: ['学校であそびます', '校ていに出ます'] },
-    { char: '生', yomi: 'せい', grade: 1, sentences: ['1年生です', '生きものを見ます'] },
+    { char: '一', grade: 1, entries: [
+      { sentence: 'りんごが 一つ あります', reading: 'ひと' },
+      { sentence: 'いすが 一つ あります', reading: 'ひと' },
+    ]},
+    { char: '右', grade: 1, entries: [
+      { sentence: '右に まがります', reading: 'みぎ' },
+      { sentence: '右の てです', reading: 'みぎ' },
+    ]},
+    { char: '雨', grade: 1, entries: [
+      { sentence: '雨が ふっています', reading: 'あめ' },
+      { sentence: '雨の ひです', reading: 'あめ' },
+    ]},
+    { char: '円', grade: 1, entries: [
+      { sentence: 'この 円が まるいです', reading: 'えん' },
+      { sentence: '円を かきます', reading: 'えん' },
+    ]},
+    { char: '王', grade: 1, entries: [
+      { sentence: '王さまの はなしです', reading: 'おう' },
+      { sentence: '王さまは やさしいです', reading: 'おう' },
+    ]},
+    { char: '音', grade: 1, entries: [
+      { sentence: '音が きこえます', reading: 'おと' },
+      { sentence: '音を ききます', reading: 'おと' },
+    ]},
+    { char: '下', grade: 1, entries: [
+      { sentence: '下に おります', reading: 'した' },
+      { sentence: '下を みます', reading: 'した' },
+    ]},
+    { char: '火', grade: 1, entries: [
+      { sentence: '火に きをつけます', reading: 'ひ' },
+      { sentence: '火が みえます', reading: 'ひ' },
+    ]},
+    { char: '花', grade: 1, entries: [
+      { sentence: '花が さいています', reading: 'はな' },
+      { sentence: 'きれいな 花です', reading: 'はな' },
+    ]},
+    { char: '貝', grade: 1, entries: [
+      { sentence: '貝を ひろいました', reading: 'かい' },
+      { sentence: 'きれいな 貝です', reading: 'かい' },
+    ]},
+    { char: '学', grade: 1, entries: [
+      { sentence: '学びが たのしいです', reading: 'まな' },
+      { sentence: '学びましょう', reading: 'まな' },
+    ]},
+    { char: '気', grade: 1, entries: [
+      { sentence: '気を つけます', reading: 'き' },
+      { sentence: '気が つきました', reading: 'き' },
+    ]},
+    { char: '九', grade: 1, entries: [
+      { sentence: '九つ あります', reading: 'ここの' },
+      { sentence: '九の かずです', reading: 'きゅう' },
+    ]},
+    { char: '休', grade: 1, entries: [
+      { sentence: '休みを とります', reading: 'やす' },
+      { sentence: '休みの ひです', reading: 'やす' },
+    ]},
+    { char: '玉', grade: 1, entries: [
+      { sentence: '玉を なげます', reading: 'たま' },
+      { sentence: '玉が ころがります', reading: 'たま' },
+    ]},
+    { char: '金', grade: 1, entries: [
+      { sentence: 'お金を つかいます', reading: 'かね' },
+      { sentence: '金の いろが すきです', reading: 'きん' },
+    ]},
+    { char: '空', grade: 1, entries: [
+      { sentence: '空が あおいです', reading: 'そら' },
+      { sentence: '空を みあげます', reading: 'そら' },
+    ]},
+    { char: '月', grade: 1, entries: [
+      { sentence: '月が でています', reading: 'つき' },
+      { sentence: '月が きれいです', reading: 'つき' },
+    ]},
+    { char: '犬', grade: 1, entries: [
+      { sentence: '犬が はしっています', reading: 'いぬ' },
+      { sentence: '犬が ねています', reading: 'いぬ' },
+    ]},
+    { char: '見', grade: 1, entries: [
+      { sentence: 'よく 見ます', reading: 'み' },
+      { sentence: 'ちゃんと 見ます', reading: 'み' },
+    ]},
+    { char: '五', grade: 1, entries: [
+      { sentence: '五の かずです', reading: 'いつ' },
+      { sentence: '五つ あります', reading: 'いつ' },
+    ]},
+    { char: '口', grade: 1, entries: [
+      { sentence: '口を あけます', reading: 'くち' },
+      { sentence: '口を ゆすぎます', reading: 'くち' },
+    ]},
+    { char: '校', grade: 1, entries: [
+      { sentence: '校に いきます', reading: 'こう' },
+      { sentence: '校の まえです', reading: 'こう' },
+    ]},
+    { char: '左', grade: 1, entries: [
+      { sentence: '左に まがります', reading: 'ひだり' },
+      { sentence: '左の てです', reading: 'ひだり' },
+    ]},
+    { char: '三', grade: 1, entries: [
+      { sentence: '三つ あります', reading: 'み' },
+      { sentence: '三の かずです', reading: 'さん' },
+    ]},
+    { char: '山', grade: 1, entries: [
+      { sentence: 'とおくに 山が みえます', reading: 'やま' },
+      { sentence: '山に のぼります', reading: 'やま' },
+    ]},
+    { char: '子', grade: 1, entries: [
+      { sentence: '子どもと あそびます', reading: 'こ' },
+      { sentence: '子が ねています', reading: 'こ' },
+    ]},
+    { char: '四', grade: 1, entries: [
+      { sentence: '四つ あります', reading: 'よ' },
+      { sentence: '四の かずです', reading: 'し' },
+    ]},
+    { char: '糸', grade: 1, entries: [
+      { sentence: '糸を つかいます', reading: 'いと' },
+      { sentence: 'ほそい 糸です', reading: 'いと' },
+    ]},
+    { char: '字', grade: 1, entries: [
+      { sentence: '字を かきます', reading: 'じ' },
+      { sentence: '字が きれいです', reading: 'じ' },
+    ]},
+    { char: '耳', grade: 1, entries: [
+      { sentence: '耳を すまします', reading: 'みみ' },
+      { sentence: '耳が ちいさいです', reading: 'みみ' },
+    ]},
+    { char: '七', grade: 1, entries: [
+      { sentence: '七つ あります', reading: 'なな' },
+      { sentence: '七の かずです', reading: 'しち' },
+    ]},
+    { char: '車', grade: 1, entries: [
+      { sentence: '車が とおります', reading: 'くるま' },
+      { sentence: 'あかい 車です', reading: 'くるま' },
+    ]},
+    { char: '手', grade: 1, entries: [
+      { sentence: '手を あらいます', reading: 'て' },
+      { sentence: '手を あげて ください', reading: 'て' },
+    ]},
+    { char: '十', grade: 1, entries: [
+      { sentence: '十の かずです', reading: 'じゅう' },
+      { sentence: '十まで かぞえます', reading: 'じゅう' },
+    ]},
+    { char: '出', grade: 1, entries: [
+      { sentence: '出て きました', reading: 'で' },
+      { sentence: '出る のを まちます', reading: 'で' },
+    ]},
+    { char: '女', grade: 1, entries: [
+      { sentence: '女の こが はしっています', reading: 'おんな' },
+      { sentence: 'やさしい 女の ひとです', reading: 'おんな' },
+    ]},
+    { char: '小', grade: 1, entries: [
+      { sentence: '小さな ねこです', reading: 'ちい' },
+      { sentence: '小さな はこです', reading: 'ちい' },
+    ]},
+    { char: '上', grade: 1, entries: [
+      { sentence: '上を みます', reading: 'うえ' },
+      { sentence: '上に のぼります', reading: 'うえ' },
+    ]},
+    { char: '森', grade: 1, entries: [
+      { sentence: '森が しずかです', reading: 'もり' },
+      { sentence: '森を みます', reading: 'もり' },
+    ]},
+    { char: '人', grade: 1, entries: [
+      { sentence: '人が います', reading: 'ひと' },
+      { sentence: 'やさしい 人です', reading: 'ひと' },
+    ]},
+    { char: '水', grade: 1, entries: [
+      { sentence: '水を のみます', reading: 'みず' },
+      { sentence: '水が きれいです', reading: 'みず' },
+    ]},
+    { char: '正', grade: 1, entries: [
+      { sentence: 'これで 正しいです', reading: 'ただ' },
+      { sentence: '正しい こたえです', reading: 'ただ' },
+    ]},
+    { char: '生', grade: 1, entries: [
+      { sentence: 'いちねん生です', reading: 'せい' },
+      { sentence: '生きて います', reading: 'い' },
+    ]},
+    { char: '青', grade: 1, entries: [
+      { sentence: '青い いろです', reading: 'あお' },
+      { sentence: '青い リボンです', reading: 'あお' },
+    ]},
+    { char: '夕', grade: 1, entries: [
+      { sentence: '夕べは ねむいです', reading: 'ゆう' },
+      { sentence: '夕べに あいさつします', reading: 'ゆう' },
+    ]},
+    { char: '石', grade: 1, entries: [
+      { sentence: '石を けりました', reading: 'いし' },
+      { sentence: '石の うえに すわります', reading: 'いし' },
+    ]},
+    { char: '赤', grade: 1, entries: [
+      { sentence: '赤い リボンです', reading: 'あか' },
+      { sentence: '赤い ぼうしです', reading: 'あか' },
+    ]},
+    { char: '千', grade: 1, entries: [
+      { sentence: '千の かずです', reading: 'せん' },
+      { sentence: '千まで みえます', reading: 'せん' },
+    ]},
+    { char: '川', grade: 1, entries: [
+      { sentence: '川で あそびます', reading: 'かわ' },
+      { sentence: 'きれいな 川です', reading: 'かわ' },
+    ]},
+    { char: '先', grade: 1, entries: [
+      { sentence: '先に いきます', reading: 'さき' },
+      { sentence: '先を あるきます', reading: 'さき' },
+    ]},
+    { char: '早', grade: 1, entries: [
+      { sentence: '早いですね', reading: 'はや' },
+      { sentence: '早く きます', reading: 'はや' },
+    ]},
+    { char: '草', grade: 1, entries: [
+      { sentence: '草が はえています', reading: 'くさ' },
+      { sentence: '草の そばを とおります', reading: 'くさ' },
+    ]},
+    { char: '足', grade: 1, entries: [
+      { sentence: '足が いたいです', reading: 'あし' },
+      { sentence: '足で あるきます', reading: 'あし' },
+    ]},
+    { char: '村', grade: 1, entries: [
+      { sentence: '村に いきました', reading: 'むら' },
+      { sentence: '村が すきです', reading: 'むら' },
+    ]},
+    { char: '大', grade: 1, entries: [
+      { sentence: '大きな ねこです', reading: 'おお' },
+      { sentence: '大きな いぬです', reading: 'おお' },
+    ]},
+    { char: '男', grade: 1, entries: [
+      { sentence: '男の こが はしっています', reading: 'おとこ' },
+      { sentence: '男の ひとです', reading: 'おとこ' },
+    ]},
+    { char: '竹', grade: 1, entries: [
+      { sentence: '竹が そだっています', reading: 'たけ' },
+      { sentence: '竹の となりです', reading: 'たけ' },
+    ]},
+    { char: '中', grade: 1, entries: [
+      { sentence: 'はこの 中に あります', reading: 'なか' },
+      { sentence: '中を みます', reading: 'なか' },
+    ]},
+    { char: '虫', grade: 1, entries: [
+      { sentence: '虫が とんでいます', reading: 'むし' },
+      { sentence: '虫は ちいさいです', reading: 'むし' },
+    ]},
+    { char: '町', grade: 1, entries: [
+      { sentence: '町を あるきます', reading: 'まち' },
+      { sentence: 'にぎやかな 町です', reading: 'まち' },
+    ]},
+    { char: '天', grade: 1, entries: [
+      { sentence: '天が みえます', reading: 'てん' },
+      { sentence: '天は たかいです', reading: 'てん' },
+    ]},
+    { char: '田', grade: 1, entries: [
+      { sentence: '田んぼの みちを とおります', reading: 'た' },
+      { sentence: '田の そばを とおります', reading: 'た' },
+    ]},
+    { char: '土', grade: 1, entries: [
+      { sentence: '土で あそびます', reading: 'つち' },
+      { sentence: '土の うえを あるきます', reading: 'つち' },
+    ]},
+    { char: '二', grade: 1, entries: [
+      { sentence: '二つ あります', reading: 'ふた' },
+      { sentence: '二の かずです', reading: 'に' },
+    ]},
+    { char: '日', grade: 1, entries: [
+      { sentence: '日が のぼりました', reading: 'ひ' },
+      { sentence: 'きょうは いい 日です', reading: 'ひ' },
+    ]},
+    { char: '入', grade: 1, entries: [
+      { sentence: '入って ください', reading: 'はい' },
+      { sentence: '入る まえに よういします', reading: 'はい' },
+    ]},
+    { char: '年', grade: 1, entries: [
+      { sentence: '年を とります', reading: 'とし' },
+      { sentence: '年が あけました', reading: 'とし' },
+    ]},
+    { char: '白', grade: 1, entries: [
+      { sentence: '白い ねこです', reading: 'しろ' },
+      { sentence: '白い くもです', reading: 'しろ' },
+    ]},
+    { char: '八', grade: 1, entries: [
+      { sentence: '八つ あります', reading: 'や' },
+      { sentence: '八の かずです', reading: 'はち' },
+    ]},
+    { char: '百', grade: 1, entries: [
+      { sentence: '百まで かぞえます', reading: 'ひゃく' },
+      { sentence: '百の かずです', reading: 'ひゃく' },
+    ]},
+    { char: '文', grade: 1, entries: [
+      { sentence: '文を かきます', reading: 'ぶん' },
+      { sentence: '文が よめます', reading: 'ぶん' },
+    ]},
+    { char: '木', grade: 1, entries: [
+      { sentence: '木が たかいです', reading: 'き' },
+      { sentence: '木の したで あそびます', reading: 'き' },
+    ]},
+    { char: '本', grade: 1, entries: [
+      { sentence: '本を よみます', reading: 'ほん' },
+      { sentence: '本が すきです', reading: 'ほん' },
+    ]},
+    { char: '名', grade: 1, entries: [
+      { sentence: '名を かきます', reading: 'な' },
+      { sentence: '名を よびます', reading: 'な' },
+    ]},
+    { char: '目', grade: 1, entries: [
+      { sentence: '目を ふきます', reading: 'め' },
+      { sentence: '目を みます', reading: 'め' },
+    ]},
+    { char: '立', grade: 1, entries: [
+      { sentence: '立ちます', reading: 'た' },
+      { sentence: '立って ください', reading: 'た' },
+    ]},
+    { char: '力', grade: 1, entries: [
+      { sentence: '力を いれます', reading: 'ちから' },
+      { sentence: '力が はいります', reading: 'ちから' },
+    ]},
+    { char: '林', grade: 1, entries: [
+      { sentence: '林を みました', reading: 'はやし' },
+      { sentence: '林の そばです', reading: 'はやし' },
+    ]},
+    { char: '六', grade: 1, entries: [
+      { sentence: '六つ あります', reading: 'む' },
+      { sentence: '六の かずです', reading: 'ろく' },
+    ]},
   ];
 })(typeof window !== 'undefined' ? window : globalThis);
+

@@ -1,23 +1,20 @@
 import type { KanjiGrade } from '../../types';
-import type { KanjiEntry } from './types';
+import type { KanjiEntry, KanjiSentenceEntry } from './types';
 
 /**
- * 教材用の行データ（`kanjiGrade1.ts` / 将来の `kanjiGrade2.ts` などで共通）
- * アプリ内部の `KanjiEntry`（char / yomi）へ変換して使う。
+ * 教材ファイル（kanjiGrade1.ts 等）の1字分。将来2〜6年も同形で追加。
  */
 export interface KanjiGradeSourceRow {
   grade: KanjiGrade;
   kanji: string;
-  reading: string;
-  sentences: string[];
+  entries: KanjiSentenceEntry[];
 }
 
 export function sourceRowToKanjiEntry(row: KanjiGradeSourceRow): KanjiEntry {
   return {
     char: row.kanji,
-    yomi: row.reading,
     grade: row.grade,
-    sentences: [...row.sentences],
+    entries: row.entries.map((e) => ({ sentence: e.sentence, reading: e.reading })),
   };
 }
 

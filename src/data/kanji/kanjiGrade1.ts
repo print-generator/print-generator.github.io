@@ -3,134 +3,336 @@ import { sourceRowsToKanjiEntries } from './sourceRow';
 import type { KanjiEntry } from './types';
 
 /**
- * 小学1年生漢字（教材データ・ソース・オブ・トゥルース）
+ * 小学1年生漢字（令和・学年別漢字配当表 80字）
  *
- * - 読み／書き・初級／中級／上級の生成は `src/generators/kanji.ts` が
- *   `GRADE_1_KANJI`（本データの変換結果）を参照する。
- * - ブラウザ印刷は `js/data/kanjiGrade1.js` を手元で同期すること（コメント参照）。
+ * 各 `entries[]` は { sentence, reading } で、文中のその漢字の読みと一致する。
+ * 1文に対象漢字は1字のみ（ほかはひらがな・かな表記）。
+ *
+ * - 生成: `src/generators/kanji.ts` → `GRADE_1_KANJI`
+ * - 印刷: `js/data/kanjiGrade1.js` を本ファイルと同期すること
  */
 export const kanjiGrade1: KanjiGradeSourceRow[] = [
-  {
-    grade: 1,
-    kanji: '日',
-    reading: 'ひ',
-    sentences: ['きょうはいい日です', '日がのぼりました'],
-  },
-  {
-    grade: 1,
-    kanji: '月',
-    reading: 'つき',
-    sentences: ['よるに月が見えます', '月がきれいです'],
-  },
-  {
-    grade: 1,
-    kanji: '火',
-    reading: 'ひ',
-    sentences: ['火をつけます', '火に気をつけましょう'],
-  },
-  {
-    grade: 1,
-    kanji: '水',
-    reading: 'みず',
-    sentences: ['水をのみます', 'つめたい水です'],
-  },
-  {
-    grade: 1,
-    kanji: '木',
-    reading: 'き',
-    sentences: ['こうえんに大きな木があります', '木の下であそびます'],
-  },
-  {
-    grade: 1,
-    kanji: '金',
-    reading: 'かね',
-    sentences: ['金をたいせつにします', 'お金をつかいます'],
-  },
-  {
-    grade: 1,
-    kanji: '土',
-    reading: 'つち',
-    sentences: ['土をほります', '土であそびます'],
-  },
-  {
-    grade: 1,
-    kanji: '人',
-    reading: 'ひと',
-    sentences: ['たくさんの人がいます', '人にあいさつします'],
-  },
-  {
-    grade: 1,
-    kanji: '山',
-    reading: 'やま',
-    sentences: ['山にのぼります', '大きな山です'],
-  },
-  {
-    grade: 1,
-    kanji: '川',
-    reading: 'かわ',
-    sentences: ['川であそびます', 'きれいな川です'],
-  },
-  {
-    grade: 1,
-    kanji: '空',
-    reading: 'そら',
-    sentences: ['空を見あげます', '青い空です'],
-  },
-  {
-    grade: 1,
-    kanji: '雨',
-    reading: 'あめ',
-    sentences: ['雨がふっています', '雨の日です'],
-  },
-  {
-    grade: 1,
-    kanji: '上',
-    reading: 'うえ',
-    sentences: ['つくえの上にあります', '上を見ます'],
-  },
-  {
-    grade: 1,
-    kanji: '下',
-    reading: 'した',
-    sentences: ['つくえの下にあります', '下を見ます'],
-  },
-  {
-    grade: 1,
-    kanji: '中',
-    reading: 'なか',
-    sentences: ['はこの中にあります', 'なかを見ます'],
-  },
-  {
-    grade: 1,
-    kanji: '大',
-    reading: 'おお',
-    sentences: ['大きないぬです', '大きな木があります'],
-  },
-  {
-    grade: 1,
-    kanji: '小',
-    reading: 'ちい',
-    sentences: ['小さなねこです', '小さなはこです'],
-  },
-  {
-    grade: 1,
-    kanji: '学',
-    reading: 'がく',
-    sentences: ['学校に行きます', 'がくしゅうをします'],
-  },
-  {
-    grade: 1,
-    kanji: '校',
-    reading: 'こう',
-    sentences: ['学校であそびます', '校ていに出ます'],
-  },
-  {
-    grade: 1,
-    kanji: '生',
-    reading: 'せい',
-    sentences: ['1年生です', '生きものを見ます'],
-  },
+  { grade: 1, kanji: '一', entries: [
+    { sentence: 'りんごが 一つ あります', reading: 'ひと' },
+    { sentence: 'いすが 一つ あります', reading: 'ひと' },
+  ]},
+  { grade: 1, kanji: '右', entries: [
+    { sentence: '右に まがります', reading: 'みぎ' },
+    { sentence: '右の てです', reading: 'みぎ' },
+  ]},
+  { grade: 1, kanji: '雨', entries: [
+    { sentence: '雨が ふっています', reading: 'あめ' },
+    { sentence: '雨の ひです', reading: 'あめ' },
+  ]},
+  { grade: 1, kanji: '円', entries: [
+    { sentence: 'この 円が まるいです', reading: 'えん' },
+    { sentence: '円を かきます', reading: 'えん' },
+  ]},
+  { grade: 1, kanji: '王', entries: [
+    { sentence: '王さまの はなしです', reading: 'おう' },
+    { sentence: '王さまは やさしいです', reading: 'おう' },
+  ]},
+  { grade: 1, kanji: '音', entries: [
+    { sentence: '音が きこえます', reading: 'おと' },
+    { sentence: '音を ききます', reading: 'おと' },
+  ]},
+  { grade: 1, kanji: '下', entries: [
+    { sentence: '下に おります', reading: 'した' },
+    { sentence: '下を みます', reading: 'した' },
+  ]},
+  { grade: 1, kanji: '火', entries: [
+    { sentence: '火に きをつけます', reading: 'ひ' },
+    { sentence: '火が みえます', reading: 'ひ' },
+  ]},
+  { grade: 1, kanji: '花', entries: [
+    { sentence: '花が さいています', reading: 'はな' },
+    { sentence: 'きれいな 花です', reading: 'はな' },
+  ]},
+  { grade: 1, kanji: '貝', entries: [
+    { sentence: '貝を ひろいました', reading: 'かい' },
+    { sentence: 'きれいな 貝です', reading: 'かい' },
+  ]},
+  { grade: 1, kanji: '学', entries: [
+    { sentence: '学びが たのしいです', reading: 'まな' },
+    { sentence: '学びましょう', reading: 'まな' },
+  ]},
+  { grade: 1, kanji: '気', entries: [
+    { sentence: '気を つけます', reading: 'き' },
+    { sentence: '気が つきました', reading: 'き' },
+  ]},
+  { grade: 1, kanji: '九', entries: [
+    { sentence: '九つ あります', reading: 'ここの' },
+    { sentence: '九の かずです', reading: 'きゅう' },
+  ]},
+  { grade: 1, kanji: '休', entries: [
+    { sentence: '休みを とります', reading: 'やす' },
+    { sentence: '休みの ひです', reading: 'やす' },
+  ]},
+  { grade: 1, kanji: '玉', entries: [
+    { sentence: '玉を なげます', reading: 'たま' },
+    { sentence: '玉が ころがります', reading: 'たま' },
+  ]},
+  { grade: 1, kanji: '金', entries: [
+    { sentence: 'お金を つかいます', reading: 'かね' },
+    { sentence: '金の いろが すきです', reading: 'きん' },
+  ]},
+  { grade: 1, kanji: '空', entries: [
+    { sentence: '空が あおいです', reading: 'そら' },
+    { sentence: '空を みあげます', reading: 'そら' },
+  ]},
+  { grade: 1, kanji: '月', entries: [
+    { sentence: '月が でています', reading: 'つき' },
+    { sentence: '月が きれいです', reading: 'つき' },
+  ]},
+  { grade: 1, kanji: '犬', entries: [
+    { sentence: '犬が はしっています', reading: 'いぬ' },
+    { sentence: '犬が ねています', reading: 'いぬ' },
+  ]},
+  { grade: 1, kanji: '見', entries: [
+    { sentence: 'よく 見ます', reading: 'み' },
+    { sentence: 'ちゃんと 見ます', reading: 'み' },
+  ]},
+  { grade: 1, kanji: '五', entries: [
+    { sentence: '五の かずです', reading: 'いつ' },
+    { sentence: '五つ あります', reading: 'いつ' },
+  ]},
+  { grade: 1, kanji: '口', entries: [
+    { sentence: '口を あけます', reading: 'くち' },
+    { sentence: '口を ゆすぎます', reading: 'くち' },
+  ]},
+  { grade: 1, kanji: '校', entries: [
+    { sentence: '校に いきます', reading: 'こう' },
+    { sentence: '校の まえです', reading: 'こう' },
+  ]},
+  { grade: 1, kanji: '左', entries: [
+    { sentence: '左に まがります', reading: 'ひだり' },
+    { sentence: '左の てです', reading: 'ひだり' },
+  ]},
+  { grade: 1, kanji: '三', entries: [
+    { sentence: '三つ あります', reading: 'み' },
+    { sentence: '三の かずです', reading: 'さん' },
+  ]},
+  { grade: 1, kanji: '山', entries: [
+    { sentence: 'とおくに 山が みえます', reading: 'やま' },
+    { sentence: '山に のぼります', reading: 'やま' },
+  ]},
+  { grade: 1, kanji: '子', entries: [
+    { sentence: '子どもと あそびます', reading: 'こ' },
+    { sentence: '子が ねています', reading: 'こ' },
+  ]},
+  { grade: 1, kanji: '四', entries: [
+    { sentence: '四つ あります', reading: 'よ' },
+    { sentence: '四の かずです', reading: 'し' },
+  ]},
+  { grade: 1, kanji: '糸', entries: [
+    { sentence: '糸を つかいます', reading: 'いと' },
+    { sentence: 'ほそい 糸です', reading: 'いと' },
+  ]},
+  { grade: 1, kanji: '字', entries: [
+    { sentence: '字を かきます', reading: 'じ' },
+    { sentence: '字が きれいです', reading: 'じ' },
+  ]},
+  { grade: 1, kanji: '耳', entries: [
+    { sentence: '耳を すまします', reading: 'みみ' },
+    { sentence: '耳が ちいさいです', reading: 'みみ' },
+  ]},
+  { grade: 1, kanji: '七', entries: [
+    { sentence: '七つ あります', reading: 'なな' },
+    { sentence: '七の かずです', reading: 'しち' },
+  ]},
+  { grade: 1, kanji: '車', entries: [
+    { sentence: '車が とおります', reading: 'くるま' },
+    { sentence: 'あかい 車です', reading: 'くるま' },
+  ]},
+  { grade: 1, kanji: '手', entries: [
+    { sentence: '手を あらいます', reading: 'て' },
+    { sentence: '手を あげて ください', reading: 'て' },
+  ]},
+  { grade: 1, kanji: '十', entries: [
+    { sentence: '十の かずです', reading: 'じゅう' },
+    { sentence: '十まで かぞえます', reading: 'じゅう' },
+  ]},
+  { grade: 1, kanji: '出', entries: [
+    { sentence: '出て きました', reading: 'で' },
+    { sentence: '出る のを まちます', reading: 'で' },
+  ]},
+  { grade: 1, kanji: '女', entries: [
+    { sentence: '女の こが はしっています', reading: 'おんな' },
+    { sentence: 'やさしい 女の ひとです', reading: 'おんな' },
+  ]},
+  { grade: 1, kanji: '小', entries: [
+    { sentence: '小さな ねこです', reading: 'ちい' },
+    { sentence: '小さな はこです', reading: 'ちい' },
+  ]},
+  { grade: 1, kanji: '上', entries: [
+    { sentence: '上を みます', reading: 'うえ' },
+    { sentence: '上に のぼります', reading: 'うえ' },
+  ]},
+  { grade: 1, kanji: '森', entries: [
+    { sentence: '森が しずかです', reading: 'もり' },
+    { sentence: '森を みます', reading: 'もり' },
+  ]},
+  { grade: 1, kanji: '人', entries: [
+    { sentence: '人が います', reading: 'ひと' },
+    { sentence: 'やさしい 人です', reading: 'ひと' },
+  ]},
+  { grade: 1, kanji: '水', entries: [
+    { sentence: '水を のみます', reading: 'みず' },
+    { sentence: '水が きれいです', reading: 'みず' },
+  ]},
+  { grade: 1, kanji: '正', entries: [
+    { sentence: 'これで 正しいです', reading: 'ただ' },
+    { sentence: '正しい こたえです', reading: 'ただ' },
+  ]},
+  { grade: 1, kanji: '生', entries: [
+    { sentence: 'いちねん生です', reading: 'せい' },
+    { sentence: '生きて います', reading: 'い' },
+  ]},
+  { grade: 1, kanji: '青', entries: [
+    { sentence: '青い いろです', reading: 'あお' },
+    { sentence: '青い リボンです', reading: 'あお' },
+  ]},
+  { grade: 1, kanji: '夕', entries: [
+    { sentence: '夕べは ねむいです', reading: 'ゆう' },
+    { sentence: '夕べに あいさつします', reading: 'ゆう' },
+  ]},
+  { grade: 1, kanji: '石', entries: [
+    { sentence: '石を けりました', reading: 'いし' },
+    { sentence: '石の うえに すわります', reading: 'いし' },
+  ]},
+  { grade: 1, kanji: '赤', entries: [
+    { sentence: '赤い リボンです', reading: 'あか' },
+    { sentence: '赤い ぼうしです', reading: 'あか' },
+  ]},
+  { grade: 1, kanji: '千', entries: [
+    { sentence: '千の かずです', reading: 'せん' },
+    { sentence: '千まで みえます', reading: 'せん' },
+  ]},
+  { grade: 1, kanji: '川', entries: [
+    { sentence: '川で あそびます', reading: 'かわ' },
+    { sentence: 'きれいな 川です', reading: 'かわ' },
+  ]},
+  { grade: 1, kanji: '先', entries: [
+    { sentence: '先に いきます', reading: 'さき' },
+    { sentence: '先を あるきます', reading: 'さき' },
+  ]},
+  { grade: 1, kanji: '早', entries: [
+    { sentence: '早いですね', reading: 'はや' },
+    { sentence: '早く きます', reading: 'はや' },
+  ]},
+  { grade: 1, kanji: '草', entries: [
+    { sentence: '草が はえています', reading: 'くさ' },
+    { sentence: '草の そばを とおります', reading: 'くさ' },
+  ]},
+  { grade: 1, kanji: '足', entries: [
+    { sentence: '足が いたいです', reading: 'あし' },
+    { sentence: '足で あるきます', reading: 'あし' },
+  ]},
+  { grade: 1, kanji: '村', entries: [
+    { sentence: '村に いきました', reading: 'むら' },
+    { sentence: '村が すきです', reading: 'むら' },
+  ]},
+  { grade: 1, kanji: '大', entries: [
+    { sentence: '大きな ねこです', reading: 'おお' },
+    { sentence: '大きな いぬです', reading: 'おお' },
+  ]},
+  { grade: 1, kanji: '男', entries: [
+    { sentence: '男の こが はしっています', reading: 'おとこ' },
+    { sentence: '男の ひとです', reading: 'おとこ' },
+  ]},
+  { grade: 1, kanji: '竹', entries: [
+    { sentence: '竹が そだっています', reading: 'たけ' },
+    { sentence: '竹の となりです', reading: 'たけ' },
+  ]},
+  { grade: 1, kanji: '中', entries: [
+    { sentence: 'はこの 中に あります', reading: 'なか' },
+    { sentence: '中を みます', reading: 'なか' },
+  ]},
+  { grade: 1, kanji: '虫', entries: [
+    { sentence: '虫が とんでいます', reading: 'むし' },
+    { sentence: '虫は ちいさいです', reading: 'むし' },
+  ]},
+  { grade: 1, kanji: '町', entries: [
+    { sentence: '町を あるきます', reading: 'まち' },
+    { sentence: 'にぎやかな 町です', reading: 'まち' },
+  ]},
+  { grade: 1, kanji: '天', entries: [
+    { sentence: '天が みえます', reading: 'てん' },
+    { sentence: '天は たかいです', reading: 'てん' },
+  ]},
+  { grade: 1, kanji: '田', entries: [
+    { sentence: '田んぼの みちを とおります', reading: 'た' },
+    { sentence: '田の そばを とおります', reading: 'た' },
+  ]},
+  { grade: 1, kanji: '土', entries: [
+    { sentence: '土で あそびます', reading: 'つち' },
+    { sentence: '土の うえを あるきます', reading: 'つち' },
+  ]},
+  { grade: 1, kanji: '二', entries: [
+    { sentence: '二つ あります', reading: 'ふた' },
+    { sentence: '二の かずです', reading: 'に' },
+  ]},
+  { grade: 1, kanji: '日', entries: [
+    { sentence: '日が のぼりました', reading: 'ひ' },
+    { sentence: 'きょうは いい 日です', reading: 'ひ' },
+  ]},
+  { grade: 1, kanji: '入', entries: [
+    { sentence: '入って ください', reading: 'はい' },
+    { sentence: '入る まえに よういします', reading: 'はい' },
+  ]},
+  { grade: 1, kanji: '年', entries: [
+    { sentence: '年を とります', reading: 'とし' },
+    { sentence: '年が あけました', reading: 'とし' },
+  ]},
+  { grade: 1, kanji: '白', entries: [
+    { sentence: '白い ねこです', reading: 'しろ' },
+    { sentence: '白い くもです', reading: 'しろ' },
+  ]},
+  { grade: 1, kanji: '八', entries: [
+    { sentence: '八つ あります', reading: 'や' },
+    { sentence: '八の かずです', reading: 'はち' },
+  ]},
+  { grade: 1, kanji: '百', entries: [
+    { sentence: '百まで かぞえます', reading: 'ひゃく' },
+    { sentence: '百の かずです', reading: 'ひゃく' },
+  ]},
+  { grade: 1, kanji: '文', entries: [
+    { sentence: '文を かきます', reading: 'ぶん' },
+    { sentence: '文が よめます', reading: 'ぶん' },
+  ]},
+  { grade: 1, kanji: '木', entries: [
+    { sentence: '木が たかいです', reading: 'き' },
+    { sentence: '木の したで あそびます', reading: 'き' },
+  ]},
+  { grade: 1, kanji: '本', entries: [
+    { sentence: '本を よみます', reading: 'ほん' },
+    { sentence: '本が すきです', reading: 'ほん' },
+  ]},
+  { grade: 1, kanji: '名', entries: [
+    { sentence: '名を かきます', reading: 'な' },
+    { sentence: '名を よびます', reading: 'な' },
+  ]},
+  { grade: 1, kanji: '目', entries: [
+    { sentence: '目を ふきます', reading: 'め' },
+    { sentence: '目を みます', reading: 'め' },
+  ]},
+  { grade: 1, kanji: '立', entries: [
+    { sentence: '立ちます', reading: 'た' },
+    { sentence: '立って ください', reading: 'た' },
+  ]},
+  { grade: 1, kanji: '力', entries: [
+    { sentence: '力を いれます', reading: 'ちから' },
+    { sentence: '力が はいります', reading: 'ちから' },
+  ]},
+  { grade: 1, kanji: '林', entries: [
+    { sentence: '林を みました', reading: 'はやし' },
+    { sentence: '林の そばです', reading: 'はやし' },
+  ]},
+  { grade: 1, kanji: '六', entries: [
+    { sentence: '六つ あります', reading: 'む' },
+    { sentence: '六の かずです', reading: 'ろく' },
+  ]},
 ];
 
-/** `kanjiGrade1` を `KanjiEntry[]` に変換したもの（生成器はこれを参照） */
+/** 教材行から変換したプール（問題生成で使用） */
 export const GRADE_1_KANJI: KanjiEntry[] = sourceRowsToKanjiEntries(kanjiGrade1);

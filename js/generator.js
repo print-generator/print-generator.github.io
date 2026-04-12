@@ -481,10 +481,22 @@ function getKanjiPool(grade) {
   return [];
 }
 
-function kanjiPickSentence(entry) {
-  const list = entry.sentences;
-  if (!list || !list.length) return '';
-  return list[Math.floor(Math.random() * list.length)] || '';
+function kanjiPickContext(entry) {
+  const list = entry.entries;
+  if (!list || !list.length) return null;
+  return list[Math.floor(Math.random() * list.length)] || null;
+}
+
+function kanjiCollectAllReadings(pool) {
+  const set = new Set();
+  for (let i = 0; i < pool.length; i++) {
+    const ent = pool[i].entries;
+    if (!ent) continue;
+    for (let j = 0; j < ent.length; j++) {
+      if (ent[j].reading) set.add(ent[j].reading);
+    }
+  }
+  return [...set];
 }
 
 /** 文中の対象漢字1字をマーク */
@@ -505,7 +517,7 @@ function kanjiHtmlSentenceWriting(sentence, char, yomi) {
   return `${escapeHtmlPrint(before)}（${escapeHtmlPrint(yomi)}）${escapeHtmlPrint(after)}`;
 }
 
-function buildKanjiReadingSentence(entry, sentence, pool, level) {
+function buildKanjiReadingSentence(entry, sentence, reading, pool, level) {
   const marked = kanjiHtmlSentenceReading(sentence, entry.char);
   const line = `<div class="choice-sentence kanji-sentence-line">${marked}</div>`;
 
@@ -513,15 +525,15 @@ function buildKanjiReadingSentence(entry, sentence, pool, level) {
     const inner = `${line}
       <div class="emoji-question-prompt">「${escapeHtmlPrint(entry.char)}」の よみかたを なぞりましょう。</div>
       <div class="trace-area kanji-yomi-trace">
-        <span class="trace-target">${escapeHtmlPrint(entry.yomi)}</span>
+        <span class="trace-target">${escapeHtmlPrint(reading)}</span>
       </div>`;
-    return { html: inner, answer: entry.yomi };
+    return { html: inner, answer: reading };
   }
 
   if (level === 'intermediate') {
-    const answer = entry.yomi;
-    const wrong = shuffle(pool.filter((e) => e.char !== entry.char && e.yomi !== answer))
-      .map((e) => e.yomi)
+    const answer = reading;
+    const poolReadings = kanjiCollectAllReadings(pool);
+    const wrong = shuffle(poolReadings.filter((r) => r !== answer))
       .filter((y, idx, a) => a.indexOf(y) === idx)
       .slice(0, 3);
     const choices = shuffle([answer, ...wrong]).slice(0, 4);
@@ -538,11 +550,11 @@ function buildKanjiReadingSentence(entry, sentence, pool, level) {
   const inner = `${line}
     <div class="desc-sentence">「${escapeHtmlPrint(entry.char)}」の よみかたを （　　　）に かきましょう。</div>
     <div class="answer-line"></div>`;
-  return { html: inner, answer: entry.yomi };
+  return { html: inner, answer: reading };
 }
 
-function buildKanjiWritingSentence(entry, sentence, pool, level) {
-  const hiraganaLine = kanjiHtmlSentenceWriting(sentence, entry.char, entry.yomi);
+function buildKanjiWritingSentence(entry, sentence, reading, pool, level) {
+  const hiraganaLine = kanjiHtmlSentenceWriting(sentence, entry.char, reading);
   const line = `<div class="choice-sentence kanji-sentence-line">${hiraganaLine}</div>`;
 
   if (level === 'beginner') {
@@ -592,16 +604,18 @@ function buildKanjiByLevel(count, customPayload, _allowKatakana, _kanaMode, leve
 
   const answers = [];
   const cards = data.map((entry, i) => {
-    const sentence = kanjiPickSentence(entry);
-    if (!sentence || sentence.indexOf(entry.char) === -1) {
+    const ctx = kanjiPickContext(entry);
+    const sentence = ctx && ctx.sentence ? ctx.sentence : '';
+    const reading = ctx && ctx.reading ? ctx.reading : '';
+    if (!ctx || !sentence || !reading || sentence.indexOf(entry.char) === -1) {
       answers.push('');
       const inner = '<p class="emoji-question-prompt">データの 例文に かんじが ありません。</p>';
       return questionCard(i + 1, inner);
     }
     const built =
       mode === 'writing'
-        ? buildKanjiWritingSentence(entry, sentence, pool, diff)
-        : buildKanjiReadingSentence(entry, sentence, pool, diff);
+        ? buildKanjiWritingSentence(entry, sentence, reading, pool, diff)
+        : buildKanjiReadingSentence(entry, sentence, reading, pool, diff);
     answers.push(built.answer);
     return questionCard(i + 1, built.html);
   });
