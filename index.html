@@ -208,6 +208,10 @@
     <p class="free-plan-notice no-print" id="freePlanNotice">
       【無料版】1日5回まで・最大10問まで
     </p>
+    <div class="pro-plan-banner no-print" id="proPlanBanner" hidden>
+      <span class="pro-plan-banner-badge"><i class="fas fa-check-circle"></i> 有料版利用中</span>
+      <span class="pro-plan-banner-line">全機能をご利用いただけます</span>
+    </div>
 
     <section class="control-panel no-print" id="controlPanel">
 
@@ -406,7 +410,7 @@
         <p class="generate-katakana-note no-print" id="katakanaGenerateNote" hidden>
           ※カタカナは有料版で利用できます
         </p>
-        <p class="generate-note">
+        <p class="generate-note no-print" id="generateUpgradeNote">
           <i class="fas fa-info-circle"></i> もっと使うには有料版（月額300円・回数無制限・最大30問・上級モード・解答付き）
           <button type="button" class="link-btn" onclick="openPlanModal()">詳しく見る</button>
         </p>
@@ -640,9 +644,6 @@
 
   </div>
 </div>
-
-<!-- 印刷・PDF用ロゴ（問題DOMの外。画面では非表示・レイアウトに影響しない） -->
-<img src="images/logo.png" class="print-logo" alt="" />
 
 <script src="js/data/sortQuestionData.js"></script>
 <script src="js/sortQuestionGenerator.js"></script>

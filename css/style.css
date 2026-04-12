@@ -56,9 +56,18 @@ body {
   vertical-align: middle;
 }
 
-/* 印刷用ロゴ：画面では非表示（body 直下・本文フローに入れない） */
-.print-logo {
-  display: none;
+/* 生成プリント内ロゴは #printSheet 先頭に挿入。プレビューは右上に小さく（本文フロー外） */
+.a4-sheet#printSheet > img.print-logo {
+  display: block;
+  position: absolute;
+  top: 4mm;
+  right: 5mm;
+  width: 20mm;
+  max-width: 32%;
+  height: auto;
+  opacity: 0.92;
+  z-index: 5;
+  pointer-events: none;
 }
 
 /* ============================================
@@ -2877,7 +2886,7 @@ body.lp-pricing-page {
   .word-emoji { font-size: 18pt !important; }
 
   /*
-   * 印刷ロゴ（body 直下の img.print-logo）：最後に指定して他ルールに負けないようにする。
+   * 印刷ロゴ（#printSheet 先頭の img.print-logo）：最後に指定して他ルールに負けないようにする。
    * position:fixed はページ座標。問題ブロックのフロー外のため改ページ・余白は変わらない。
    */
   img.print-logo {
@@ -3033,6 +3042,37 @@ body.pdf-mobile-capture .hira-write::after {
   border: 1px solid var(--gold);
 }
 .plan-pro .free-plan-notice {
+  display: none !important;
+}
+.pro-plan-banner {
+  font-size: 0.88rem;
+  text-align: center;
+  margin: 8px auto 16px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, var(--gold-soft) 0%, var(--primary-light) 100%);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-sm);
+  max-width: 560px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.5;
+}
+.pro-plan-banner:not([hidden]) {
+  display: flex;
+}
+.pro-plan-banner-badge {
+  font-weight: 800;
+  color: var(--gold-dark);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+.pro-plan-banner-line {
+  font-size: 0.86rem;
+  color: var(--text-sub);
+  font-weight: 600;
+}
+.plan-pro .generate-note#generateUpgradeNote {
   display: none !important;
 }
 .free-plan-notice {

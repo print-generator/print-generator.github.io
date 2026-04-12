@@ -6,8 +6,16 @@
 /** 有料版の案内・お申し込み（LINE） */
 const LINE_SIGNUP_URL = 'https://lin.ee/QrdTzUH';
 
-const planParam = new URLSearchParams(window.location.search).get('plan');
-const isProUser = planParam === 'pro';
+/** ?plan=pro（大文字小文字・前後空白を許容） */
+function readIsProPlanFromUrl() {
+  try {
+    const raw = new URLSearchParams(window.location.search).get('plan');
+    return String(raw || '').trim().toLowerCase() === 'pro';
+  } catch (_e) {
+    return false;
+  }
+}
+const isProUser = readIsProPlanFromUrl();
 
 /* ════════════════════════════════════════
    選択状態
@@ -496,10 +504,20 @@ function refreshLevelButtons() {
   }
 }
 
+function updatePlanPromoVisibility() {
+  const freeNotice = document.getElementById('freePlanNotice');
+  const proBanner = document.getElementById('proPlanBanner');
+  const upgradeNote = document.getElementById('generateUpgradeNote');
+  if (freeNotice) freeNotice.hidden = !!isProUser;
+  if (proBanner) proBanner.hidden = !isProUser;
+  if (upgradeNote) upgradeNote.hidden = !!isProUser;
+}
+
 function applyPlanTierToUI() {
   document.body.classList.toggle('plan-pro', isProUser);
   document.body.classList.toggle('plan-free', !isProUser);
   updatePlanBadge();
+  updatePlanPromoVisibility();
   if (!isProUser && selectedContent === 'custom') {
     selectedContent = 'joshi';
     document.querySelectorAll('.content-btn').forEach((b) => {
@@ -697,7 +715,8 @@ function generatePrint() {
         getKanaMode()
       );
       const sheet = document.getElementById('printSheet');
-      sheet.innerHTML = html;
+      /* プリントDOM先頭にロゴ（フロー外・CSSで絶対／印刷時は固定） */
+      sheet.innerHTML = `<img src="images/logo.png" class="print-logo" alt="" />${html}`;
       /* 迷路系のみ a4-sheet--maze（印刷・プレビュー・PDF で共通レイアウト最適化の影響を切り離す） */
       sheet.classList.toggle('a4-sheet--maze', content === 'maze' || content === 'maze_hiragana');
 
@@ -798,7 +817,8 @@ const MOBILE_PDF_SIDE_MARGIN_MM = 12;
 
 /** 印刷用ロゴ画像の絶対URL（相対パスを document.baseURI で解決） */
 function resolvePrintLogoImageUrl() {
-  const el = document.querySelector('img.print-logo');
+  const el =
+    document.querySelector('#printSheet > img.print-logo') || document.querySelector('img.print-logo');
   const raw = el && el.getAttribute('src');
   if (raw) {
     try {
@@ -816,12 +836,15 @@ function resolvePrintLogoImageUrl() {
 
 /**
  * スマホPDFキャプチャ用：各ページ fragment の右上にロゴを重ねる（本文フロー外・レイアウト不変）。
+ * @param {HTMLElement} wrap
+ * @param {HTMLElement} [sheet] #printSheet（先頭の img.print-logo と同じ src を使う）
  */
-function appendMobilePdfLogoOverlay(wrap) {
+function appendMobilePdfLogoOverlay(wrap, sheet) {
   if (!wrap) return;
   wrap.style.position = 'relative';
   const logo = document.createElement('img');
-  logo.src = resolvePrintLogoImageUrl();
+  const domLogo = sheet && sheet.querySelector(':scope > img.print-logo');
+  logo.src = domLogo ? domLogo.currentSrc || resolvePrintLogoImageUrl() : resolvePrintLogoImageUrl();
   logo.alt = '';
   logo.setAttribute('aria-hidden', 'true');
   logo.className = 'pdf-mobile-page-logo';
@@ -1028,7 +1051,7 @@ function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc)
   cardSlice.forEach((c) => g.appendChild(c.cloneNode(true)));
   wrap.appendChild(g);
   if (isLastPageOfDoc && footer) wrap.appendChild(footer.cloneNode(true));
-  appendMobilePdfLogoOverlay(wrap);
+  appendMobilePdfLogoOverlay(wrap, sheet);
   return wrap;
 }
 
