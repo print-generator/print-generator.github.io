@@ -137,17 +137,29 @@ function resolveQuestionCountForPrint(content, level) {
   return 5;
 }
 
-/** 有料：問題数行の表示（五十音・初級は10問固定のため行ごと非表示） */
+/** 問題数行：五十音・初級のみ非表示（10問固定）。無料は表示のまま disabled＋固定5問 */
 function refreshQuestionCountRow() {
   const row = document.getElementById('questionCountRow');
   const hint = document.getElementById('questionCountProHint');
+  const sel = document.getElementById('questionCountPro');
   if (!row) return;
   const levelRaw = document.querySelector('.level-btn.active')?.dataset.value || selectedLevel;
   const level = getEffectiveLevelForContent(selectedContent, levelRaw);
   const fixedHiraganaBeginner = selectedContent === 'hiragana' && level === 'beginner';
-  row.hidden = !isProUser || fixedHiraganaBeginner;
+  row.hidden = fixedHiraganaBeginner;
+  if (sel) {
+    sel.disabled = !isProUser;
+    sel.classList.toggle('setting-select--locked', !isProUser);
+    if (!isProUser) sel.value = '5';
+  }
   if (hint) {
-    hint.textContent = row.hidden ? '' : '5〜25問から選べます。';
+    if (row.hidden) {
+      hint.textContent = '';
+    } else if (!isProUser) {
+      hint.textContent = '無料版は5問固定です。有料版で変更できます。';
+    } else {
+      hint.textContent = '5〜25問から選べます。';
+    }
   }
 }
 
@@ -232,9 +244,15 @@ function getAllowKatakana() {
   return !!document.getElementById('includeKatakana')?.checked;
 }
 
+/** 五十音：セレクトの値をそのまま生成に渡す（有料・五十音選択時）。無料は常にひらがなのみ */
 function getKanaMode() {
-  if (!isProUser || !getAllowKatakana()) return 'hiragana';
-  return selectedKanaMode || 'mix';
+  if (!isProUser) return 'hiragana';
+  if (selectedContent !== 'hiragana') return 'mix';
+  const sel = document.getElementById('kanaMode');
+  if (!sel || sel.disabled) return selectedKanaMode || 'hiragana';
+  const v = sel.value || 'mix';
+  selectedKanaMode = v;
+  return v;
 }
 
 function refreshKanaModeControl() {
@@ -254,11 +272,10 @@ function refreshKanaModeControl() {
   }
   if (isProUser) {
     select.disabled = false;
-    selectedKanaMode = select.value || selectedKanaMode || 'mix';
+    selectedKanaMode = select.value || 'mix';
     if (hint) {
-      hint.textContent = getAllowKatakana()
-        ? '初級のなぞり書きに反映されます。ミックスは行ごとにひらがな／カタカナが切り替わります。'
-        : '「カタカナを含める」をオンにすると、ここで選んだモード（ミックス・カタカナのみなど）が出題に反映されます。オフのときはひらがなのみで出題されます。';
+      hint.textContent =
+        '初級のなぞりに反映されます（あ行〜わ行の10問構成はそのまま）。ミックスは行ごとにひらがな／カタカナ、カタカナのみ・ひらがなのみも選べます。';
     }
   } else {
     select.disabled = true;
@@ -558,11 +575,11 @@ document.querySelectorAll('.level-btn').forEach(btn => {
 
 const includeKatakanaEl = document.getElementById('includeKatakana');
 if (includeKatakanaEl) {
-  includeKatakanaEl.addEventListener('click', (e) => {
+  includeKatakanaEl.addEventListener('change', () => {
     if (!isProUser) {
-      e.preventDefault();
       includeKatakanaEl.checked = false;
       openFeatureLockedModal('katakana');
+      return;
     }
     refreshKanaModeControl();
   });
@@ -570,9 +587,11 @@ if (includeKatakanaEl) {
 
 const kanaModeEl = document.getElementById('kanaMode');
 if (kanaModeEl) {
-  kanaModeEl.addEventListener('change', () => {
+  const syncKanaMode = () => {
     selectedKanaMode = kanaModeEl.value || 'mix';
-  });
+  };
+  kanaModeEl.addEventListener('change', syncKanaMode);
+  kanaModeEl.addEventListener('input', syncKanaMode);
 }
 document.querySelectorAll('.custom-mode-btn').forEach((btn) => {
   btn.addEventListener('click', () => {

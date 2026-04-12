@@ -512,6 +512,10 @@ body {
   letter-spacing: 0.06em;
   line-height: 1.2;
 }
+/* 有料プラン時はジャンル・レベルの「有料」バッジを出さない */
+body.plan-pro .option-pro-badge {
+  display: none !important;
+}
 body.plan-free .content-btn--custom:not(.active) {
   opacity: 0.9;
 }
@@ -566,6 +570,13 @@ body.plan-free .content-btn--custom:not(.active) {
 .setting-select:focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
+}
+.setting-select.setting-select--locked,
+select.setting-select--locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background-color: #f3f4f6;
+  color: var(--text-sub);
 }
 
 .settings-row--custom {
@@ -878,8 +889,8 @@ body.plan-free .content-btn--custom:not(.active) {
 }
 .print-header-left {
   min-width: 0;
-  flex: 1 1 45%;
-  max-width: calc(100% - 9.5rem);
+  flex: 1 1 42%;
+  max-width: calc(100% - 11rem);
 }
 .print-title-row {
   display: flex;
@@ -910,9 +921,9 @@ body.plan-free .content-btn--custom:not(.active) {
   flex-wrap: nowrap;
   align-items: flex-end;
   justify-content: flex-end;
-  gap: 10px 14px;
+  gap: 10px 18px;
   flex: 0 1 auto;
-  max-width: min(100%, 55%);
+  max-width: min(100%, 58%);
   margin-left: auto;
 }
 .print-header-field {
@@ -924,12 +935,13 @@ body.plan-free .content-btn--custom:not(.active) {
 }
 .print-header-field--name {
   min-width: 0;
-  flex: 1 1 14rem;
-  max-width: 26rem;
+  flex: 1 1 10rem;
+  max-width: 18rem;
 }
 .print-header-field--date {
   flex: 0 0 auto;
   gap: 4px;
+  min-width: 7rem;
 }
 .print-field-label {
   color: var(--text-sub);
@@ -2149,13 +2161,13 @@ body.lp-pricing-page {
   }
   .print-header-fields {
     flex: 0 0 auto;
-    max-width: min(46%, 10.5rem);
+    max-width: min(52%, 11.5rem);
     min-width: 0;
     margin-left: auto;
     flex-wrap: nowrap;
     justify-content: flex-end;
     align-items: flex-end;
-    gap: 4px 5px;
+    gap: 6px 8px;
   }
   .print-header-field {
     font-size: 0.62rem;
@@ -2164,11 +2176,14 @@ body.lp-pricing-page {
   .print-header-field--name {
     flex: 1 1 auto;
     min-width: 0;
-    max-width: 6.8rem;
+    max-width: 5.5rem;
+  }
+  .print-header-field--date {
+    min-width: 5.8rem;
   }
   .print-field-line--name {
-    min-width: 3.2rem;
-    max-width: 4.8rem;
+    min-width: 3rem;
+    max-width: 4.2rem;
     min-height: 18px;
     height: 18px;
   }
@@ -2744,16 +2759,20 @@ body.lp-pricing-page {
     gap: 8pt !important;
   }
   .print-header-fields {
-    gap: 8pt 10pt !important;
-    max-width: 52% !important;
+    gap: 8pt 12pt !important;
+    max-width: 56% !important;
   }
   .print-header-field {
     font-size: 7.5pt !important;
   }
+  .print-header-field--date {
+    min-width: 20mm !important;
+  }
   .print-field-line--name {
     min-height: 6.5mm !important;
     height: 6.5mm !important;
-    min-width: 34mm !important;
+    min-width: 30mm !important;
+    max-width: 38mm !important;
     border-bottom: 1.5pt solid #999 !important;
   }
   .print-date-blank {

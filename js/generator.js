@@ -575,7 +575,14 @@ function buildJoshiAdvanced(count, _cw) {
 
 function buildHiraganaBeginner(count, _cw, allowKatakana, kanaMode) {
   const rawSets = pickHiraganaBeginnerSetsOrdered(APP_DATA.hiragana.beginner_sets, count);
-  const mode = allowKatakana ? (kanaMode || 'mix') : 'hiragana';
+  /* 出題モードは UI の kanaMode を優先（ひらがなのみ／カタカナのみ／ミックス）。未指定時のみ checkbox 相当でフォールバック */
+  const km = kanaMode || 'mix';
+  let mode;
+  if (km === 'hiragana' || km === 'katakana' || km === 'mix') {
+    mode = km;
+  } else {
+    mode = allowKatakana ? km : 'hiragana';
+  }
   const sets = rawSets.map((set, i) => {
     if (mode === 'katakana') return mapBeginnerSetToKatakana(set);
     if (mode === 'mix') {
