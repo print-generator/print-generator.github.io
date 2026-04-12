@@ -1383,3 +1383,11 @@ function buildNarabikaeAdvanced(count) {
   }
   return { cardHtmls: cards, answers };
 }
+
+/** TypeScript（PlanCore）から既存HTMLエンジンを参照するための公開API */
+if (typeof window !== 'undefined') {
+  window.PrintGenerator = {
+    generatePrintHTML,
+    buildQuestionBodyStructured,
+  };
+}

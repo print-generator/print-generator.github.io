@@ -1,0 +1,12 @@
+{
+  "name": "print-generator-home",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --outfile=js/plan-core.bundle.js --format=iife --global-name=PlanCore --platform=browser --target=es2020",
+    "watch": "npm run build -- --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}

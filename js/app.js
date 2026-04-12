@@ -50,8 +50,11 @@ function getLevelLabel(level, content) {
   return levelLabels[level] || level;
 }
 
+/** plan-core.bundle.js（src/config/planRules.ts）と同一値 */
+const PlanCore = typeof window !== 'undefined' ? window.PlanCore : undefined;
+
 /** 無料版のみカウント（1日あたり3回まで） */
-const FREE_GENERATION_LIMIT = 3;
+const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 3;
 const LS_FREE_GEN_TOTAL_KEY = 'homePrint_freeGenTotal_v2';
 const LS_FREE_GEN_DATE_KEY = 'homePrint_freeGenDateJst_v2';
 /** 文章問題・並び替えの「有料ジャンル体験」は通算1回まで（'1' で使用済み） */
@@ -124,13 +127,22 @@ function markPremiumGenreTrialConsumed() {
 }
 
 /** 有料版のみ選択可。五十音・初級は教材上10問固定で選択より優先 */
-const PRO_QUESTION_COUNT_OPTIONS = [5, 10, 15, 20, 25];
+const PRO_QUESTION_COUNT_OPTIONS = PlanCore?.PRO_QUESTION_COUNT_OPTIONS ?? [5, 10, 15, 20, 25];
 
 function resolveQuestionCountForPrint(content, level) {
+  const sel = document.getElementById('questionCountPro');
+  const raw = sel?.value;
+  const n = raw != null && raw !== '' ? parseInt(raw, 10) : NaN;
+  if (PlanCore && typeof PlanCore.resolveQuestionCount === 'function') {
+    return PlanCore.resolveQuestionCount({
+      genre: content,
+      difficulty: level,
+      isPro: isProUser,
+      selectedProCount: Number.isFinite(n) ? n : undefined,
+    });
+  }
   if (content === 'hiragana' && level === 'beginner') return 10;
   if (isProUser) {
-    const sel = document.getElementById('questionCountPro');
-    const n = parseInt(sel?.value, 10);
     if (PRO_QUESTION_COUNT_OPTIONS.includes(n)) return n;
     return 5;
   }
@@ -627,7 +639,37 @@ function generatePrint() {
 
   const premiumTrialStillAvailable = !isProUser && !isPremiumGenreTrialConsumed();
 
-  if (!isProUser) {
+  if (PlanCore && typeof PlanCore.validateGenerationGate === 'function') {
+    const gate = PlanCore.validateGenerationGate({
+      isPro: isProUser,
+      genre: content,
+      difficulty: level,
+      freeGenerationsUsed: getFreeGenerationsUsed(),
+      premiumGenreTrialConsumed: isPremiumGenreTrialConsumed(),
+    });
+    if (!gate.ok) {
+      if (gate.kind === 'quota') {
+        openPlanModal(gate.message || '');
+        return;
+      }
+      if (gate.kind === 'advanced_locked') {
+        openPlanModal(gate.message || '');
+        return;
+      }
+      if (gate.kind === 'custom_locked') {
+        openFeatureLockedModal('custom');
+        return;
+      }
+      if (gate.kind === 'maze_hiragana_locked') {
+        openPlanModal(gate.message || '');
+        return;
+      }
+      if (gate.kind === 'premium_trial_exhausted') {
+        updateTrialNotice(true, '文章問題・並び替え', 'limit');
+        return;
+      }
+    }
+  } else if (!isProUser) {
     if (getFreeGenerationsUsed() >= FREE_GENERATION_LIMIT) {
       openPlanModal(
         `無料版は1日${FREE_GENERATION_LIMIT}回までです。有料版（月額300円・回数無制限）をご利用ください。`
@@ -677,17 +719,30 @@ function generatePrint() {
 
   setTimeout(() => {
     try {
-      const html  = generatePrintHTML(
-        content,
-        level,
-        count,
-        showName,
-        showDate,
-        customPayload,
-        wantAnswers,
-        getAllowKatakana(),
-        getKanaMode()
-      );
+      const html =
+        PlanCore && typeof PlanCore.buildPrintHtml === 'function'
+          ? PlanCore.buildPrintHtml({
+              content,
+              level,
+              count,
+              showName,
+              showDate,
+              customPayload,
+              wantAnswers,
+              allowKatakana: getAllowKatakana(),
+              kanaMode: getKanaMode(),
+            })
+          : generatePrintHTML(
+              content,
+              level,
+              count,
+              showName,
+              showDate,
+              customPayload,
+              wantAnswers,
+              getAllowKatakana(),
+              getKanaMode()
+            );
       const sheet = document.getElementById('printSheet');
       sheet.innerHTML = html;
       /* 迷路系のみ a4-sheet--maze（印刷・プレビュー・PDF で共通レイアウト最適化の影響を切り離す） */
