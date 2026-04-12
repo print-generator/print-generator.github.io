@@ -146,7 +146,7 @@ function generatePrintHTML(content, level, count, showName, showDate, customPayl
   const header = buildPrintHeader(meta, showName, showDate);
   const instr  = buildInstruction(meta);
   const footer = `<div class="print-footer">
-    <span>家庭学習プリント生成｜学習プリント自動作成ツール</span>
+    <span>家庭学習プリント工房｜学習プリント自動作成ツール</span>
     <span>${today()}</span>
   </div>`;
 

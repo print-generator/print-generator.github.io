@@ -1,6 +1,6 @@
 /**
  * app.js  —  UI操作・モーダル・FAQ・印刷・PDF（印刷ダイアログ経由）
- * 家庭学習プリント生成 v2
+ * 家庭学習プリント工房 v2
  */
 
 /** 有料版の案内・お申し込み（LINE） */
@@ -42,7 +42,7 @@ function getLevelLabel(level, content) {
   return levelLabels[level] || level;
 }
 
-/** 無料版のみカウント（累計5回まで） */
+/** 無料版のみカウント（1日あたり5回まで） */
 const FREE_GENERATION_LIMIT = 5;
 const LS_FREE_GEN_TOTAL_KEY = 'homePrint_freeGenTotal_v2';
 const LS_FREE_GEN_DATE_KEY = 'homePrint_freeGenDateJst_v2';
@@ -173,7 +173,7 @@ function updateTrialNotice(show, featureName = '', mode = 'limit') {
     } else {
       title.textContent = '本日の無料体験は終了しました。';
       sub.textContent = `${featureName || 'この機能'}は有料プランで無制限に利用できます。`;
-      if (btn) btn.textContent = '300円で使い放題';
+      if (btn) btn.textContent = '月額300円の有料版を見る';
     }
   }
   el.hidden = !show;
@@ -209,7 +209,7 @@ function updateFreeGenQuotaUI() {
   el.hidden = false;
   const used = getFreeGenerationsUsed();
   const left = Math.max(0, FREE_GENERATION_LIMIT - used);
-  el.textContent = `無料版の生成：残り ${left} 回（${FREE_GENERATION_LIMIT}回まで）`;
+  el.textContent = `無料版の生成：残り ${left} 回（1日${FREE_GENERATION_LIMIT}回まで）`;
 }
 
 function refreshKatakanaGenerateNote() {
@@ -291,7 +291,7 @@ function openFeatureLockedModal(feature) {
           bullets: [
             'ひらがな＋カタカナの出題に対応',
             '学習状況に合わせてON/OFF切り替え可能',
-            '300円で使い放題',
+            '月額300円でご利用できます',
           ],
         }
       : {
@@ -301,7 +301,7 @@ function openFeatureLockedModal(feature) {
             '自分専用の単語でプリント作成',
             '最大8単語まで入力可能',
             'なぞり書き・視写に対応',
-            '300円で使い放題',
+            '月額300円でご利用できます',
           ],
         };
 
@@ -350,7 +350,9 @@ function updatePlanBadge() {
   const el = document.getElementById('planBadge');
   if (!el) return;
   el.textContent = isProUser ? '有料版利用中' : '無料版利用中';
-  el.title = isProUser ? '有料プランをご利用中です' : '有料プランでは追加機能が使えます';
+  el.title = isProUser
+    ? '有料プランをご利用中です'
+    : '【有料版】月額300円・回数無制限・最大30問まで・上級モード・解答付き';
   el.classList.toggle('plan-badge--pro', isProUser);
   el.classList.toggle('plan-badge--free', !isProUser);
 }
@@ -626,7 +628,7 @@ function generatePrint() {
 
   if (!isProUser) {
     if (getFreeGenerationsUsed() >= FREE_GENERATION_LIMIT) {
-      openPlanModal('無料版の生成回数は5回までです。有料版をご利用ください。');
+      openPlanModal('無料版は1日5回までです。有料版（月額300円・回数無制限）をご利用ください。');
       return;
     }
     const allowedN = getFreeQuestionCountOptions();
@@ -1104,14 +1106,11 @@ function openPlanModal(contextMessage) {
   if (heading) heading.textContent = '有料版でできること';
   if (pitchList) {
     pitchList.innerHTML = [
-      '<li>カスタム問題（自分の単語でプリント）が使える</li>',
-      '<li>※カタカナは有料版で利用できます</li>',
-      '<li>上級レベルが使える</li>',
-      '<li>15問／20問／25問／30問が選べる（＋4問から）</li>',
-      '<li>解答付きプリントが使える</li>',
-      '<li>問題生成回数が無制限</li>',
-      '<li>ワンクリック自動生成が使える</li>',
-      '<li>300円で使い放題</li>',
+      '<li>月額300円</li>',
+      '<li>回数無制限</li>',
+      '<li>最大30問まで</li>',
+      '<li>上級モードあり</li>',
+      '<li>解答付き</li>',
     ].join('');
   }
   if (line) line.textContent = '有料版のお申し込みはLINEから';

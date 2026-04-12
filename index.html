@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- ===== SEO ===== -->
-  <title>家庭学習プリント生成｜学習プリント自動作成ツール</title>
+  <title>家庭学習プリント工房｜学習プリント自動作成ツール</title>
   <meta name="description" content="家庭学習や個別学習に使える学習プリント自動作成ツール。子ども向けのドリルとして、助詞・50音・めいろなどをワンクリックで作成。初級〜上級の3段階レベルに対応。印刷・PDF保存も簡単。" />
   <meta name="keywords" content="家庭学習, 学習プリント, 子ども向け学習, ドリル, 個別学習, プリント, 自動生成, 助詞, 50音, ひらがな, カタカナ, 無料, 教材作成" />
-  <meta name="author" content="家庭学習プリント生成" />
+  <meta name="author" content="家庭学習プリント工房" />
   <meta name="robots" content="index, follow" />
 
   <!-- OGP -->
-  <meta property="og:title" content="家庭学習プリント生成｜学習プリント自動作成ツール" />
+  <meta property="og:title" content="家庭学習プリント工房｜学習プリント自動作成ツール" />
   <meta property="og:description" content="家庭学習や個別学習に使える学習プリントをワンクリック生成。子ども向けドリルとして初級〜上級対応。印刷・PDF保存もできる無料ツール。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="ja_JP" />
@@ -31,7 +31,7 @@
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "家庭学習プリント生成",
+    "name": "家庭学習プリント工房",
     "description": "家庭学習や個別学習に使える学習プリント自動作成ツール。助詞・50音・めいろなどを初級〜上級で生成。",
     "applicationCategory": "EducationalApplication",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
@@ -41,13 +41,17 @@
 </head>
 <body>
 
+<div class="logo-area no-print">
+  <img src="images/logo.png" alt="家庭学習プリント工房ロゴ" />
+</div>
+
 <!-- ===== ヘッダー ===== -->
 <header class="site-header no-print">
   <div class="header-inner">
     <div class="header-logo">
       <span class="logo-icon"><i class="fas fa-star"></i></span>
-      <span class="logo-text">家庭学習プリント生成</span>
-      <span class="plan-badge plan-badge--free" id="planBadge" title="有料プランでは追加機能が使えます">無料版利用中</span>
+      <span class="logo-text">家庭学習プリント工房</span>
+      <span class="plan-badge plan-badge--free" id="planBadge" title="【有料版】月額300円・回数無制限・最大30問まで・上級モード・解答付き">無料版利用中</span>
     </div>
     <nav class="header-nav">
       <a href="#how-to-use" class="nav-link">使い方</a>
@@ -201,7 +205,7 @@
     <div class="section-label no-print">GENERATOR</div>
     <h2 class="section-title no-print">プリントを作成する</h2>
     <p class="free-plan-notice no-print" id="freePlanNotice">
-      無料版は10問まで・生成5回までです
+      【無料版】1日5回まで・最大10問まで
     </p>
 
     <section class="control-panel no-print" id="controlPanel">
@@ -396,13 +400,13 @@
           <span>プリントを生成する</span>
         </button>
         <p class="generate-quota" id="freeGenQuota" hidden>
-          無料版の生成：残り 5 回（5回まで）
+          無料版の生成：残り 5 回（1日5回まで）
         </p>
         <p class="generate-katakana-note no-print" id="katakanaGenerateNote" hidden>
           ※カタカナは有料版で利用できます
         </p>
         <p class="generate-note">
-          <i class="fas fa-info-circle"></i> もっと使うには有料版（上級・30問・解答付きなど）
+          <i class="fas fa-info-circle"></i> もっと使うには有料版（月額300円・回数無制限・最大30問・上級モード・解答付き）
           <button type="button" class="link-btn" onclick="openPlanModal()">詳しく見る</button>
         </p>
         <div class="sentence-trial-notice no-print" id="sentenceTrialNotice" hidden>
@@ -413,7 +417,7 @@
             <li>すべての問題が無制限に使える</li>
             <li>上級・文章問題・カスタム問題も解放</li>
           </ul>
-          <button type="button" class="sentence-trial-btn" onclick="openPricingPage()">300円で使い放題</button>
+          <button type="button" class="sentence-trial-btn" onclick="openPricingPage()">月額300円の有料版を見る</button>
         </div>
       </div>
 
@@ -436,6 +440,7 @@
         </div>
       </div>
       <div class="a4-wrapper print-area">
+        <img src="images/logo.png" class="print-logo" alt="" />
         <div class="a4-sheet" id="printSheet"></div>
       </div>
     </section>
@@ -448,7 +453,7 @@
     <div class="plan-cta-left">
       <span class="plan-cta-badge"><i class="fas fa-crown"></i> PRO PLAN</span>
       <h2 class="plan-cta-title">もっとできることを増やしませんか？</h2>
-      <p class="plan-cta-desc">月額300円で、解答付き・最大30問・上級レベルまで。考えずにすぐ使える家庭学習プリントを。</p>
+      <p class="plan-cta-desc">【有料版】月額300円・回数無制限・最大30問まで・上級モードあり・解答付き。考えずにすぐ使える家庭学習プリントを。</p>
     </div>
     <div class="plan-cta-right plan-cta-buttons">
       <button type="button" class="plan-cta-btn plan-cta-btn--secondary" onclick="openPricingPage()">
@@ -480,7 +485,7 @@
           <i class="fas fa-chevron-down faq-arrow"></i>
         </button>
         <div class="faq-a">
-          はい、基本機能は<strong>完全無料</strong>でご利用いただけます（1日5回まで生成可能）。登録やログインも不要です。有料プランでは回数制限なし・最大30問・上級レベル・解答付きなどがお使いいただけます。
+          はい、基本機能は無料でご利用いただけます。【無料版】1日5回まで・最大10問まで。登録やログインも不要です。【有料版】月額300円・回数無制限・最大30問まで・上級モードあり・解答付き。
         </div>
       </div>
 
@@ -520,7 +525,7 @@
           <i class="fas fa-chevron-down faq-arrow"></i>
         </button>
         <div class="faq-a">
-          「助詞」「五十音」「めいろ」など7モードに対応しています。無料は1日5回・最大10問まで。有料プランでは最大30問・上級レベル・解答付きプリントなどがご利用いただけます。
+          「助詞」「五十音」「めいろ」など7モードに対応しています。【無料版】1日5回まで・最大10問まで。【有料版】月額300円・回数無制限・最大30問まで・上級モードあり・解答付き（ほかにカスタム問題なども利用できます）。
         </div>
       </div>
 
@@ -540,7 +545,7 @@
           <i class="fas fa-chevron-down faq-arrow"></i>
         </button>
         <div class="faq-a">
-          有料プランでは①回数制限なし②最大30問③上級レベル④解答付きプリント⑤カスタム単語などがご利用いただけます。詳しくは「有料プランの詳細」ページをご覧ください。
+          【有料版】月額300円・回数無制限・最大30問まで・上級モードあり・解答付き。カスタム問題・カタカナなどの拡張機能もご利用いただけます。詳しくは「有料プランの説明」ページをご覧ください。
         </div>
       </div>
 
@@ -553,9 +558,9 @@
   <div class="footer-inner">
     <div class="footer-logo">
       <span class="logo-icon"><i class="fas fa-star"></i></span>
-      <span>家庭学習プリント生成</span>
+      <span>家庭学習プリント工房</span>
     </div>
-    <p class="footer-desc">家庭学習プリント生成｜学習プリント自動作成ツール</p>
+    <p class="footer-desc">家庭学習プリント工房｜学習プリント自動作成ツール</p>
     <div class="footer-links">
       <a href="#how-to-use">使い方</a>
       <a href="#generator">プリント作成</a>
@@ -563,7 +568,7 @@
       <a href="pricing.html">有料プランの説明</a>
       <a href="https://lin.ee/QrdTzUH" target="_blank" rel="noopener noreferrer" class="footer-link-pro">有料版を申し込む</a>
     </div>
-    <p class="footer-copy">© 2026 家庭学習プリント生成　制作：あなたの名前</p>
+    <p class="footer-copy">© 2026 家庭学習プリント工房</p>
   </div>
 </footer>
 
@@ -597,13 +602,11 @@
       <div class="plan-modal-pitch" data-modal-panel="pitch">
         <h3 class="plan-pitch-title" id="planPitchHeading">有料版でできること</h3>
         <ul class="plan-pitch-list">
-          <li>カスタム問題（自分の単語でプリント）が使える</li>
-          <li>※カタカナは有料版で利用できます</li>
-          <li>上級レベルが使える</li>
-          <li>15問／20問／25問／30問が選べる（＋4問から）</li>
-          <li>解答付きプリントが使える</li>
-          <li>問題生成回数が無制限</li>
-          <li>ワンクリック自動生成が使える</li>
+          <li>月額300円</li>
+          <li>回数無制限</li>
+          <li>最大30問まで</li>
+          <li>上級モードあり</li>
+          <li>解答付き</li>
         </ul>
         <p class="plan-pitch-line">有料版のお申し込みはLINEから</p>
         <button type="button" class="plan-line-btn" onclick="openLineSignup()">

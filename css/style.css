@@ -1,5 +1,5 @@
 /* ============================================
-   家庭学習プリント生成 - スタイルシート v2
+   家庭学習プリント工房 - スタイルシート v2
    白ベース＋青系 | レスポンシブ | 収益化対応
    ============================================ */
 
@@ -38,6 +38,24 @@ body {
   color: var(--text);
   min-height: 100vh;
   line-height: 1.6;
+}
+
+/* サイト上部ロゴ（画面のみ） */
+.logo-area {
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 12px 16px 0;
+}
+.logo-area img {
+  width: 120px;
+  max-width: min(120px, 42vw);
+  height: auto;
+  vertical-align: middle;
+}
+
+/* 印刷用ロゴ：画面では非表示（問題レイアウトに高さを与えない） */
+.print-logo {
+  display: none;
 }
 
 /* ============================================
@@ -2226,6 +2244,18 @@ body.lp-pricing-page {
     background: #fff !important;
     font-size: 9.5pt;
     display: block !important;
+  }
+
+  /* 問題本文の外側：固定配置のため改ページ・余白を変えない */
+  .print-logo {
+    display: block !important;
+    position: fixed;
+    top: 10mm;
+    right: 10mm;
+    width: 25mm;
+    height: auto;
+    opacity: 0.8;
+    z-index: 9999;
   }
 
   /* ヘッダー・操作パネル・モーダル等 */
