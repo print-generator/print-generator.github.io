@@ -1,27 +1,30 @@
 /* ============================================
    家庭学習プリント工房 - スタイルシート v2
-   白ベース＋青系 | レスポンシブ | 収益化対応
+   白ベース＋オレンジ系 | レスポンシブ | 収益化対応
    ============================================ */
 
 /* ── リセット & ベース ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --primary:       #1a73e8;
-  --primary-dark:  #1558b0;
-  --primary-light: #e8f0fe;
-  --primary-soft:  #c5daff;
-  --accent:        #34a853;
-  --accent-soft:   #e6f4ea;
-  --gold:          #f9ab00;
-  --gold-soft:     #fef7e0;
-  --gold-dark:     #7a5400;
+  --primary:       #f97316;
+  --primary-dark:  #ea580c;
+  --primary-light: #fff7ed;
+  --primary-soft:  #ffedd5;
+  /* なぞり・罫線などの補助色（視認性を保った淡い暖色） */
+  --trace-pale:    #fec9a8;
+  --grid-line:     #fed7aa;
+  --accent:        #ea580c;
+  --accent-soft:   #fff7ed;
+  --gold:          #f59e0b;
+  --gold-soft:     #fffbeb;
+  --gold-dark:     #b45309;
   --danger:        #ea4335;
   --danger-soft:   #fce8e6;
   --text:          #202124;
   --text-sub:      #5f6368;
   --border:        #dadce0;
-  --bg:            #f8f9fb;
+  --bg:            #faf8f6;
   --white:         #ffffff;
   --shadow-sm:     0 1px 4px rgba(0,0,0,.10);
   --shadow-md:     0 4px 16px rgba(0,0,0,.12);
@@ -53,7 +56,7 @@ body {
   vertical-align: middle;
 }
 
-/* 印刷用ロゴ：画面では非表示（問題レイアウトに高さを与えない） */
+/* 印刷用ロゴ：画面では非表示（body 直下・本文フローに入れない） */
 .print-logo {
   display: none;
 }
@@ -153,7 +156,7 @@ body {
    ヒーロー
    ============================================ */
 .hero-section {
-  background: linear-gradient(160deg, #1a73e8 0%, #0d47a1 60%, #1a237e 100%);
+  background: linear-gradient(160deg, #f97316 0%, #ea580c 55%, #c2410c 100%);
   color: var(--white);
   padding: 72px 20px 80px;
   text-align: center;
@@ -237,7 +240,7 @@ body {
 
 /* ── 「誰向け？」ボックス ── */
 .for-whom-box {
-  background: linear-gradient(135deg, var(--primary-light) 0%, #f0f7ff 100%);
+  background: linear-gradient(135deg, var(--primary-light) 0%, #fffbeb 100%);
   border: 2px solid var(--primary-soft);
   border-radius: var(--radius);
   padding: 20px 22px;
@@ -558,7 +561,7 @@ body.plan-free .content-btn--custom:not(.active) {
   cursor: pointer;
   transition: border-color .2s;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231a73e8' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23f97316' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
 }
@@ -612,7 +615,7 @@ body.plan-free .content-btn--custom:not(.active) {
   padding: 14px 14px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: #fafbfd;
+  background: var(--bg);
   box-sizing: border-box;
 }
 .custom-word-row .custom-word-input {
@@ -685,7 +688,7 @@ body.plan-free .content-btn--custom:not(.active) {
 .setting-input:disabled {
   opacity: 0.65;
   cursor: not-allowed;
-  background: #f5f7fa;
+  background: var(--bg);
 }
 .setting-hint {
   font-size: .74rem;
@@ -706,10 +709,10 @@ body.plan-free .content-btn--custom:not(.active) {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: var(--white); border: none; border-radius: 50px;
   font-family: var(--font); font-size: 1.15rem; font-weight: 700;
-  cursor: pointer; box-shadow: 0 4px 20px rgba(26,115,232,.4);
+  cursor: pointer; box-shadow: 0 4px 20px rgba(249, 115, 22, 0.38);
   transition: all .2s; letter-spacing: .04em;
 }
-.generate-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(26,115,232,.5); }
+.generate-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(249, 115, 22, 0.48); }
 .generate-btn:focus-visible {
   outline: 3px solid var(--primary-soft);
   outline-offset: 3px;
@@ -825,8 +828,8 @@ body.plan-free .content-btn--custom:not(.active) {
 }
 .btn-regenerate { background: var(--gold-soft); color: var(--gold-dark); border: 1px solid var(--gold); }
 .btn-regenerate:hover { background: var(--gold); color: var(--white); }
-.btn-print { background: var(--accent-soft); color: #1e6e32; border: 1px solid var(--accent); }
-.btn-print:hover { background: var(--accent); color: var(--white); }
+.btn-print { background: var(--primary-light); color: var(--primary-dark); border: 1px solid var(--primary); }
+.btn-print:hover { background: var(--primary); color: var(--white); }
 .btn-pdf { background: var(--danger-soft); color: #8b0000; border: 1px solid var(--danger); }
 .btn-pdf:hover { background: var(--danger); color: var(--white); }
 
@@ -1032,10 +1035,10 @@ body.plan-free .content-btn--custom:not(.active) {
 }
 .trace-area { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; font-size: 2rem; line-height: 1.15; letter-spacing: .08em; margin-top: 2px; }
 .trace-char { color: var(--text); font-weight: 700; }
-.trace-target { color: #cce0ff; font-weight: 900; border-bottom: 2px dashed var(--primary-soft); min-width: 2rem; text-align: center; }
+.trace-target { color: var(--trace-pale); font-weight: 900; border-bottom: 2px dashed var(--primary-soft); min-width: 2rem; text-align: center; }
 .write-box {
   display: inline-block; border: 2px solid var(--border); border-radius: 6px;
-  width: 52px; height: 52px; vertical-align: middle; background: #fafcff; position: relative;
+  width: 52px; height: 52px; vertical-align: middle; background: #fffdfb; position: relative;
 }
 .write-box-tight {
   display: inline-block;
@@ -1044,11 +1047,11 @@ body.plan-free .content-btn--custom:not(.active) {
 }
 .write-box::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to right,transparent calc(50% - .5px),#e0eaff calc(50% - .5px),#e0eaff calc(50% + .5px),transparent calc(50% + .5px)),
-              linear-gradient(to bottom,transparent calc(50% - .5px),#e0eaff calc(50% - .5px),#e0eaff calc(50% + .5px),transparent calc(50% + .5px));
+  background: linear-gradient(to right,transparent calc(50% - .5px),var(--grid-line) calc(50% - .5px),var(--grid-line) calc(50% + .5px),transparent calc(50% + .5px)),
+              linear-gradient(to bottom,transparent calc(50% - .5px),var(--grid-line) calc(50% - .5px),var(--grid-line) calc(50% + .5px),transparent calc(50% + .5px));
 }
 .choice-sentence { font-size: 1.25rem; font-weight: 600; margin-bottom: 6px; line-height: 1.45; }
-.blank-box { display: inline-block; border: 2px solid var(--primary); border-radius: 6px; width: 44px; height: 36px; vertical-align: middle; background: #f0f5ff; }
+.blank-box { display: inline-block; border: 2px solid var(--primary); border-radius: 6px; width: 44px; height: 36px; vertical-align: middle; background: var(--primary-light); }
 .choices-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .choice-label { font-size: .78rem; color: var(--text-sub); font-weight: 500; margin-right: 3px; }
 .choice-item {
@@ -1116,7 +1119,7 @@ body.plan-free .content-btn--custom:not(.active) {
   border-radius: 4px !important;
   border-style: dashed !important;
   border-color: var(--primary-soft) !important;
-  background: #f5f9ff !important;
+  background: var(--primary-light) !important;
 }
 /* 拗音：「き」＋小「ゃ」を1セットとして横密着（マス同士の隙間なし） */
 .hira-yoon-pair {
@@ -1146,12 +1149,12 @@ body.plan-free .content-btn--custom:not(.active) {
   z-index: 1;
 }
 .hira-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.hira-trace { font-size: 2rem; color: #cce0ff; font-weight: 900; line-height: 1; border-bottom: 2px dashed var(--primary-soft); }
-.hira-write { width: 48px; height: 48px; border: 2px solid var(--border); border-radius: 6px; background: #fafcff; position: relative; }
+.hira-trace { font-size: 2rem; color: var(--trace-pale); font-weight: 900; line-height: 1; border-bottom: 2px dashed var(--primary-soft); }
+.hira-write { width: 48px; height: 48px; border: 2px solid var(--border); border-radius: 6px; background: #fffdfb; position: relative; }
 .hira-write::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to right,transparent calc(50% - .5px),#e0eaff calc(50% - .5px),#e0eaff calc(50% + .5px),transparent calc(50% + .5px)),
-              linear-gradient(to bottom,transparent calc(50% - .5px),#e0eaff calc(50% - .5px),#e0eaff calc(50% + .5px),transparent calc(50% + .5px));
+  background: linear-gradient(to right,transparent calc(50% - .5px),var(--grid-line) calc(50% - .5px),var(--grid-line) calc(50% + .5px),transparent calc(50% + .5px)),
+              linear-gradient(to bottom,transparent calc(50% - .5px),var(--grid-line) calc(50% - .5px),var(--grid-line) calc(50% + .5px),transparent calc(50% + .5px));
 }
 .print-footer {
   margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border);
@@ -1222,15 +1225,15 @@ body.plan-free .content-btn--custom:not(.active) {
 }
 .seikatsu-trace {
   font-size: 1.6rem;
-  color: #cce0ff;
+  color: var(--trace-pale);
   font-weight: 900;
   line-height: 1;
 }
 
 .maze-card {
   width: 100%;
-  border: 1px solid #d9e4f7;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid var(--primary-soft);
+  background: linear-gradient(180deg, #ffffff 0%, var(--primary-light) 100%);
   border-radius: 10px;
   padding: 4px 4px 8px;
 }
@@ -1244,7 +1247,7 @@ body.plan-free .content-btn--custom:not(.active) {
 }
 .maze-walls { fill: none; stroke: #1e293b; stroke-linecap: round; stroke-linejoin: round; }
 .maze-walls--curve { stroke-linecap: round; stroke-linejoin: round; }
-.maze-start { fill: #34a853; }
+.maze-start { fill: #16a34a; }
 .maze-goal { fill: #ea4335; }
 .maze-label {
   font-size: 12px;
@@ -1259,7 +1262,7 @@ body.plan-free .content-btn--custom:not(.active) {
 .maze-char-on-path {
   font-size: 12px;
   font-weight: 800;
-  fill: #1e3a8a;
+  fill: #c2410c;
   paint-order: stroke;
   stroke: #ffffff;
   stroke-width: 2px;
@@ -1319,7 +1322,7 @@ body.plan-free .content-btn--custom:not(.active) {
    有料プランCTAバナー
    ============================================ */
 .plan-cta-section {
-  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 50%, #1565c0 100%);
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #9a3412 100%);
   color: var(--white);
   padding: 56px 20px;
 }
@@ -1433,7 +1436,7 @@ body.plan-free .content-btn--custom:not(.active) {
    フッター
    ============================================ */
 .site-footer {
-  background: #1e2a38;
+  background: #292524;
   color: rgba(255,255,255,.7);
   padding: 40px 20px 24px;
 }
@@ -1689,7 +1692,7 @@ body.plan-free .content-btn--custom:not(.active) {
 /* ── 有料プラン LP（pricing.html） ── */
 body.lp-pricing-page {
   margin: 0;
-  background: #fafcfd;
+  background: var(--bg);
   font-family: var(--font);
   color: var(--text);
   min-height: 100vh;
@@ -1787,7 +1790,7 @@ body.lp-pricing-page {
   border-radius: 12px;
   padding: 22px 20px 24px;
   margin: 28px 0;
-  box-shadow: 0 4px 24px rgba(26, 115, 232, 0.07);
+  box-shadow: 0 4px 24px rgba(249, 115, 22, 0.08);
 }
 .lp-value-lead {
   font-size: .95rem;
@@ -1796,7 +1799,7 @@ body.lp-pricing-page {
   text-align: center;
   margin: 0 0 14px;
   padding: 12px 14px;
-  background: linear-gradient(135deg, var(--primary-light) 0%, #e8f4fe 100%);
+  background: linear-gradient(135deg, var(--primary-light) 0%, #ffedd5 100%);
   border-radius: 8px;
   border-left: 4px solid var(--primary);
   line-height: 1.55;
@@ -1850,7 +1853,7 @@ body.lp-pricing-page {
 .lp-compare-card--free { background: #f9fafb; }
 .lp-compare-card--pro {
   border-color: var(--primary-soft);
-  box-shadow: 0 2px 16px rgba(26, 115, 232, 0.12);
+  box-shadow: 0 2px 16px rgba(249, 115, 22, 0.14);
 }
 .lp-compare-badge {
   position: absolute;
@@ -2007,9 +2010,9 @@ body.lp-pricing-page {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: var(--white); font-family: var(--font); font-size: .95rem; font-weight: 700;
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: all .2s; box-shadow: 0 4px 14px rgba(26,115,232,.35);
+  transition: all .2s; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
 }
-.modal-detail-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,115,232,.45); }
+.modal-detail-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(249, 115, 22, 0.45); }
 .modal-detail-btn:focus-visible {
   outline: 3px solid var(--primary-soft);
   outline-offset: 2px;
@@ -2246,18 +2249,6 @@ body.lp-pricing-page {
     display: block !important;
   }
 
-  /* 問題本文の外側：固定配置のため改ページ・余白を変えない */
-  .print-logo {
-    display: block !important;
-    position: fixed;
-    top: 10mm;
-    right: 10mm;
-    width: 25mm;
-    height: auto;
-    opacity: 0.8;
-    z-index: 9999;
-  }
-
   /* ヘッダー・操作パネル・モーダル等 */
   .no-print {
     display: none !important;
@@ -2390,8 +2381,8 @@ body.lp-pricing-page {
     min-width: 0 !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    border-left: 3pt solid #1a73e8 !important;
-    background: #e8f0fe !important;
+    border-left: 3pt solid #f97316 !important;
+    background: #fff7ed !important;
     border-radius: 0 4pt 4pt 0 !important;
   }
   .print-continuation-kicker {
@@ -2408,7 +2399,7 @@ body.lp-pricing-page {
   .print-continuation-title {
     font-size: 9.5pt !important;
     font-weight: 800 !important;
-    color: #174ea6 !important;
+    color: #c2410c !important;
     margin-top: 1pt !important;
   }
   .print-continuation-hint {
@@ -2456,7 +2447,7 @@ body.lp-pricing-page {
   .maze-card {
     padding: 2.5mm 2.5mm 3mm !important;
     border-radius: 6px !important;
-    border: 1pt solid #d6e3f8 !important;
+    border: 1pt solid #fed7aa !important;
     background: #ffffff !important;
   }
   .maze-card--normal .maze-svg {
@@ -2615,8 +2606,8 @@ body.lp-pricing-page {
     padding: 1pt 4pt !important;
     margin-bottom: 1.5mm !important;
     line-height: 1.3 !important;
-    border-left: 3pt solid #1a73e8 !important;
-    background: #e8f0fe !important;
+    border-left: 3pt solid #f97316 !important;
+    background: #fff7ed !important;
   }
   /* 1ページ目：5問収容のため説明・ヘッダーを詰める */
   .print-page--first .print-header {
@@ -2640,7 +2631,7 @@ body.lp-pricing-page {
 
   /* ── ⑧ なぞり書き文字：色を明確に出す ── */
   .trace-target {
-    color: #aaccff !important;
+    color: #fdba74 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -2648,7 +2639,7 @@ body.lp-pricing-page {
     font-size: 17pt !important;
   }
   .hira-trace {
-    color: #aaccff !important;
+    color: #fdba74 !important;
     font-size: 17pt !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -2668,22 +2659,22 @@ body.lp-pricing-page {
   .write-box::after,
   .hira-write::after {
     background:
-      linear-gradient(to right,  transparent calc(50% - 0.5pt), #e0eaff calc(50% - 0.5pt), #e0eaff calc(50% + 0.5pt), transparent calc(50% + 0.5pt)),
-      linear-gradient(to bottom, transparent calc(50% - 0.5pt), #e0eaff calc(50% - 0.5pt), #e0eaff calc(50% + 0.5pt), transparent calc(50% + 0.5pt)) !important;
+      linear-gradient(to right,  transparent calc(50% - 0.5pt), #fed7aa calc(50% - 0.5pt), #fed7aa calc(50% + 0.5pt), transparent calc(50% + 0.5pt)),
+      linear-gradient(to bottom, transparent calc(50% - 0.5pt), #fed7aa calc(50% - 0.5pt), #fed7aa calc(50% + 0.5pt), transparent calc(50% + 0.5pt)) !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   /* ── ⑩ 選択肢ボタン：枠線を印刷でも表示 ── */
   .choice-item {
-    border: 1.5pt solid #c5daff !important;
-    background: #e8f0fe !important;
+    border: 1.5pt solid #ffedd5 !important;
+    background: #fff7ed !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
   .blank-box {
-    border: 1.5pt solid #1a73e8 !important;
-    background: #f0f5ff !important;
+    border: 1.5pt solid #f97316 !important;
+    background: #fff7ed !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -2693,13 +2684,13 @@ body.lp-pricing-page {
     border-bottom: 1.5pt solid #dadce0 !important;
   }
   .word-answer-line {
-    border-bottom: 1.5pt solid #c5daff !important;
+    border-bottom: 1.5pt solid #ffedd5 !important;
   }
 
   /* ── ⑫ プリントヘッダーの区切り線（1ページ目の .print-page--first にのみ存在） ── */
   .print-header {
     flex-shrink: 0 !important;
-    border-bottom: 2pt solid #1a73e8 !important;
+    border-bottom: 2pt solid #f97316 !important;
     margin-bottom: 1mm !important;
     padding-bottom: 1mm !important;
   }
@@ -2754,7 +2745,7 @@ body.lp-pricing-page {
 
   /* ── ⑭ 問題番号バッジ ── */
   .question-num {
-    background: #1a73e8 !important;
+    background: #f97316 !important;
     color: #fff !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -2800,7 +2791,7 @@ body.lp-pricing-page {
     font-size: 12.5pt !important;
   }
   .hiragana-grid--beginner-compact .hira-trace--small {
-    color: #aaccff !important;
+    color: #fdba74 !important;
     font-size: 9pt !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -2813,7 +2804,7 @@ body.lp-pricing-page {
     width: 5.2mm !important;
     height: 5.2mm !important;
     border-style: dashed !important;
-    border-color: #8ab4f8 !important;
+    border-color: #fb923c !important;
   }
   .hira-yoon-pair .hira-cell:first-child .hira-write {
     border-right-width: 0 !important;
@@ -2884,6 +2875,26 @@ body.lp-pricing-page {
     padding: 2mm !important;
   }
   .word-emoji { font-size: 18pt !important; }
+
+  /*
+   * 印刷ロゴ（body 直下の img.print-logo）：最後に指定して他ルールに負けないようにする。
+   * position:fixed はページ座標。問題ブロックのフロー外のため改ページ・余白は変わらない。
+   */
+  img.print-logo {
+    display: block !important;
+    visibility: visible !important;
+    position: fixed !important;
+    top: 10mm !important;
+    right: 10mm !important;
+    left: auto !important;
+    width: 25mm !important;
+    height: auto !important;
+    max-width: none !important;
+    opacity: 0.8 !important;
+    z-index: 9999 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }
 
 /* スマホ Safari 等：印刷プレビューで ::after の多層 linear-gradient が黒塗りに崩れることがあるため、
@@ -2911,36 +2922,36 @@ body.lp-pricing-page {
 .pdf-capturing .trace-target,
 .pdf-capturing .hira-trace,
 .pdf-capturing .hira-trace--small {
-  /* なぞり文字の薄青をキャンバスでも再現 */
-  color: #aaccff !important;
+  /* なぞり文字の淡い暖色をキャンバスでも再現 */
+  color: #fdba74 !important;
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
 }
 .pdf-capturing .choice-item {
-  background: #e8f0fe !important;
-  border-color: #c5daff !important;
+  background: #fff7ed !important;
+  border-color: #ffedd5 !important;
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
 }
 .pdf-capturing .question-num {
-  background: #1a73e8 !important;
+  background: #f97316 !important;
   color: #fff !important;
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
 }
 .pdf-capturing .print-instruction {
-  background: #e8f0fe !important;
+  background: #fff7ed !important;
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
 }
 .pdf-capturing .print-continuation-strip {
-  background: #e8f0fe !important;
-  border-left-color: #1a73e8 !important;
+  background: #fff7ed !important;
+  border-left-color: #f97316 !important;
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
 }
 .pdf-capturing .print-header {
-  border-bottom-color: #1a73e8 !important;
+  border-bottom-color: #f97316 !important;
 }
 
 /* ラスタライズ時の細枠のにじみを抑える（1px 実数・背景色は単色） */
@@ -2954,7 +2965,7 @@ body.lp-pricing-page {
   border-color: #dadce0 !important;
 }
 .pdf-capturing .blank-box {
-  border-color: #1a73e8 !important;
+  border-color: #f97316 !important;
 }
 .pdf-capturing .write-box::after,
 .pdf-capturing .hira-write::after {

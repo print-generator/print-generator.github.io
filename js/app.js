@@ -796,6 +796,48 @@ async function waitForPaintPdf() {
 const MOBILE_PDF_CONTENT_WIDTH_MM = 186;
 const MOBILE_PDF_SIDE_MARGIN_MM = 12;
 
+/** 印刷用ロゴ画像の絶対URL（相対パスを document.baseURI で解決） */
+function resolvePrintLogoImageUrl() {
+  const el = document.querySelector('img.print-logo');
+  const raw = el && el.getAttribute('src');
+  if (raw) {
+    try {
+      return new URL(raw, document.baseURI).href;
+    } catch (_e) {
+      return el.src;
+    }
+  }
+  try {
+    return new URL('images/logo.png', document.baseURI).href;
+  } catch (_e2) {
+    return 'images/logo.png';
+  }
+}
+
+/**
+ * スマホPDFキャプチャ用：各ページ fragment の右上にロゴを重ねる（本文フロー外・レイアウト不変）。
+ */
+function appendMobilePdfLogoOverlay(wrap) {
+  if (!wrap) return;
+  wrap.style.position = 'relative';
+  const logo = document.createElement('img');
+  logo.src = resolvePrintLogoImageUrl();
+  logo.alt = '';
+  logo.setAttribute('aria-hidden', 'true');
+  logo.className = 'pdf-mobile-page-logo';
+  logo.style.cssText = [
+    'position:absolute',
+    'top:10mm',
+    'right:10mm',
+    'width:25mm',
+    'height:auto',
+    'opacity:0.8',
+    'z-index:99',
+    'pointer-events:none',
+  ].join(';');
+  wrap.appendChild(logo);
+}
+
 /**
  * スマホ向け：.print-page を cloneNode し、body 直下の可視一時コンテナ内で html2canvas。
  * 一時コンテナは 186mm 固定（スマホ viewport に引っ張られない）。
@@ -986,6 +1028,7 @@ function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc)
   cardSlice.forEach((c) => g.appendChild(c.cloneNode(true)));
   wrap.appendChild(g);
   if (isLastPageOfDoc && footer) wrap.appendChild(footer.cloneNode(true));
+  appendMobilePdfLogoOverlay(wrap);
   return wrap;
 }
 
