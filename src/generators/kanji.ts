@@ -1,5 +1,5 @@
 import type { Difficulty, GenerateOptions, KanjiGrade, KanjiMode, Problem } from '../types';
-import { GRADE_1_KANJI } from '../data/kanji/grade1';
+import { getKanjiPool } from '../data/kanji/pools';
 import type { KanjiEntry } from '../data/kanji/types';
 
 function esc(s: string): string {
@@ -20,8 +20,7 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function poolForGrade(grade: KanjiGrade): KanjiEntry[] {
-  if (grade === 1) return GRADE_1_KANJI;
-  return [];
+  return getKanjiPool(grade);
 }
 
 function pickRandom<T>(arr: T[], n: number): T[] {

@@ -472,7 +472,7 @@ function buildPrintContinuationStrip(meta) {
 }
 
 /* ====================================================
-   漢字（データ: js/data/kanjiGrade1.js の KANJI_GRADE_1）
+   漢字（データ: js/data/kanjiGrade1.js → src/data/kanji/kanjiGrade1.ts と同期）
    短文1題・difficulty×kanjiMode（src/generators/kanji.ts と同ロジック）
    ==================================================== */
 function getKanjiPool(grade) {
