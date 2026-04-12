@@ -56,21 +56,7 @@ body {
   vertical-align: middle;
 }
 
-/* 生成プリント内ロゴは #printSheet 先頭に挿入。プレビューは右下に小さく（本文フロー外） */
-.a4-sheet#printSheet > img.print-logo {
-  display: block;
-  position: absolute;
-  bottom: 8mm;
-  right: 8mm;
-  top: auto;
-  left: auto;
-  width: 18mm;
-  max-width: 30%;
-  height: auto;
-  opacity: 0.88;
-  z-index: 5;
-  pointer-events: none;
-}
+/* プリント内ロゴはヘッダー内 .print-logo--header（タイトル横・本文フロー内。印刷範囲は従来どおり .a4-sheet 内） */
 
 /* ============================================
    ヘッダー
@@ -881,10 +867,34 @@ body.plan-free .content-btn--custom:not(.active) {
   gap: 10px 16px;
   width: 100%;
 }
-.print-title-block {
+.print-header-left {
   min-width: 0;
   flex: 1 1 45%;
   max-width: calc(100% - 9.5rem);
+}
+.print-title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 6px 10px;
+  min-width: 0;
+  width: 100%;
+}
+.print-title-block {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.print-logo--header {
+  flex: 0 0 auto;
+  width: 11mm;
+  max-width: 18%;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.88;
+  pointer-events: none;
+  align-self: flex-end;
+  margin-bottom: 1px;
 }
 .print-header-fields {
   display: flex;
@@ -905,8 +915,8 @@ body.plan-free .content-btn--custom:not(.active) {
 }
 .print-header-field--name {
   min-width: 0;
-  flex: 1 1 12rem;
-  max-width: 22rem;
+  flex: 1 1 14rem;
+  max-width: 26rem;
 }
 .print-header-field--date {
   flex: 0 0 auto;
@@ -929,7 +939,7 @@ body.plan-free .content-btn--custom:not(.active) {
 }
 .print-field-line--name {
   flex: 1 1 auto;
-  min-width: 7rem;
+  min-width: 9.5rem;
 }
 .print-date-slot {
   display: inline-flex;
@@ -2108,10 +2118,14 @@ body.lp-pricing-page {
     gap: 6px 8px;
     flex-wrap: nowrap;
   }
-  .print-header .print-title-block {
+  .print-header .print-header-left {
     flex: 1 1 min(0, 56%);
     max-width: calc(100% - 10.5rem);
     min-width: 0;
+  }
+  .print-header .print-logo--header {
+    width: 9mm;
+    max-width: 16%;
   }
   .print-header .print-title-block .print-title {
     font-size: clamp(0.92rem, 4vw, 1.2rem);
@@ -2139,11 +2153,11 @@ body.lp-pricing-page {
   .print-header-field--name {
     flex: 1 1 auto;
     min-width: 0;
-    max-width: 5.8rem;
+    max-width: 6.8rem;
   }
   .print-field-line--name {
-    min-width: 2.6rem;
-    max-width: 3.6rem;
+    min-width: 3.2rem;
+    max-width: 4.8rem;
     min-height: 18px;
     height: 18px;
   }
@@ -2598,10 +2612,17 @@ body.lp-pricing-page {
   .print-title {
     font-size: 15pt !important;
   }
-  .print-header .print-title-block {
+  .print-header .print-header-left {
     min-width: 0 !important;
     flex: 1 1 auto !important;
     max-width: 100% !important;
+  }
+  .print-logo--header {
+    width: 9mm !important;
+    max-width: 16% !important;
+    height: auto !important;
+    opacity: 0.88 !important;
+    flex-shrink: 0 !important;
   }
   .print-category {
     font-size: 7.5pt !important;
@@ -2721,7 +2742,7 @@ body.lp-pricing-page {
   .print-field-line--name {
     min-height: 6.5mm !important;
     height: 6.5mm !important;
-    min-width: 28mm !important;
+    min-width: 34mm !important;
     border-bottom: 1.5pt solid #999 !important;
   }
   .print-date-blank {
@@ -2887,23 +2908,15 @@ body.lp-pricing-page {
   }
   .word-emoji { font-size: 18pt !important; }
 
-  /*
-   * 印刷ロゴ（#printSheet 先頭の img.print-logo）：最後に指定して他ルールに負けないようにする。
-   * position:fixed はページ座標。本文フロー外のため改ページ・余白は変わらない。
-   */
-  img.print-logo {
+  /* ヘッダー内ロゴ（タイトル横）：フロー内のまま印刷。改ページ・余白ロジックは従来の .print-page 単位を維持 */
+  .print-logo--header {
     display: block !important;
     visibility: visible !important;
-    position: fixed !important;
-    bottom: 10mm !important;
-    right: 10mm !important;
-    top: auto !important;
-    left: auto !important;
-    width: 22mm !important;
+    position: static !important;
+    width: 9mm !important;
+    max-width: 16% !important;
     height: auto !important;
-    max-width: none !important;
-    opacity: 0.8 !important;
-    z-index: 9999 !important;
+    opacity: 0.88 !important;
     pointer-events: none !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;

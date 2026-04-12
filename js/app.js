@@ -50,13 +50,13 @@ function getLevelLabel(level, content) {
   return levelLabels[level] || level;
 }
 
-/** 無料版のみカウント（1日あたり5回まで） */
-const FREE_GENERATION_LIMIT = 5;
+/** 無料版のみカウント（1日あたり3回まで） */
+const FREE_GENERATION_LIMIT = 3;
 const LS_FREE_GEN_TOTAL_KEY = 'homePrint_freeGenTotal_v2';
 const LS_FREE_GEN_DATE_KEY = 'homePrint_freeGenDateJst_v2';
-const LS_SENTENCE_TRIAL_DATE_KEY = 'homePrint_sentenceTrialDateJst_v1';
+/** 文章問題・並び替えの「有料ジャンル体験」は通算1回まで（'1' で使用済み） */
+const LS_PREMIUM_GENRE_TRIAL_KEY = 'homePrint_premiumGenreTrialConsumed_v1';
 const LS_SENTENCE_TRIAL_COUNT_KEY = 'homePrint_sentenceTrialCount_v1';
-const LS_NARABIKAE_TRIAL_DATE_KEY = 'homePrint_narabikaeTrialDateJst_v1';
 const LS_NARABIKAE_TRIAL_COUNT_KEY = 'homePrint_narabikaeTrialCount_v1';
 
 function getJstDateKey() {
@@ -91,80 +91,42 @@ function ensureDailyFreeQuotaSynced() {
   }
 }
 
-function ensureDailySentenceTrialSynced() {
+/** 旧キーから移行：すでに文章／並び替えを使っていたユーザーは体験済みとみなす */
+function migratePremiumGenreTrialFromLegacy() {
   if (isProUser) return;
   try {
-    const today = getJstDateKey();
-    const storedDate = localStorage.getItem(LS_SENTENCE_TRIAL_DATE_KEY) || '';
-    if (storedDate !== today) {
-      localStorage.setItem(LS_SENTENCE_TRIAL_DATE_KEY, today);
-      localStorage.setItem(LS_SENTENCE_TRIAL_COUNT_KEY, '0');
-    }
+    if (localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) !== null) return;
+    const s = parseInt(localStorage.getItem(LS_SENTENCE_TRIAL_COUNT_KEY) || '0', 10) || 0;
+    const n = parseInt(localStorage.getItem(LS_NARABIKAE_TRIAL_COUNT_KEY) || '0', 10) || 0;
+    if (s > 0 || n > 0) localStorage.setItem(LS_PREMIUM_GENRE_TRIAL_KEY, '1');
   } catch (_e) {
     /* ignore */
   }
 }
 
-function getSentenceTrialUsedToday() {
-  ensureDailySentenceTrialSynced();
+function isPremiumGenreTrialConsumed() {
+  if (isProUser) return false;
+  migratePremiumGenreTrialFromLegacy();
   try {
-    return parseInt(localStorage.getItem(LS_SENTENCE_TRIAL_COUNT_KEY) || '0', 10) || 0;
+    return localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) === '1';
   } catch (_e) {
-    return 0;
+    return false;
   }
 }
 
-function incrementSentenceTrialCount() {
+function markPremiumGenreTrialConsumed() {
   if (isProUser) return;
-  ensureDailySentenceTrialSynced();
   try {
-    localStorage.setItem(LS_SENTENCE_TRIAL_COUNT_KEY, String(getSentenceTrialUsedToday() + 1));
+    localStorage.setItem(LS_PREMIUM_GENRE_TRIAL_KEY, '1');
   } catch (_e) {
     /* ignore */
   }
 }
 
-function canUseSentenceToday() {
-  if (isProUser) return true;
-  return getSentenceTrialUsedToday() < 1;
-}
-
-function ensureDailyNarabikaeTrialSynced() {
-  if (isProUser) return;
-  try {
-    const today = getJstDateKey();
-    const storedDate = localStorage.getItem(LS_NARABIKAE_TRIAL_DATE_KEY) || '';
-    if (storedDate !== today) {
-      localStorage.setItem(LS_NARABIKAE_TRIAL_DATE_KEY, today);
-      localStorage.setItem(LS_NARABIKAE_TRIAL_COUNT_KEY, '0');
-    }
-  } catch (_e) {
-    /* ignore */
-  }
-}
-
-function getNarabikaeTrialUsedToday() {
-  ensureDailyNarabikaeTrialSynced();
-  try {
-    return parseInt(localStorage.getItem(LS_NARABIKAE_TRIAL_COUNT_KEY) || '0', 10) || 0;
-  } catch (_e) {
-    return 0;
-  }
-}
-
-function incrementNarabikaeTrialCount() {
-  if (isProUser) return;
-  ensureDailyNarabikaeTrialSynced();
-  try {
-    localStorage.setItem(LS_NARABIKAE_TRIAL_COUNT_KEY, String(getNarabikaeTrialUsedToday() + 1));
-  } catch (_e) {
-    /* ignore */
-  }
-}
-
-function canUseNarabikaeToday() {
-  if (isProUser) return true;
-  return getNarabikaeTrialUsedToday() < 1;
+/** 通常5問。五十音・初級のみ10問（generator 側と一致させる） */
+function resolveQuestionCountForPrint(content, level) {
+  if (content === 'hiragana' && level === 'beginner') return 10;
+  return 5;
 }
 
 function updateTrialNotice(show, featureName = '', mode = 'limit') {
@@ -175,12 +137,12 @@ function updateTrialNotice(show, featureName = '', mode = 'limit') {
   if (!el) return;
   if (show && title && sub) {
     if (mode === 'after-first-use') {
-      title.textContent = `${featureName || 'この機能'}を試せました！`;
-      sub.textContent = 'この機能は有料プランで無制限に使えます。';
+      title.textContent = '有料ジャンルをおためしできました！';
+      sub.textContent = '文章問題・並び替えは有料プランでいつでもご利用いただけます。';
       if (btn) btn.textContent = '有料プランを見る';
     } else {
-      title.textContent = '本日の無料体験は終了しました。';
-      sub.textContent = `${featureName || 'この機能'}は有料プランで無制限に利用できます。`;
+      title.textContent = '有料ジャンルの体験は終了しました。';
+      sub.textContent = `${featureName || '文章問題・並び替え'}は有料プランでご利用いただけます。`;
       if (btn) btn.textContent = '月額300円の有料版を見る';
     }
   }
@@ -326,33 +288,6 @@ function openFeatureLockedModal(feature) {
   modal.querySelector('.modal-close')?.focus();
 }
 
-function getFreeQuestionCountOptions() {
-  return [6, 8, 10];
-}
-
-function getProQuestionCountOptions() {
-  return [4, 6, 8, 10, 15, 20, 25, 30];
-}
-
-/** 問題数プルダウンをプランに合わせて再構築 */
-function refreshQuestionCountOptions() {
-  const sel = document.getElementById('questionCount');
-  if (!sel) return;
-  const allowed = isProUser ? getProQuestionCountOptions() : getFreeQuestionCountOptions();
-  let prev = parseInt(sel.value, 10);
-  if (Number.isNaN(prev)) prev = 6;
-  const frag = document.createDocumentFragment();
-  allowed.forEach((n) => {
-    const opt = document.createElement('option');
-    opt.value = String(n);
-    opt.textContent = `${n}問`;
-    frag.appendChild(opt);
-  });
-  sel.innerHTML = '';
-  sel.appendChild(frag);
-  if (!allowed.includes(prev)) prev = allowed[0];
-  sel.value = String(prev);
-}
 
 function updatePlanBadge() {
   const el = document.getElementById('planBadge');
@@ -360,7 +295,7 @@ function updatePlanBadge() {
   el.textContent = isProUser ? '有料版利用中' : '無料版利用中';
   el.title = isProUser
     ? '有料プランをご利用中です'
-    : '【有料版】月額300円・回数無制限・最大30問まで・上級モード・解答付き';
+    : '【有料版】月額300円・回数無制限・1枚5問（五十音・初級のみ10問）・上級モード・解答付き';
   el.classList.toggle('plan-badge--pro', isProUser);
   el.classList.toggle('plan-badge--free', !isProUser);
 }
@@ -526,14 +461,12 @@ function applyPlanTierToUI() {
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   }
-  refreshQuestionCountOptions();
   refreshCustomWordControl();
   refreshLevelButtons();
   refreshAnswerSheetRow();
   refreshOneClickRow();
   updateFreeGenQuotaUI();
-  ensureDailySentenceTrialSynced();
-  ensureDailyNarabikaeTrialSynced();
+  migratePremiumGenreTrialFromLegacy();
   updateTrialNotice(false);
   refreshKatakanaGenerateNote();
   refreshKatakanaToggleRow();
@@ -637,21 +570,20 @@ document.getElementById('trialNoticeCloseBtn')?.addEventListener('click', () => 
    プリント生成
 ════════════════════════════════════════ */
 function generatePrint() {
-  const count    = parseInt(document.getElementById('questionCount').value, 10);
   const levelRaw = document.querySelector('.level-btn.active')?.dataset.value || selectedLevel;
   const content  = document.querySelector('.content-btn.active')?.dataset.value || selectedContent;
   const level = getEffectiveLevelForContent(content, levelRaw);
+  const count = resolveQuestionCountForPrint(content, level);
   const showName = true;
   const showDate = true;
 
+  const premiumTrialStillAvailable = !isProUser && !isPremiumGenreTrialConsumed();
+
   if (!isProUser) {
     if (getFreeGenerationsUsed() >= FREE_GENERATION_LIMIT) {
-      openPlanModal('無料版は1日5回までです。有料版（月額300円・回数無制限）をご利用ください。');
-      return;
-    }
-    const allowedN = getFreeQuestionCountOptions();
-    if (!allowedN.includes(count)) {
-      openPlanModal('お選びの問題数は有料版でご利用いただけます。');
+      openPlanModal(
+        `無料版は1日${FREE_GENERATION_LIMIT}回までです。有料版（月額300円・回数無制限）をご利用ください。`
+      );
       return;
     }
     if (level === 'advanced') {
@@ -666,12 +598,8 @@ function generatePrint() {
       openPlanModal('ひらがな迷路は有料版で利用できます');
       return;
     }
-    if (content === 'sentence' && !canUseSentenceToday()) {
-      updateTrialNotice(true, '文章問題', 'limit');
-      return;
-    }
-    if (content === 'narabikae' && !canUseNarabikaeToday()) {
-      updateTrialNotice(true, '並び替え', 'limit');
+    if ((content === 'sentence' || content === 'narabikae') && isPremiumGenreTrialConsumed()) {
+      updateTrialNotice(true, '文章問題・並び替え', 'limit');
       return;
     }
   }
@@ -679,8 +607,6 @@ function generatePrint() {
 
   const wantAnswers =
     isProUser && document.getElementById('includeAnswersSheet')?.checked;
-  const isSentenceFirstTrial = content === 'sentence' && !isProUser && getSentenceTrialUsedToday() === 0;
-  const isNarabikaeFirstTrial = content === 'narabikae' && !isProUser && getNarabikaeTrialUsedToday() === 0;
 
   let customPayload = null;
   if (content === 'custom') {
@@ -694,7 +620,7 @@ function generatePrint() {
       return;
     }
     customPayload = { words, mode: selectedCustomMode };
-  } else if (content === 'sentence' && !isProUser && getSentenceTrialUsedToday() === 0) {
+  } else if (content === 'sentence' && premiumTrialStillAvailable) {
     customPayload = { sentenceTrialQuality: true };
   }
 
@@ -715,8 +641,7 @@ function generatePrint() {
         getKanaMode()
       );
       const sheet = document.getElementById('printSheet');
-      /* プリントDOM先頭にロゴ（フロー外・CSSで絶対／印刷時は固定） */
-      sheet.innerHTML = `<img src="images/logo.png" class="print-logo" alt="" />${html}`;
+      sheet.innerHTML = html;
       /* 迷路系のみ a4-sheet--maze（印刷・プレビュー・PDF で共通レイアウト最適化の影響を切り離す） */
       sheet.classList.toggle('a4-sheet--maze', content === 'maze' || content === 'maze_hiragana');
 
@@ -724,12 +649,13 @@ function generatePrint() {
       section.style.display = 'block';
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       incrementFreeGenerationCount();
-      if (content === 'sentence' && !isProUser) {
-        incrementSentenceTrialCount();
-        if (isSentenceFirstTrial) updateTrialNotice(true, '文章問題', 'after-first-use');
-      } else if (content === 'narabikae' && !isProUser) {
-        incrementNarabikaeTrialCount();
-        if (isNarabikaeFirstTrial) updateTrialNotice(true, '並び替え', 'after-first-use');
+      if (
+        !isProUser &&
+        (content === 'sentence' || content === 'narabikae') &&
+        premiumTrialStillAvailable
+      ) {
+        markPremiumGenreTrialConsumed();
+        updateTrialNotice(true, '', 'after-first-use');
       }
       updateFreeGenQuotaUI();
     } catch (e) {
@@ -814,54 +740,6 @@ async function waitForPaintPdf() {
 /** .a4-sheet と同じ印字幅（210mm − @page 左右余白 12mm×2） */
 const MOBILE_PDF_CONTENT_WIDTH_MM = 186;
 const MOBILE_PDF_SIDE_MARGIN_MM = 12;
-
-/** 印刷用ロゴ画像の絶対URL（相対パスを document.baseURI で解決） */
-function resolvePrintLogoImageUrl() {
-  const el =
-    document.querySelector('#printSheet > img.print-logo') || document.querySelector('img.print-logo');
-  const raw = el && el.getAttribute('src');
-  if (raw) {
-    try {
-      return new URL(raw, document.baseURI).href;
-    } catch (_e) {
-      return el.src;
-    }
-  }
-  try {
-    return new URL('images/logo.png', document.baseURI).href;
-  } catch (_e2) {
-    return 'images/logo.png';
-  }
-}
-
-/**
- * スマホPDFキャプチャ用：各ページ fragment の右上にロゴを重ねる（本文フロー外・レイアウト不変）。
- * @param {HTMLElement} wrap
- * @param {HTMLElement} [sheet] #printSheet（先頭の img.print-logo と同じ src を使う）
- */
-function appendMobilePdfLogoOverlay(wrap, sheet) {
-  if (!wrap) return;
-  wrap.style.position = 'relative';
-  const logo = document.createElement('img');
-  const domLogo = sheet && sheet.querySelector(':scope > img.print-logo');
-  logo.src = domLogo ? domLogo.currentSrc || resolvePrintLogoImageUrl() : resolvePrintLogoImageUrl();
-  logo.alt = '';
-  logo.setAttribute('aria-hidden', 'true');
-  logo.className = 'pdf-mobile-page-logo';
-  logo.style.cssText = [
-    'position:absolute',
-    'bottom:10mm',
-    'right:10mm',
-    'top:auto',
-    'left:auto',
-    'width:22mm',
-    'height:auto',
-    'opacity:0.8',
-    'z-index:99',
-    'pointer-events:none',
-  ].join(';');
-  wrap.appendChild(logo);
-}
 
 /**
  * スマホ向け：.print-page を cloneNode し、body 直下の可視一時コンテナ内で html2canvas。
@@ -1053,7 +931,6 @@ function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc)
   cardSlice.forEach((c) => g.appendChild(c.cloneNode(true)));
   wrap.appendChild(g);
   if (isLastPageOfDoc && footer) wrap.appendChild(footer.cloneNode(true));
-  appendMobilePdfLogoOverlay(wrap, sheet);
   return wrap;
 }
 
@@ -1176,7 +1053,7 @@ function openPlanModal(contextMessage) {
     pitchList.innerHTML = [
       '<li>月額300円</li>',
       '<li>回数無制限</li>',
-      '<li>最大30問まで</li>',
+      '<li>1枚あたり5問（五十音・初級のみ10問）</li>',
       '<li>上級モードあり</li>',
       '<li>解答付き</li>',
     ].join('');
@@ -1205,7 +1082,6 @@ function runOneClickGenerate() {
   }
   const contents = ['joshi', 'hiragana', 'maze', 'sentence', 'narabikae', 'maze_hiragana'];
   const levels = ['beginner', 'intermediate', 'advanced'];
-  const counts = getProQuestionCountOptions();
   selectedContent = contents[Math.floor(Math.random() * contents.length)];
   selectedLevel = levels[Math.floor(Math.random() * levels.length)];
   document.querySelectorAll('.content-btn').forEach((b) => {
@@ -1218,11 +1094,6 @@ function runOneClickGenerate() {
     b.classList.toggle('active', on);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
-  const qEl = document.getElementById('questionCount');
-  if (qEl) {
-    const n = counts[Math.floor(Math.random() * counts.length)];
-    qEl.value = String(n);
-  }
   generatePrint();
 }
 

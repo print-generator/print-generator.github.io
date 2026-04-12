@@ -381,9 +381,14 @@ function buildPrintHeader(meta, showName, showDate) {
 
   return `<div class="print-header">
     <div class="print-header-main-row">
-      <div class="print-title-block">
-        <div class="print-category">${meta.emoji} ${meta.label} ／ ${meta.badge} ${meta.label}（${meta.desc}）</div>
-        <h1 class="print-title">${meta.label}の れんしゅう</h1>
+      <div class="print-header-left">
+        <div class="print-title-row">
+          <div class="print-title-block">
+            <div class="print-category">${meta.emoji} ${meta.label} ／ ${meta.badge} ${meta.label}（${meta.desc}）</div>
+            <h1 class="print-title">${meta.label}の れんしゅう</h1>
+          </div>
+          <img src="images/logo.png" class="print-logo print-logo--header" alt="" width="48" height="48" />
+        </div>
       </div>
       ${fields}
     </div>
