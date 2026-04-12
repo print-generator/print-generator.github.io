@@ -558,12 +558,8 @@ function kanjiHtmlReadingBeginner(sentence, char, reading) {
 function kanjiHtmlReadingAdvanced(sentence, char, reading) {
   const p = kanjiSplitAtTarget(sentence, char);
   if (!p) return escapeHtmlPrint(sentence);
-  const n = Math.max(1, Array.from(reading).length);
-  let masu = '';
-  for (let i = 0; i < n; i++) {
-    masu += '<span class="kanji-masu kanji-masu--kana" aria-hidden="true"></span>';
-  }
-  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack kanji-stack--reading-adv" lang="ja"><span class="kanji-stack__masu-row kanji-stack__masu-row--kana">${masu}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${escapeHtmlPrint(char)}</span></span>${escapeHtmlPrint(p.after)}`;
+  void reading;
+  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack kanji-stack--reading-adv" lang="ja"><span class="kanji-reading-blank-line" aria-hidden="true">（　　　　）</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${escapeHtmlPrint(char)}</span></span>${escapeHtmlPrint(p.after)}`;
 }
 
 function kanjiHtmlWritingIntermediate(sentence, char, yomi) {
@@ -581,11 +577,11 @@ function kanjiHtmlWritingBeginner(sentence, char, yomi) {
 function kanjiHtmlWritingAdvanced(sentence, char, yomi) {
   const p = kanjiSplitAtTarget(sentence, char);
   if (!p) return escapeHtmlPrint(sentence);
-  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack kanji-stack--writing-adv" lang="ja"><span class="kanji-stack__yomi-read kanji-stack__yomi-read--writing">${escapeHtmlPrint(yomi)}</span><span class="kanji-stack__masu-row kanji-stack__masu-row--kanji"><span class="kanji-masu kanji-masu--kanji" aria-hidden="true"></span></span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${escapeHtmlPrint(char)}</span></span>${escapeHtmlPrint(p.after)}`;
+  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack kanji-stack--writing-adv" lang="ja"><span class="kanji-stack__yomi-read kanji-stack__yomi-read--writing">${escapeHtmlPrint(yomi)}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji kanji-stack__bottom--primary">${escapeHtmlPrint(char)}</span><span class="kanji-stack__masu-row kanji-stack__masu-row--write"><span class="kanji-masu kanji-masu--kanji" aria-hidden="true"></span></span></span>${escapeHtmlPrint(p.after)}`;
 }
 
 function buildKanjiReadingSentence(entry, sentence, reading, pool, level) {
-  const lineClass = 'choice-sentence kanji-sentence-line kanji-sentence-line--prominent';
+  const lineClass = 'choice-sentence kanji-sentence-line kanji-sentence-line--prominent kanji-sentence-line--nowrap';
 
   if (level === 'beginner') {
     const marked = kanjiHtmlReadingBeginner(sentence, entry.char, reading);
@@ -618,7 +614,7 @@ function buildKanjiReadingSentence(entry, sentence, reading, pool, level) {
 }
 
 function buildKanjiWritingSentence(entry, sentence, reading, pool, level) {
-  const lineClass = 'choice-sentence kanji-sentence-line kanji-sentence-line--prominent';
+  const lineClass = 'choice-sentence kanji-sentence-line kanji-sentence-line--prominent kanji-sentence-line--nowrap';
 
   if (level === 'beginner') {
     const marked = kanjiHtmlWritingBeginner(sentence, entry.char, reading);
