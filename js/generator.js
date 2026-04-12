@@ -352,7 +352,9 @@ function buildMeta(content, level) {
     base.desc = '絵つき・なぞり書き（単語）';
   }
   if (content === 'kanji') {
-    base.desc = '1年生・読み／書き';
+    if (level === 'beginner') base.desc = '短文・なぞり（1年生）';
+    else if (level === 'intermediate') base.desc = '短文・選択（1年生）';
+    else base.desc = '短文・記述（1年生）';
   }
   return {
     ...base,
@@ -441,9 +443,12 @@ function getInstructionText(meta) {
       advanced: '5つの ことばを ならべて ぶんを つくり、したに かきましょう。',
     },
     kanji: {
-      beginner: 'かんじの よみかたを えらぶか、かんじを かきましょう。',
-      intermediate: 'かんじの よみかたを えらぶか、かんじを かきましょう。',
-      advanced: 'かんじの よみかたを えらぶか、かんじを かきましょう。',
+      beginner:
+        'よむ：うすい よみかなを なぞりましょう。／ かく：□に 入る かんじを なぞりましょう。',
+      intermediate:
+        'よむ：ただしい よみかたを えらびましょう。／ かく：ただしい かんじを えらびましょう。',
+      advanced:
+        'よむ：（　　）に よみかたを かきましょう。／ かく：□に かんじを かきましょう。',
     },
   };
   return instructions[meta.content][meta.level];
@@ -468,6 +473,7 @@ function buildPrintContinuationStrip(meta) {
 
 /* ====================================================
    漢字（データ: js/data/kanjiGrade1.js の KANJI_GRADE_1）
+   短文1題・difficulty×kanjiMode（src/generators/kanji.ts と同ロジック）
    ==================================================== */
 function getKanjiPool(grade) {
   const g = typeof globalThis !== 'undefined' ? globalThis : {};
@@ -475,57 +481,131 @@ function getKanjiPool(grade) {
   return [];
 }
 
-function buildKanjiReading(count, customPayload) {
-  const grade = customPayload && customPayload.kanjiGrade != null ? Number(customPayload.kanjiGrade) : 1;
-  const pool = getKanjiPool(grade);
-  if (!pool.length) return { cardHtmls: [], answers: [] };
-  const data = pickRandom(pool, count);
-  const answers = data.map((q) => q.yomi);
-  const cards = data.map((q, i) => {
-    const answer = q.yomi;
-    const wrong = shuffle(pool.filter((e) => e.yomi !== answer))
+function kanjiPickSentence(entry) {
+  const list = entry.sentences;
+  if (!list || !list.length) return '';
+  return list[Math.floor(Math.random() * list.length)] || '';
+}
+
+/** 文中の対象漢字1字をマーク */
+function kanjiHtmlSentenceReading(sentence, char) {
+  const i = sentence.indexOf(char);
+  if (i === -1) return escapeHtmlPrint(sentence);
+  const before = sentence.slice(0, i);
+  const after = sentence.slice(i + char.length);
+  return `${escapeHtmlPrint(before)}<span class="kanji-drill-target">${escapeHtmlPrint(char)}</span>${escapeHtmlPrint(after)}`;
+}
+
+/** 書き：対象漢字を（よみ）に置換 */
+function kanjiHtmlSentenceWriting(sentence, char, yomi) {
+  const i = sentence.indexOf(char);
+  if (i === -1) return escapeHtmlPrint(sentence);
+  const before = sentence.slice(0, i);
+  const after = sentence.slice(i + char.length);
+  return `${escapeHtmlPrint(before)}（${escapeHtmlPrint(yomi)}）${escapeHtmlPrint(after)}`;
+}
+
+function buildKanjiReadingSentence(entry, sentence, pool, level) {
+  const marked = kanjiHtmlSentenceReading(sentence, entry.char);
+  const line = `<div class="choice-sentence kanji-sentence-line">${marked}</div>`;
+
+  if (level === 'beginner') {
+    const inner = `${line}
+      <div class="emoji-question-prompt">「${escapeHtmlPrint(entry.char)}」の よみかたを なぞりましょう。</div>
+      <div class="trace-area kanji-yomi-trace">
+        <span class="trace-target">${escapeHtmlPrint(entry.yomi)}</span>
+      </div>`;
+    return { html: inner, answer: entry.yomi };
+  }
+
+  if (level === 'intermediate') {
+    const answer = entry.yomi;
+    const wrong = shuffle(pool.filter((e) => e.char !== entry.char && e.yomi !== answer))
       .map((e) => e.yomi)
       .filter((y, idx, a) => a.indexOf(y) === idx)
       .slice(0, 3);
     const choices = shuffle([answer, ...wrong]).slice(0, 4);
     const choicesHtml = choices.map((c) => `<span class="choice-item">${escapeHtmlPrint(c)}</span>`).join('');
-    const inner = `
-      <div class="emoji-question-row emoji-question-row--tight">
-        <div class="emoji-question-body" style="flex:1">
-          <div class="kanji-drill-char" style="font-size:clamp(2.5rem,8vw,4rem);font-weight:900;text-align:center;margin-bottom:8px;">${escapeHtmlPrint(q.char)}</div>
-          <div class="emoji-question-prompt">この かんじの よみかたは どれですか。</div>
-          <div class="choices-row">
-            <span class="choice-label">こたえ：</span>
-            ${choicesHtml}
-          </div>
-        </div>
+    const inner = `${line}
+      <div class="emoji-question-prompt">「${escapeHtmlPrint(entry.char)}」の よみかたは どれですか。</div>
+      <div class="choices-row">
+        <span class="choice-label">こたえ：</span>
+        ${choicesHtml}
       </div>`;
-    return questionCard(i + 1, inner);
-  });
-  return { cardHtmls: cards, answers };
+    return { html: inner, answer };
+  }
+
+  const inner = `${line}
+    <div class="desc-sentence">「${escapeHtmlPrint(entry.char)}」の よみかたを （　　　）に かきましょう。</div>
+    <div class="answer-line"></div>`;
+  return { html: inner, answer: entry.yomi };
 }
 
-function buildKanjiWriting(count, customPayload) {
+function buildKanjiWritingSentence(entry, sentence, pool, level) {
+  const hiraganaLine = kanjiHtmlSentenceWriting(sentence, entry.char, entry.yomi);
+  const line = `<div class="choice-sentence kanji-sentence-line">${hiraganaLine}</div>`;
+
+  if (level === 'beginner') {
+    const inner = `${line}
+      <div class="emoji-question-prompt">□に 入る かんじを なぞりましょう。</div>
+      <div class="emoji-question-row emoji-question-row--tight">
+        <div class="seikatsu-char-col">
+          <span class="seikatsu-trace">${escapeHtmlPrint(entry.char)}</span>
+          <div class="hira-write"></div>
+        </div>
+      </div>`;
+    return { html: inner, answer: entry.char };
+  }
+
+  if (level === 'intermediate') {
+    const answer = entry.char;
+    const wrong = shuffle(pool.filter((e) => e.char !== answer))
+      .map((e) => e.char)
+      .filter((c, idx, a) => a.indexOf(c) === idx)
+      .slice(0, 3);
+    const choices = shuffle([answer, ...wrong]).slice(0, 4);
+    const choicesHtml = choices.map((c) => `<span class="choice-item">${escapeHtmlPrint(c)}</span>`).join('');
+    const inner = `${line}
+      <div class="emoji-question-prompt">（　）に 入る かんじは どれですか。</div>
+      <div class="choices-row">
+        <span class="choice-label">こたえ：</span>
+        ${choicesHtml}
+      </div>`;
+    return { html: inner, answer };
+  }
+
+  const inner = `${line}
+    <div class="emoji-question-prompt">□に かんじを かきましょう。</div>
+    <div class="trace-area" style="justify-content:center;margin-top:8px;">
+      <div class="write-box kanji-write-box-advanced"></div>
+    </div>`;
+  return { html: inner, answer: entry.char };
+}
+
+function buildKanjiByLevel(count, customPayload, _allowKatakana, _kanaMode, level) {
   const grade = customPayload && customPayload.kanjiGrade != null ? Number(customPayload.kanjiGrade) : 1;
+  const mode = customPayload && customPayload.kanjiMode === 'writing' ? 'writing' : 'reading';
   const pool = getKanjiPool(grade);
   if (!pool.length) return { cardHtmls: [], answers: [] };
   const data = pickRandom(pool, count);
-  const answers = data.map((q) => q.char);
-  const cards = data.map((q, i) => {
-    const inner = `
-      <div class="emoji-question-prompt">「${escapeHtmlPrint(q.yomi)}」と よむ かんじを かきましょう。</div>
-      <div class="trace-area" style="justify-content:center;margin-top:10px;">
-        <div class="write-box" style="width:64px;height:64px;font-size:2rem;"></div>
-      </div>`;
-    return questionCard(i + 1, inner);
+  const diff = level || 'beginner';
+
+  const answers = [];
+  const cards = data.map((entry, i) => {
+    const sentence = kanjiPickSentence(entry);
+    if (!sentence || sentence.indexOf(entry.char) === -1) {
+      answers.push('');
+      const inner = '<p class="emoji-question-prompt">データの 例文に かんじが ありません。</p>';
+      return questionCard(i + 1, inner);
+    }
+    const built =
+      mode === 'writing'
+        ? buildKanjiWritingSentence(entry, sentence, pool, diff)
+        : buildKanjiReadingSentence(entry, sentence, pool, diff);
+    answers.push(built.answer);
+    return questionCard(i + 1, built.html);
   });
   return { cardHtmls: cards, answers };
-}
-
-function buildKanjiByLevel(count, customPayload, _allowKatakana, _kanaMode, _level) {
-  const mode = customPayload && customPayload.kanjiMode === 'writing' ? 'writing' : 'reading';
-  if (mode === 'writing') return buildKanjiWriting(count, customPayload);
-  return buildKanjiReading(count, customPayload);
 }
 
 /* ─────────────────────────────────────────────

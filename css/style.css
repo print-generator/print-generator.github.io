@@ -1122,6 +1122,27 @@ select.setting-select--locked {
               linear-gradient(to bottom,transparent calc(50% - .5px),var(--grid-line) calc(50% - .5px),var(--grid-line) calc(50% + .5px),transparent calc(50% + .5px));
 }
 .choice-sentence { font-size: 1.25rem; font-weight: 600; margin-bottom: 6px; line-height: 1.45; }
+.kanji-sentence-line { letter-spacing: 0.02em; }
+.kanji-drill-target {
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  text-decoration-thickness: 2px;
+}
+.kanji-yomi-trace {
+  justify-content: center;
+  margin-top: 10px;
+}
+.kanji-yomi-trace .trace-target {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  min-width: 3.5em;
+  padding: 4px 8px;
+}
+.kanji-write-box-advanced {
+  width: 56px;
+  height: 56px;
+  font-size: 2rem;
+}
 .blank-box { display: inline-block; border: 2px solid var(--primary); border-radius: 6px; width: 44px; height: 36px; vertical-align: middle; background: var(--primary-light); }
 .choices-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .choice-label { font-size: .78rem; color: var(--text-sub); font-weight: 500; margin-right: 3px; }
