@@ -9,6 +9,8 @@ export interface GenreDefinition {
   hasDifficulty: boolean;
   hasCustomInput: boolean;
   hasGojuonMode: boolean;
+  /** 漢字：学年・読み/書きなど（将来拡張） */
+  hasKanjiSettings?: boolean;
 }
 
 /** ジャンルメタ（UIバッジ・将来の学年別漢字などの追加に利用） */
@@ -69,6 +71,15 @@ export const genreConfig: Record<AppGenre, GenreDefinition> = {
     hasDifficulty: true,
     hasCustomInput: true,
     hasGojuonMode: false,
+  },
+  kanji: {
+    key: 'kanji',
+    label: '漢字',
+    proOnly: false,
+    hasDifficulty: true,
+    hasCustomInput: false,
+    hasGojuonMode: false,
+    hasKanjiSettings: true,
   },
 };
 

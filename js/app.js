@@ -24,6 +24,10 @@ let selectedContent = 'joshi';
 let selectedLevel   = 'beginner';
 let selectedCustomMode = 'trace';
 let selectedKanaMode = 'mix';
+/** 漢字：学年（UI #kanjiGrade、データ追加まで 1 のみ） */
+let selectedKanjiGrade = 1;
+/** 漢字：読み／書き（#kanjiMode） */
+let selectedKanjiMode = 'reading';
 const CUSTOM_WORD_MAX_COUNT = 8;
 const CUSTOM_WORD_MAX_LEN = 15;
 const CUSTOM_WORD_PLACEHOLDERS = [
@@ -387,6 +391,28 @@ function refreshOneClickRow() {
   if (row) row.hidden = !isProUser;
 }
 
+function refreshKanjiSettingsRow() {
+  const row = document.getElementById('kanjiSettingsRow');
+  const gEl = document.getElementById('kanjiGrade');
+  const mEl = document.getElementById('kanjiMode');
+  const show = selectedContent === 'kanji';
+  if (row) row.hidden = !show;
+  if (gEl && show) {
+    selectedKanjiGrade = parseInt(gEl.value, 10) || 1;
+  }
+  if (mEl && show) {
+    selectedKanjiMode = mEl.value === 'writing' ? 'writing' : 'reading';
+  }
+}
+
+function getKanjiPayloadFromUI() {
+  const gEl = document.getElementById('kanjiGrade');
+  const mEl = document.getElementById('kanjiMode');
+  const g = gEl ? parseInt(gEl.value, 10) || 1 : selectedKanjiGrade;
+  const m = mEl && mEl.value === 'writing' ? 'writing' : 'reading';
+  return { kanjiGrade: g, kanjiMode: m };
+}
+
 function refreshCustomWordControl() {
   const hint = document.getElementById('customWordHint');
   const row = document.getElementById('customWordRow');
@@ -546,6 +572,7 @@ function applyPlanTierToUI() {
   refreshKatakanaGenerateNote();
   refreshKatakanaToggleRow();
   refreshKanaModeControl();
+  refreshKanjiSettingsRow();
   refreshQuestionCountRow();
   syncModalPanelsForPlan();
   ensureCustomWordInputsReady();
@@ -587,6 +614,7 @@ document.querySelectorAll('.content-btn').forEach(btn => {
     selectedContent = btn.dataset.value;
     refreshCustomWordControl();
     refreshKatakanaToggleRow();
+    refreshKanjiSettingsRow();
     refreshQuestionCountRow();
   });
 });
@@ -627,6 +655,19 @@ if (kanaModeEl) {
   };
   kanaModeEl.addEventListener('change', syncKanaMode);
   kanaModeEl.addEventListener('input', syncKanaMode);
+}
+
+const kanjiGradeEl = document.getElementById('kanjiGrade');
+const kanjiModeEl = document.getElementById('kanjiMode');
+if (kanjiGradeEl) {
+  kanjiGradeEl.addEventListener('change', () => {
+    selectedKanjiGrade = parseInt(kanjiGradeEl.value, 10) || 1;
+  });
+}
+if (kanjiModeEl) {
+  kanjiModeEl.addEventListener('change', () => {
+    selectedKanjiMode = kanjiModeEl.value === 'writing' ? 'writing' : 'reading';
+  });
 }
 document.querySelectorAll('.custom-mode-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -746,6 +787,8 @@ function generatePrint() {
     customPayload = { words, mode: selectedCustomMode };
   } else if (content === 'sentence' && premiumTrialStillAvailable) {
     customPayload = { sentenceTrialQuality: true };
+  } else if (content === 'kanji') {
+    customPayload = getKanjiPayloadFromUI();
   }
 
   const overlay = document.getElementById('loadingOverlay');
@@ -995,6 +1038,7 @@ async function savePdfViaHtml2Canvas() {
         custom: 'カスタム問題',
         maze: 'めいろ',
         maze_hiragana: 'ひらがな迷路',
+        kanji: '漢字',
         sentence: '文章問題',
         narabikae: '並び替え',
       };
@@ -1147,6 +1191,7 @@ async function savePdfViaHtml2CanvasFallbackSlices(sheet, contentSel, levelSel) 
       custom: 'カスタム問題',
       maze: 'めいろ',
       maze_hiragana: 'ひらがな迷路',
+      kanji: '漢字',
       sentence: '文章問題',
       narabikae: '並び替え',
     };
@@ -1221,7 +1266,7 @@ function runOneClickGenerate() {
     openPlanModal('ワンクリック自動生成は有料版限定機能です。');
     return;
   }
-  const contents = ['joshi', 'hiragana', 'maze', 'sentence', 'narabikae', 'maze_hiragana'];
+  const contents = ['joshi', 'hiragana', 'maze', 'kanji', 'sentence', 'narabikae', 'maze_hiragana'];
   const levels = ['beginner', 'intermediate', 'advanced'];
   selectedContent = contents[Math.floor(Math.random() * contents.length)];
   selectedLevel = levels[Math.floor(Math.random() * levels.length)];

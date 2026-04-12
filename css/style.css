@@ -599,6 +599,15 @@ select.setting-select--locked {
   grid-template-columns: 1fr;
   padding-top: 0;
 }
+.settings-row--kanji {
+  grid-template-columns: 1fr;
+  padding-top: 0;
+}
+.settings-row--kanji .setting-item--full {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
 .settings-row--question-count {
   grid-template-columns: 1fr;
   padding-top: 0;
@@ -2142,12 +2151,14 @@ body.lp-pricing-page {
   .setting-select { width: 100%; }
   .settings-row--katakana .setting-item--full,
   .settings-row--kana-mode .setting-item--full,
+  .settings-row--kanji .setting-item--full,
   .settings-row--question-count .setting-item--full,
   .settings-row--answer .setting-item--full { gap: 8px; }
   .settings-row--katakana .setting-label--checkbox,
   .settings-row--answer .setting-label--checkbox { width: 100%; align-items: flex-start; }
   .settings-row--katakana .setting-hint,
   .settings-row--kana-mode .setting-hint,
+  .settings-row--kanji .setting-hint,
   .settings-row--question-count .setting-hint,
   .settings-row--answer .setting-hint { margin-top: 2px; }
   .generate-btn { padding: 16px 32px; font-size: 1rem; }

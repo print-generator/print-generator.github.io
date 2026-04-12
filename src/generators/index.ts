@@ -7,6 +7,7 @@ import { generateBunshou } from './bunshou';
 import { generateMaze, generateMazeHiragana } from './maze';
 import { generateNarabikae } from './narabikae';
 import { generateCustom } from './custom';
+import { generateKanji } from './kanji';
 
 /** 実際のビルダーは AppGenre キーのみ */
 const coreGenerators: Record<AppGenre, (o: GenerateOptions) => Problem[]> = {
@@ -17,6 +18,7 @@ const coreGenerators: Record<AppGenre, (o: GenerateOptions) => Problem[]> = {
   sentence: generateBunshou,
   narabikae: generateNarabikae,
   custom: generateCustom,
+  kanji: generateKanji,
 };
 
 /**
@@ -33,6 +35,7 @@ const generators: Record<string, (o: GenerateOptions) => Problem[]> = {
   maze_hiragana: generateMazeHiragana,
   narabikae: generateNarabikae,
   custom: generateCustom,
+  kanji: generateKanji,
 };
 
 export default generators;

@@ -36,6 +36,14 @@ export function normalizeGenerateOptions(options: GenerateOptions): GenerateOpti
   if (g === 'bunshou') {
     return { ...options, genre: 'sentence' };
   }
+  if (g === 'kanji') {
+    return {
+      ...options,
+      genre: 'kanji',
+      kanjiGrade: options.kanjiGrade ?? 1,
+      kanjiMode: options.kanjiMode ?? 'reading',
+    };
+  }
   return options;
 }
 

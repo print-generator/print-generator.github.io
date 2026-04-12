@@ -237,6 +237,11 @@
             <span class="option-label">めいろ</span>
             <span class="option-desc">ランダム生成</span>
           </button>
+          <button type="button" class="option-btn content-btn" data-value="kanji" aria-pressed="false">
+            <span class="option-icon">字</span>
+            <span class="option-label">漢字</span>
+            <span class="option-desc">1年生（読み・書き）</span>
+          </button>
           <button class="option-btn content-btn content-btn--trial" data-value="narabikae" aria-pressed="false">
             <span class="option-icon">🔀</span>
             <span class="option-label">並び替え</span>
@@ -335,6 +340,24 @@
               <option value="katakana">カタカナのみ</option>
             </select>
             <p class="setting-hint" id="kanaModeHint">有料版で「カタカナを含める」をONにすると選べます。</p>
+          </div>
+        </div>
+        <div class="settings-row settings-row--kanji" id="kanjiSettingsRow" hidden>
+          <div class="setting-item setting-item--full">
+            <label for="kanjiGrade" class="setting-label">
+              <i class="fas fa-graduation-cap"></i> 学年
+            </label>
+            <select id="kanjiGrade" class="setting-select">
+              <option value="1" selected>1年生</option>
+            </select>
+            <label for="kanjiMode" class="setting-label" style="margin-top:10px;">
+              <i class="fas fa-book"></i> 出題タイプ
+            </label>
+            <select id="kanjiMode" class="setting-select">
+              <option value="reading" selected>読み（よみかたを選ぶ）</option>
+              <option value="writing">書き（かんじを書く）</option>
+            </select>
+            <p class="setting-hint" id="kanjiSettingsHint">2年生以降はデータ追加後に選択肢を増やせます。</p>
           </div>
         </div>
         <div class="settings-row settings-row--question-count" id="questionCountRow">
@@ -632,6 +655,7 @@
 <script src="js/data/sortQuestionData.js"></script>
 <script src="js/sortQuestionGenerator.js"></script>
 <script src="js/data.js"></script>
+<script src="js/data/kanjiGrade1.js"></script>
 <script src="js/generator.js"></script>
 <script src="js/plan-core.bundle.js"></script>
 <script src="js/app.js"></script>

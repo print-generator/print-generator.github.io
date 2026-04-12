@@ -18,7 +18,8 @@ export type AppGenre =
   | 'maze_hiragana'
   | 'sentence'
   | 'narabikae'
-  | 'custom';
+  | 'custom'
+  | 'kanji';
 
 /**
  * 生成API用ジャンル（将来拡張・別名）
@@ -29,6 +30,12 @@ export type GenreKey = AppGenre | 'gojuon' | 'katakana' | 'bunshou';
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
 export type GojuonMode = 'hiragana' | 'katakana' | 'mix';
+
+/** 漢字：学年（2〜6年はデータ追加後に利用） */
+export type KanjiGrade = 1 | 2 | 3 | 4 | 5 | 6;
+
+/** 漢字：出題タイプ */
+export type KanjiMode = 'reading' | 'writing';
 
 export interface GenerateOptions {
   genre: GenreKey;
@@ -41,6 +48,10 @@ export interface GenerateOptions {
   allowKatakana?: boolean;
   customPayload?: unknown;
   sentenceTrialQuality?: boolean;
+  /** 漢字：学年（既定 1） */
+  kanjiGrade?: KanjiGrade;
+  /** 漢字：読み／書き（既定 reading） */
+  kanjiMode?: KanjiMode;
 }
 
 export interface PlanGateInput {

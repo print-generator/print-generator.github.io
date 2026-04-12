@@ -231,6 +231,9 @@ function getCardsPerPage(content, level) {
   if (content === 'custom') {
     return level === 'advanced' ? 4 : 6;
   }
+  if (content === 'kanji') {
+    return 6;
+  }
   return 6;
 }
 
@@ -336,6 +339,7 @@ function buildMeta(content, level) {
     maze_hiragana: { label: 'ひらがな迷路', emoji: '🧩' },
     sentence: { label: '文章問題', emoji: '📚' },
     narabikae: { label: '並び替え', emoji: '🔀' },
+    kanji: { label: '漢字', emoji: '字' },
   };
   const levelInfo = {
     beginner:     { label: '初級',  desc: 'なぞり書き',  badge: '🌱' },
@@ -346,6 +350,9 @@ function buildMeta(content, level) {
   /* 50音・上級は絵つき単語のなぞり書きのため、ヘッダー説明を記述問題にしない */
   if (content === 'hiragana' && level === 'advanced') {
     base.desc = '絵つき・なぞり書き（単語）';
+  }
+  if (content === 'kanji') {
+    base.desc = '1年生・読み／書き';
   }
   return {
     ...base,
@@ -433,6 +440,11 @@ function getInstructionText(meta) {
       intermediate: '4つの ことばを ならべて ぶんを つくりましょう。',
       advanced: '5つの ことばを ならべて ぶんを つくり、したに かきましょう。',
     },
+    kanji: {
+      beginner: 'かんじの よみかたを えらぶか、かんじを かきましょう。',
+      intermediate: 'かんじの よみかたを えらぶか、かんじを かきましょう。',
+      advanced: 'かんじの よみかたを えらぶか、かんじを かきましょう。',
+    },
   };
   return instructions[meta.content][meta.level];
 }
@@ -452,6 +464,68 @@ function buildPrintContinuationStrip(meta) {
     <div class="print-continuation-title">つづき</div>
     <p class="print-continuation-hint">${text}</p>
   </div>`;
+}
+
+/* ====================================================
+   漢字（データ: js/data/kanjiGrade1.js の KANJI_GRADE_1）
+   ==================================================== */
+function getKanjiPool(grade) {
+  const g = typeof globalThis !== 'undefined' ? globalThis : {};
+  if (grade === 1 && Array.isArray(g.KANJI_GRADE_1)) return g.KANJI_GRADE_1;
+  return [];
+}
+
+function buildKanjiReading(count, customPayload) {
+  const grade = customPayload && customPayload.kanjiGrade != null ? Number(customPayload.kanjiGrade) : 1;
+  const pool = getKanjiPool(grade);
+  if (!pool.length) return { cardHtmls: [], answers: [] };
+  const data = pickRandom(pool, count);
+  const answers = data.map((q) => q.yomi);
+  const cards = data.map((q, i) => {
+    const answer = q.yomi;
+    const wrong = shuffle(pool.filter((e) => e.yomi !== answer))
+      .map((e) => e.yomi)
+      .filter((y, idx, a) => a.indexOf(y) === idx)
+      .slice(0, 3);
+    const choices = shuffle([answer, ...wrong]).slice(0, 4);
+    const choicesHtml = choices.map((c) => `<span class="choice-item">${escapeHtmlPrint(c)}</span>`).join('');
+    const inner = `
+      <div class="emoji-question-row emoji-question-row--tight">
+        <div class="emoji-question-body" style="flex:1">
+          <div class="kanji-drill-char" style="font-size:clamp(2.5rem,8vw,4rem);font-weight:900;text-align:center;margin-bottom:8px;">${escapeHtmlPrint(q.char)}</div>
+          <div class="emoji-question-prompt">この かんじの よみかたは どれですか。</div>
+          <div class="choices-row">
+            <span class="choice-label">こたえ：</span>
+            ${choicesHtml}
+          </div>
+        </div>
+      </div>`;
+    return questionCard(i + 1, inner);
+  });
+  return { cardHtmls: cards, answers };
+}
+
+function buildKanjiWriting(count, customPayload) {
+  const grade = customPayload && customPayload.kanjiGrade != null ? Number(customPayload.kanjiGrade) : 1;
+  const pool = getKanjiPool(grade);
+  if (!pool.length) return { cardHtmls: [], answers: [] };
+  const data = pickRandom(pool, count);
+  const answers = data.map((q) => q.char);
+  const cards = data.map((q, i) => {
+    const inner = `
+      <div class="emoji-question-prompt">「${escapeHtmlPrint(q.yomi)}」と よむ かんじを かきましょう。</div>
+      <div class="trace-area" style="justify-content:center;margin-top:10px;">
+        <div class="write-box" style="width:64px;height:64px;font-size:2rem;"></div>
+      </div>`;
+    return questionCard(i + 1, inner);
+  });
+  return { cardHtmls: cards, answers };
+}
+
+function buildKanjiByLevel(count, customPayload, _allowKatakana, _kanaMode, _level) {
+  const mode = customPayload && customPayload.kanjiMode === 'writing' ? 'writing' : 'reading';
+  if (mode === 'writing') return buildKanjiWriting(count, customPayload);
+  return buildKanjiReading(count, customPayload);
 }
 
 /* ─────────────────────────────────────────────
@@ -505,6 +579,11 @@ function buildQuestionBodyStructured(content, level, count, customPayload, allow
       beginner: buildNarabikaeBeginner,
       intermediate: buildNarabikaeIntermediate,
       advanced: buildNarabikaeAdvanced,
+    },
+    kanji: {
+      beginner: buildKanjiByLevel,
+      intermediate: buildKanjiByLevel,
+      advanced: buildKanjiByLevel,
     },
   };
   return builders[content][level](count, customPayload || '', !!allowKatakana, kanaMode || 'mix', level);
