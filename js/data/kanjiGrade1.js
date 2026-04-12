@@ -66,7 +66,7 @@
     ]},
     { char: '金', grade: 1, entries: [
       { sentence: 'お金を つかいます', reading: 'かね' },
-      { sentence: '金ようびは やすみです', reading: 'きん' },
+      { sentence: 'お金を しまいます', reading: 'かね' },
     ]},
     { char: '空', grade: 1, entries: [
       { sentence: '空が あおいです', reading: 'そら' },
@@ -247,10 +247,6 @@
     { char: '町', grade: 1, entries: [
       { sentence: '町を あるきます', reading: 'まち' },
       { sentence: 'にぎやかな 町です', reading: 'まち' },
-    ]},
-    { char: '天', grade: 1, entries: [
-      { sentence: '天が あおいです', reading: 'てん' },
-      { sentence: '天は たかいです', reading: 'てん' },
     ]},
     { char: '田', grade: 1, entries: [
       { sentence: '田んぼの みちを とおります', reading: 'た' },

@@ -3,7 +3,7 @@ import { sourceRowsToKanjiEntries } from './sourceRow';
 import type { KanjiEntry } from './types';
 
 /**
- * 小学1年生漢字（令和・学年別漢字配当表 80字）
+ * 小学1年生漢字（配当表ベース。教材都合で「天」は未収録・「金」は訓「かね」のみ）
  *
  * 各 `entries[]` は { sentence, reading } で、文中のその漢字の読みと一致する。
  * 原則は1文に対象漢字のみ（かな表記）。自然な表現のため「学校」「1年生」など最小限の熟語を含む文もある。
@@ -74,7 +74,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
   ]},
   { grade: 1, kanji: '金', entries: [
     { sentence: 'お金を つかいます', reading: 'かね' },
-    { sentence: '金ようびは やすみです', reading: 'きん' },
+    { sentence: 'お金を しまいます', reading: 'かね' },
   ]},
   { grade: 1, kanji: '空', entries: [
     { sentence: '空が あおいです', reading: 'そら' },
@@ -255,10 +255,6 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
   { grade: 1, kanji: '町', entries: [
     { sentence: '町を あるきます', reading: 'まち' },
     { sentence: 'にぎやかな 町です', reading: 'まち' },
-  ]},
-  { grade: 1, kanji: '天', entries: [
-    { sentence: '天が あおいです', reading: 'てん' },
-    { sentence: '天は たかいです', reading: 'てん' },
   ]},
   { grade: 1, kanji: '田', entries: [
     { sentence: '田んぼの みちを とおります', reading: 'た' },
