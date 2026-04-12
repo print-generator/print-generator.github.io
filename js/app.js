@@ -123,10 +123,32 @@ function markPremiumGenreTrialConsumed() {
   }
 }
 
-/** 通常5問。五十音・初級のみ10問（generator 側と一致させる） */
+/** 有料版のみ選択可。五十音・初級は教材上10問固定で選択より優先 */
+const PRO_QUESTION_COUNT_OPTIONS = [5, 10, 15, 20, 25];
+
 function resolveQuestionCountForPrint(content, level) {
   if (content === 'hiragana' && level === 'beginner') return 10;
+  if (isProUser) {
+    const sel = document.getElementById('questionCountPro');
+    const n = parseInt(sel?.value, 10);
+    if (PRO_QUESTION_COUNT_OPTIONS.includes(n)) return n;
+    return 5;
+  }
   return 5;
+}
+
+/** 有料：問題数行の表示（五十音・初級は10問固定のため行ごと非表示） */
+function refreshQuestionCountRow() {
+  const row = document.getElementById('questionCountRow');
+  const hint = document.getElementById('questionCountProHint');
+  if (!row) return;
+  const levelRaw = document.querySelector('.level-btn.active')?.dataset.value || selectedLevel;
+  const level = getEffectiveLevelForContent(selectedContent, levelRaw);
+  const fixedHiraganaBeginner = selectedContent === 'hiragana' && level === 'beginner';
+  row.hidden = !isProUser || fixedHiraganaBeginner;
+  if (hint) {
+    hint.textContent = row.hidden ? '' : '5〜25問から選べます。';
+  }
 }
 
 function updateTrialNotice(show, featureName = '', mode = 'limit') {
@@ -192,8 +214,10 @@ function refreshKatakanaToggleRow() {
   const row = document.getElementById('katakanaToggleRow');
   const cb = document.getElementById('includeKatakana');
   const hint = document.getElementById('katakanaToggleHint');
-  if (row) row.hidden = false;
+  const isHiragana = selectedContent === 'hiragana';
+  if (row) row.hidden = !isHiragana;
   if (!cb) return;
+  if (!isHiragana) return;
   if (!isProUser) {
     cb.checked = false;
     if (hint) hint.textContent = '※有料版のみ利用できます';
@@ -221,24 +245,26 @@ function refreshKanaModeControl() {
   const show = isHiragana;
   if (row) row.hidden = !show;
   if (!select) return;
-  if (show) {
-    if (isProUser && getAllowKatakana()) {
-      select.disabled = false;
-      selectedKanaMode = select.value || selectedKanaMode || 'mix';
-      if (hint) hint.textContent = '有料版の50音なぞり書きで、出題タイプを切り替えできます。';
-    } else {
-      select.disabled = true;
-      select.value = 'mix';
-      selectedKanaMode = 'mix';
-      if (hint) hint.textContent = isProUser
-        ? '「カタカナを含める」をONにすると選べます。'
-        : '有料版で「カタカナを含める」をONにすると選べます。';
+  if (!show) {
+    select.disabled = true;
+    if (hint) {
+      hint.textContent = '「五十音」を選ぶと設定できます。';
+    }
+    return;
+  }
+  if (isProUser) {
+    select.disabled = false;
+    selectedKanaMode = select.value || selectedKanaMode || 'mix';
+    if (hint) {
+      hint.textContent = getAllowKatakana()
+        ? '初級のなぞり書きに反映されます。ミックスは行ごとにひらがな／カタカナが切り替わります。'
+        : '「カタカナを含める」をオンにすると、ここで選んだモード（ミックス・カタカナのみなど）が出題に反映されます。オフのときはひらがなのみで出題されます。';
     }
   } else {
     select.disabled = true;
-    select.value = 'mix';
-    selectedKanaMode = 'mix';
-    if (hint) hint.textContent = '有料版で「カタカナを含める」をONにすると選べます。';
+    if (hint) {
+      hint.textContent = '有料版で「五十音」を選ぶと、カタカナの出題モードを選べます。';
+    }
   }
 }
 
@@ -471,6 +497,7 @@ function applyPlanTierToUI() {
   refreshKatakanaGenerateNote();
   refreshKatakanaToggleRow();
   refreshKanaModeControl();
+  refreshQuestionCountRow();
   syncModalPanelsForPlan();
   ensureCustomWordInputsReady();
   refreshCustomWordButtons();
@@ -507,7 +534,8 @@ document.querySelectorAll('.content-btn').forEach(btn => {
     btn.setAttribute('aria-pressed', 'true');
     selectedContent = btn.dataset.value;
     refreshCustomWordControl();
-    refreshKanaModeControl();
+    refreshKatakanaToggleRow();
+    refreshQuestionCountRow();
   });
 });
 
@@ -524,6 +552,7 @@ document.querySelectorAll('.level-btn').forEach(btn => {
     btn.classList.add('active');
     btn.setAttribute('aria-pressed', 'true');
     selectedLevel = btn.dataset.value;
+    refreshQuestionCountRow();
   });
 });
 
@@ -1053,7 +1082,7 @@ function openPlanModal(contextMessage) {
     pitchList.innerHTML = [
       '<li>月額300円</li>',
       '<li>回数無制限</li>',
-      '<li>1枚あたり5問（五十音・初級のみ10問）</li>',
+      '<li>1枚あたり5〜25問から選択（五十音・初級のみ10問固定）</li>',
       '<li>上級モードあり</li>',
       '<li>解答付き</li>',
     ].join('');
@@ -1094,6 +1123,13 @@ function runOneClickGenerate() {
     b.classList.toggle('active', on);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
+  refreshKatakanaToggleRow();
+  refreshQuestionCountRow();
+  const effLevel = getEffectiveLevelForContent(selectedContent, selectedLevel);
+  const qc = document.getElementById('questionCountPro');
+  if (qc && !(selectedContent === 'hiragana' && effLevel === 'beginner')) {
+    qc.value = String(PRO_QUESTION_COUNT_OPTIONS[Math.floor(Math.random() * PRO_QUESTION_COUNT_OPTIONS.length)]);
+  }
   generatePrint();
 }
 

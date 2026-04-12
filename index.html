@@ -337,6 +337,21 @@
             <p class="setting-hint" id="kanaModeHint">有料版で「カタカナを含める」をONにすると選べます。</p>
           </div>
         </div>
+        <div class="settings-row settings-row--question-count" id="questionCountRow" hidden>
+          <div class="setting-item setting-item--full">
+            <label for="questionCountPro" class="setting-label">
+              <i class="fas fa-list-ol"></i> 問題数（有料）
+            </label>
+            <select id="questionCountPro" class="setting-select">
+              <option value="5" selected>5問</option>
+              <option value="10">10問</option>
+              <option value="15">15問</option>
+              <option value="20">20問</option>
+              <option value="25">25問</option>
+            </select>
+            <p class="setting-hint" id="questionCountProHint"></p>
+          </div>
+        </div>
         <div class="settings-row settings-row--custom" id="customWordRow" hidden>
           <div class="setting-item setting-item--full">
             <label for="customWord1" class="setting-label">
@@ -577,7 +592,7 @@
         <ul class="plan-pitch-list">
           <li>月額300円</li>
           <li>回数無制限</li>
-          <li>1枚あたり5問（五十音・初級のみ10問）</li>
+          <li>1枚あたり5〜25問から選択（五十音・初級のみ10問固定）</li>
           <li>上級モードあり</li>
           <li>解答付き</li>
         </ul>
