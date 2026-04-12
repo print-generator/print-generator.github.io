@@ -6,15 +6,15 @@ import type { KanjiEntry } from './types';
  * 小学1年生漢字（令和・学年別漢字配当表 80字）
  *
  * 各 `entries[]` は { sentence, reading } で、文中のその漢字の読みと一致する。
- * 1文に対象漢字は1字のみ（ほかはひらがな・かな表記）。
+ * 原則は1文に対象漢字のみ（かな表記）。自然な表現のため「学校」「1年生」など最小限の熟語を含む文もある。
  *
  * - 生成: `src/generators/kanji.ts` → `GRADE_1_KANJI`
  * - 印刷: `js/data/kanjiGrade1.js` を本ファイルと同期すること
  */
 export const kanjiGrade1: KanjiGradeSourceRow[] = [
   { grade: 1, kanji: '一', entries: [
-    { sentence: 'りんごが 一つ あります', reading: 'ひと' },
-    { sentence: 'いすが 一つ あります', reading: 'ひと' },
+    { sentence: 'りんごが 一つ あります', reading: 'ひとつ' },
+    { sentence: 'いすが 一つ あります', reading: 'ひとつ' },
   ]},
   { grade: 1, kanji: '右', entries: [
     { sentence: '右に まがります', reading: 'みぎ' },
@@ -25,7 +25,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '雨の ひです', reading: 'あめ' },
   ]},
   { grade: 1, kanji: '円', entries: [
-    { sentence: 'この 円が まるいです', reading: 'えん' },
+    { sentence: 'ノートに 円を かきます', reading: 'えん' },
     { sentence: '円を かきます', reading: 'えん' },
   ]},
   { grade: 1, kanji: '王', entries: [
@@ -61,7 +61,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '気が つきました', reading: 'き' },
   ]},
   { grade: 1, kanji: '九', entries: [
-    { sentence: '九つ あります', reading: 'ここの' },
+    { sentence: '九つ あります', reading: 'ここのつ' },
     { sentence: '九の かずです', reading: 'きゅう' },
   ]},
   { grade: 1, kanji: '休', entries: [
@@ -74,7 +74,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
   ]},
   { grade: 1, kanji: '金', entries: [
     { sentence: 'お金を つかいます', reading: 'かね' },
-    { sentence: '金の いろが すきです', reading: 'きん' },
+    { sentence: '金ようびは やすみです', reading: 'きん' },
   ]},
   { grade: 1, kanji: '空', entries: [
     { sentence: '空が あおいです', reading: 'そら' },
@@ -93,23 +93,23 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: 'ちゃんと 見ます', reading: 'み' },
   ]},
   { grade: 1, kanji: '五', entries: [
-    { sentence: '五の かずです', reading: 'いつ' },
-    { sentence: '五つ あります', reading: 'いつ' },
+    { sentence: '五の かずです', reading: 'ご' },
+    { sentence: '五つ あります', reading: 'いつつ' },
   ]},
   { grade: 1, kanji: '口', entries: [
     { sentence: '口を あけます', reading: 'くち' },
     { sentence: '口を ゆすぎます', reading: 'くち' },
   ]},
   { grade: 1, kanji: '校', entries: [
-    { sentence: '校に いきます', reading: 'こう' },
-    { sentence: '校の まえです', reading: 'こう' },
+    { sentence: '学校に いきます', reading: 'こう' },
+    { sentence: '学校の まえです', reading: 'こう' },
   ]},
   { grade: 1, kanji: '左', entries: [
     { sentence: '左に まがります', reading: 'ひだり' },
     { sentence: '左の てです', reading: 'ひだり' },
   ]},
   { grade: 1, kanji: '三', entries: [
-    { sentence: '三つ あります', reading: 'み' },
+    { sentence: '三つ あります', reading: 'みっつ' },
     { sentence: '三の かずです', reading: 'さん' },
   ]},
   { grade: 1, kanji: '山', entries: [
@@ -121,7 +121,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '子が ねています', reading: 'こ' },
   ]},
   { grade: 1, kanji: '四', entries: [
-    { sentence: '四つ あります', reading: 'よ' },
+    { sentence: '四つ あります', reading: 'よっつ' },
     { sentence: '四の かずです', reading: 'し' },
   ]},
   { grade: 1, kanji: '糸', entries: [
@@ -137,7 +137,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '耳が ちいさいです', reading: 'みみ' },
   ]},
   { grade: 1, kanji: '七', entries: [
-    { sentence: '七つ あります', reading: 'なな' },
+    { sentence: '七つ あります', reading: 'ななつ' },
     { sentence: '七の かずです', reading: 'しち' },
   ]},
   { grade: 1, kanji: '車', entries: [
@@ -185,8 +185,8 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '正しい こたえです', reading: 'ただ' },
   ]},
   { grade: 1, kanji: '生', entries: [
-    { sentence: 'いちねん生です', reading: 'せい' },
-    { sentence: '生きて います', reading: 'い' },
+    { sentence: '1年生です', reading: 'せい' },
+    { sentence: '生きています', reading: 'い' },
   ]},
   { grade: 1, kanji: '青', entries: [
     { sentence: '青い いろです', reading: 'あお' },
@@ -257,7 +257,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: 'にぎやかな 町です', reading: 'まち' },
   ]},
   { grade: 1, kanji: '天', entries: [
-    { sentence: '天が みえます', reading: 'てん' },
+    { sentence: '天が あおいです', reading: 'てん' },
     { sentence: '天は たかいです', reading: 'てん' },
   ]},
   { grade: 1, kanji: '田', entries: [
@@ -269,7 +269,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '土の うえを あるきます', reading: 'つち' },
   ]},
   { grade: 1, kanji: '二', entries: [
-    { sentence: '二つ あります', reading: 'ふた' },
+    { sentence: '二つ あります', reading: 'ふたつ' },
     { sentence: '二の かずです', reading: 'に' },
   ]},
   { grade: 1, kanji: '日', entries: [
@@ -289,7 +289,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '白い くもです', reading: 'しろ' },
   ]},
   { grade: 1, kanji: '八', entries: [
-    { sentence: '八つ あります', reading: 'や' },
+    { sentence: '八つ あります', reading: 'やっつ' },
     { sentence: '八の かずです', reading: 'はち' },
   ]},
   { grade: 1, kanji: '百', entries: [
@@ -329,7 +329,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '林の そばです', reading: 'はやし' },
   ]},
   { grade: 1, kanji: '六', entries: [
-    { sentence: '六つ あります', reading: 'む' },
+    { sentence: '六つ あります', reading: 'むっつ' },
     { sentence: '六の かずです', reading: 'ろく' },
   ]},
 ];

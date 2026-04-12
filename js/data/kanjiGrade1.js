@@ -5,8 +5,8 @@
 (function (g) {
   g.KANJI_GRADE_1 = [
     { char: '一', grade: 1, entries: [
-      { sentence: 'りんごが 一つ あります', reading: 'ひと' },
-      { sentence: 'いすが 一つ あります', reading: 'ひと' },
+      { sentence: 'りんごが 一つ あります', reading: 'ひとつ' },
+      { sentence: 'いすが 一つ あります', reading: 'ひとつ' },
     ]},
     { char: '右', grade: 1, entries: [
       { sentence: '右に まがります', reading: 'みぎ' },
@@ -17,7 +17,7 @@
       { sentence: '雨の ひです', reading: 'あめ' },
     ]},
     { char: '円', grade: 1, entries: [
-      { sentence: 'この 円が まるいです', reading: 'えん' },
+      { sentence: 'ノートに 円を かきます', reading: 'えん' },
       { sentence: '円を かきます', reading: 'えん' },
     ]},
     { char: '王', grade: 1, entries: [
@@ -53,7 +53,7 @@
       { sentence: '気が つきました', reading: 'き' },
     ]},
     { char: '九', grade: 1, entries: [
-      { sentence: '九つ あります', reading: 'ここの' },
+      { sentence: '九つ あります', reading: 'ここのつ' },
       { sentence: '九の かずです', reading: 'きゅう' },
     ]},
     { char: '休', grade: 1, entries: [
@@ -66,7 +66,7 @@
     ]},
     { char: '金', grade: 1, entries: [
       { sentence: 'お金を つかいます', reading: 'かね' },
-      { sentence: '金の いろが すきです', reading: 'きん' },
+      { sentence: '金ようびは やすみです', reading: 'きん' },
     ]},
     { char: '空', grade: 1, entries: [
       { sentence: '空が あおいです', reading: 'そら' },
@@ -85,23 +85,23 @@
       { sentence: 'ちゃんと 見ます', reading: 'み' },
     ]},
     { char: '五', grade: 1, entries: [
-      { sentence: '五の かずです', reading: 'いつ' },
-      { sentence: '五つ あります', reading: 'いつ' },
+      { sentence: '五の かずです', reading: 'ご' },
+      { sentence: '五つ あります', reading: 'いつつ' },
     ]},
     { char: '口', grade: 1, entries: [
       { sentence: '口を あけます', reading: 'くち' },
       { sentence: '口を ゆすぎます', reading: 'くち' },
     ]},
     { char: '校', grade: 1, entries: [
-      { sentence: '校に いきます', reading: 'こう' },
-      { sentence: '校の まえです', reading: 'こう' },
+      { sentence: '学校に いきます', reading: 'こう' },
+      { sentence: '学校の まえです', reading: 'こう' },
     ]},
     { char: '左', grade: 1, entries: [
       { sentence: '左に まがります', reading: 'ひだり' },
       { sentence: '左の てです', reading: 'ひだり' },
     ]},
     { char: '三', grade: 1, entries: [
-      { sentence: '三つ あります', reading: 'み' },
+      { sentence: '三つ あります', reading: 'みっつ' },
       { sentence: '三の かずです', reading: 'さん' },
     ]},
     { char: '山', grade: 1, entries: [
@@ -113,7 +113,7 @@
       { sentence: '子が ねています', reading: 'こ' },
     ]},
     { char: '四', grade: 1, entries: [
-      { sentence: '四つ あります', reading: 'よ' },
+      { sentence: '四つ あります', reading: 'よっつ' },
       { sentence: '四の かずです', reading: 'し' },
     ]},
     { char: '糸', grade: 1, entries: [
@@ -129,7 +129,7 @@
       { sentence: '耳が ちいさいです', reading: 'みみ' },
     ]},
     { char: '七', grade: 1, entries: [
-      { sentence: '七つ あります', reading: 'なな' },
+      { sentence: '七つ あります', reading: 'ななつ' },
       { sentence: '七の かずです', reading: 'しち' },
     ]},
     { char: '車', grade: 1, entries: [
@@ -177,8 +177,8 @@
       { sentence: '正しい こたえです', reading: 'ただ' },
     ]},
     { char: '生', grade: 1, entries: [
-      { sentence: 'いちねん生です', reading: 'せい' },
-      { sentence: '生きて います', reading: 'い' },
+      { sentence: '1年生です', reading: 'せい' },
+      { sentence: '生きています', reading: 'い' },
     ]},
     { char: '青', grade: 1, entries: [
       { sentence: '青い いろです', reading: 'あお' },
@@ -249,7 +249,7 @@
       { sentence: 'にぎやかな 町です', reading: 'まち' },
     ]},
     { char: '天', grade: 1, entries: [
-      { sentence: '天が みえます', reading: 'てん' },
+      { sentence: '天が あおいです', reading: 'てん' },
       { sentence: '天は たかいです', reading: 'てん' },
     ]},
     { char: '田', grade: 1, entries: [
@@ -261,7 +261,7 @@
       { sentence: '土の うえを あるきます', reading: 'つち' },
     ]},
     { char: '二', grade: 1, entries: [
-      { sentence: '二つ あります', reading: 'ふた' },
+      { sentence: '二つ あります', reading: 'ふたつ' },
       { sentence: '二の かずです', reading: 'に' },
     ]},
     { char: '日', grade: 1, entries: [
@@ -281,7 +281,7 @@
       { sentence: '白い くもです', reading: 'しろ' },
     ]},
     { char: '八', grade: 1, entries: [
-      { sentence: '八つ あります', reading: 'や' },
+      { sentence: '八つ あります', reading: 'やっつ' },
       { sentence: '八の かずです', reading: 'はち' },
     ]},
     { char: '百', grade: 1, entries: [
@@ -321,7 +321,7 @@
       { sentence: '林の そばです', reading: 'はやし' },
     ]},
     { char: '六', grade: 1, entries: [
-      { sentence: '六つ あります', reading: 'む' },
+      { sentence: '六つ あります', reading: 'むっつ' },
       { sentence: '六の かずです', reading: 'ろく' },
     ]},
   ];
