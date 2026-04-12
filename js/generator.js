@@ -543,7 +543,7 @@ function kanjiHtmlReadingBeginner(sentence, char, reading) {
 function kanjiHtmlReadingAdvanced(sentence, char) {
   const p = kanjiSplitAtTarget(sentence, char);
   if (!p) return escapeHtmlPrint(sentence);
-  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank">（　）</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${escapeHtmlPrint(char)}</span></span>${escapeHtmlPrint(p.after)}`;
+  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank"><span class="kanji-stack__blank-inner" aria-hidden="true">（　　　）</span></span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${escapeHtmlPrint(char)}</span></span>${escapeHtmlPrint(p.after)}`;
 }
 
 function kanjiHtmlWritingIntermediate(sentence, char, yomi) {
@@ -561,7 +561,7 @@ function kanjiHtmlWritingBeginner(sentence, char, yomi) {
 function kanjiHtmlWritingAdvanced(sentence, char, yomi) {
   const p = kanjiSplitAtTarget(sentence, char);
   if (!p) return escapeHtmlPrint(sentence);
-  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank">（　）</span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${escapeHtmlPrint(yomi)}）</span></span>${escapeHtmlPrint(p.after)}`;
+  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank"><span class="kanji-stack__blank-inner" aria-hidden="true">（　　　）</span></span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${escapeHtmlPrint(yomi)}）</span></span>${escapeHtmlPrint(p.after)}`;
 }
 
 function buildKanjiReadingSentence(entry, sentence, reading, pool, level) {
@@ -626,10 +626,7 @@ function buildKanjiWritingSentence(entry, sentence, reading, pool, level) {
   }
 
   const marked = kanjiHtmlWritingAdvanced(sentence, entry.char, reading);
-  const inner = `<div class="${lineClass}">${marked}</div>
-    <div class="trace-area kanji-write-advanced-row">
-      <div class="write-box kanji-write-box-advanced"></div>
-    </div>`;
+  const inner = `<div class="${lineClass}">${marked}</div>`;
   return { html: inner, answer: entry.char };
 }
 

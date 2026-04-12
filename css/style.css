@@ -1123,30 +1123,30 @@ select.setting-select--locked {
 }
 .choice-sentence { font-size: 1.25rem; font-weight: 600; margin-bottom: 6px; line-height: 1.45; }
 .kanji-sentence-line { letter-spacing: 0.02em; }
-/* 漢字短文：初級・上級は補助を字の真上に置くため本文をやや大きく */
+/* 漢字短文：初級・上級は補助を字の真上に置く（本文は1行のベースラインで揃える） */
 .kanji-sentence-line--prominent {
-  font-size: clamp(1.35rem, 4.2vw, 1.85rem);
+  font-size: clamp(1.28rem, 3.9vw, 1.78rem);
   font-weight: 700;
-  line-height: 1.65;
+  line-height: 1.5;
   margin-bottom: 10px;
 }
-/* ターゲット1字の直上に補助（なぞり読み・（　））／ flex 縦積みでズレにくくする */
+/* ターゲット1字：上＝補助、下＝本文中の字。inline-flex の最下行ベースラインで前後の文字と揃える */
 .kanji-stack {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   vertical-align: baseline;
-  margin: 0 0.04em;
-  gap: 0.2em;
+  margin: 0 0.03em;
+  gap: 0.12em;
+  max-width: 100%;
   break-inside: avoid;
   page-break-inside: avoid;
 }
 .kanji-stack__top {
   display: block;
-  font-size: 0.72em;
-  line-height: 1.25;
-  min-height: 1.25em;
+  font-size: 0.68em;
+  line-height: 1.15;
   text-align: center;
   white-space: nowrap;
   width: 100%;
@@ -1163,11 +1163,19 @@ select.setting-select--locked {
 .kanji-stack__top--blank {
   color: #64748b;
   font-weight: 700;
-  letter-spacing: 0.12em;
+}
+/* 上級の記入欄（本文よりやや大きめ・幅に余裕） */
+.kanji-stack__blank-inner {
+  display: inline-block;
+  font-size: 1.02em;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  line-height: 1.2;
 }
 .kanji-stack__bottom--kanji {
   font-weight: 900;
-  font-size: 1em;
+  font-size: inherit;
+  line-height: 1.35;
   text-decoration: underline;
   text-underline-offset: 0.14em;
   text-decoration-thickness: 2px;
@@ -1175,12 +1183,9 @@ select.setting-select--locked {
 }
 .kanji-stack__bottom--slot {
   font-weight: 700;
-  font-size: 1em;
+  font-size: inherit;
+  line-height: 1.35;
   text-align: center;
-}
-.kanji-write-advanced-row {
-  justify-content: center;
-  margin-top: 12px;
 }
 .kanji-drill-target {
   font-weight: 900;
@@ -2683,13 +2688,16 @@ body.lp-pricing-page {
   }
 
   .question-card .kanji-sentence-line--prominent {
-    font-size: 11.2pt !important;
-    line-height: 1.45 !important;
+    font-size: 11pt !important;
+    line-height: 1.42 !important;
     margin-bottom: 2mm !important;
   }
   .question-card .kanji-stack__top {
-    font-size: 8pt !important;
-    min-height: 1.1em !important;
+    font-size: 7.6pt !important;
+  }
+  .question-card .kanji-stack__blank-inner {
+    font-size: 9.2pt !important;
+    letter-spacing: 0.12em !important;
   }
   .question-card .kanji-stack__top--trace {
     color: #b8956a !important;

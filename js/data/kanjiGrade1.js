@@ -93,8 +93,8 @@
       { sentence: '口を ゆすぎます', reading: 'くち' },
     ]},
     { char: '校', grade: 1, entries: [
-      { sentence: '学校に いきます', reading: 'こう' },
-      { sentence: '学校の まえです', reading: 'こう' },
+      { sentence: 'がっ校に いきます', reading: 'こう' },
+      { sentence: 'がっ校の まえです', reading: 'こう' },
     ]},
     { char: '左', grade: 1, entries: [
       { sentence: '左に まがります', reading: 'ひだり' },
@@ -177,7 +177,7 @@
       { sentence: '正しい こたえです', reading: 'ただ' },
     ]},
     { char: '生', grade: 1, entries: [
-      { sentence: '1年生です', reading: 'せい' },
+      { sentence: 'がく生に なります', reading: 'せい' },
       { sentence: '生きています', reading: 'い' },
     ]},
     { char: '青', grade: 1, entries: [

@@ -6,7 +6,7 @@ import type { KanjiEntry } from './types';
  * 小学1年生漢字（配当表ベース。教材都合で「天」は未収録・「金」は訓「かね」のみ）
  *
  * 各 `entries[]` は { sentence, reading } で、文中のその漢字の読みと一致する。
- * 原則は1文に対象漢字のみ（かな表記）。自然な表現のため「学校」「1年生」など最小限の熟語を含む文もある。
+ * 例文に出す漢字は原則その1字だけ（他はひらがな）。熟語の一部だけ漢字にする場合は「がっ校」「がく生」のように表記する。
  *
  * - 生成: `src/generators/kanji.ts` → `GRADE_1_KANJI`
  * - 印刷: `js/data/kanjiGrade1.js` を本ファイルと同期すること
@@ -101,8 +101,8 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '口を ゆすぎます', reading: 'くち' },
   ]},
   { grade: 1, kanji: '校', entries: [
-    { sentence: '学校に いきます', reading: 'こう' },
-    { sentence: '学校の まえです', reading: 'こう' },
+    { sentence: 'がっ校に いきます', reading: 'こう' },
+    { sentence: 'がっ校の まえです', reading: 'こう' },
   ]},
   { grade: 1, kanji: '左', entries: [
     { sentence: '左に まがります', reading: 'ひだり' },
@@ -185,7 +185,7 @@ export const kanjiGrade1: KanjiGradeSourceRow[] = [
     { sentence: '正しい こたえです', reading: 'ただ' },
   ]},
   { grade: 1, kanji: '生', entries: [
-    { sentence: '1年生です', reading: 'せい' },
+    { sentence: 'がく生に なります', reading: 'せい' },
     { sentence: '生きています', reading: 'い' },
   ]},
   { grade: 1, kanji: '青', entries: [

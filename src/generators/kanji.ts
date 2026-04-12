@@ -65,11 +65,11 @@ function htmlReadingBeginner(sentence: string, char: string, reading: string): s
   return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--trace">${esc(reading)}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${esc(char)}</span></span>${esc(p.after)}`;
 }
 
-/** 読み・上級：上段＝（　）、下段＝漢字 */
+/** 読み・上級：上段＝記入欄、下段＝本文中の漢字 */
 function htmlReadingAdvanced(sentence: string, char: string): string {
   const p = splitAtTarget(sentence, char);
   if (!p) return esc(sentence);
-  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank">（　）</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${esc(char)}</span></span>${esc(p.after)}`;
+  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank"><span class="kanji-stack__blank-inner" aria-hidden="true">（　　　）</span></span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${esc(char)}</span></span>${esc(p.after)}`;
 }
 
 /** 書き・中級：（よみ）に置換（従来どおり） */
@@ -86,11 +86,11 @@ function htmlWritingBeginner(sentence: string, char: string, yomi: string): stri
   return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--trace">${esc(char)}</span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${esc(yomi)}）</span></span>${esc(p.after)}`;
 }
 
-/** 書き・上級：上段＝（　）、下段＝（よみ）＋書きマス */
+/** 書き・上級：上段＝記入欄、下段＝（よみ）。本文行に漢字は出さない */
 function htmlWritingAdvanced(sentence: string, char: string, yomi: string): string {
   const p = splitAtTarget(sentence, char);
   if (!p) return esc(sentence);
-  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank">（　）</span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${esc(yomi)}）</span></span>${esc(p.after)}`;
+  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank"><span class="kanji-stack__blank-inner" aria-hidden="true">（　　　）</span></span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${esc(yomi)}）</span></span>${esc(p.after)}`;
 }
 
 function questionCard(num: number, inner: string): string {
@@ -178,10 +178,7 @@ function buildWriting(
   }
 
   const marked = htmlWritingAdvanced(sentence, entry.char, reading);
-  const inner = `<div class="${lineClass}">${marked}</div>
-    <div class="trace-area kanji-write-advanced-row">
-      <div class="write-box kanji-write-box-advanced"></div>
-    </div>`;
+  const inner = `<div class="${lineClass}">${marked}</div>`;
   return { html: inner, answer: entry.char, format: formatKey('advanced', 'writing') };
 }
 
