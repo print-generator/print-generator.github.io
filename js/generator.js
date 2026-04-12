@@ -499,7 +499,7 @@ function kanjiCollectAllReadings(pool) {
   return [...set];
 }
 
-/** 漢数字＋「つ」の読み（src/data/kanji/numeralReadings.ts と同一）。つを連結して生成しない。 */
+/** 漢数字：固定表のみ（src/data/kanji/numeralReadings.ts と同一）。「つ」の連結生成はしない。 */
 const KANJI_NUMERAL_TSU_READINGS = {
   一: 'ひとつ',
   二: 'ふたつ',
@@ -512,14 +512,29 @@ const KANJI_NUMERAL_TSU_READINGS = {
   九: 'ここのつ',
   十: 'とお',
 };
+const KANJI_NUMERAL_SUUJI_READINGS = {
+  一: 'いち',
+  二: 'に',
+  三: 'さん',
+  四: 'し',
+  五: 'ご',
+  六: 'ろく',
+  七: 'なな',
+  八: 'はち',
+  九: 'きゅう',
+  十: 'じゅう',
+};
+const KANJI_NUMERAL_CHARS = '一二三四五六七八九十';
 
 function resolveKanjiContextReading(char, sentence, dataReading) {
-  const fixed = KANJI_NUMERAL_TSU_READINGS[char];
-  if (!fixed) return dataReading;
+  if (!KANJI_NUMERAL_CHARS.includes(char)) return dataReading;
   const idx = sentence.indexOf(char);
   if (idx === -1) return dataReading;
   const after = sentence.slice(idx + char.length);
-  return /^\s*つ/.test(after) ? fixed : dataReading;
+  if (/^\s*つ/.test(after)) {
+    return KANJI_NUMERAL_TSU_READINGS[char] != null ? KANJI_NUMERAL_TSU_READINGS[char] : dataReading;
+  }
+  return KANJI_NUMERAL_SUUJI_READINGS[char] != null ? KANJI_NUMERAL_SUUJI_READINGS[char] : dataReading;
 }
 
 function kanjiSplitAtTarget(sentence, char) {
@@ -540,10 +555,15 @@ function kanjiHtmlReadingBeginner(sentence, char, reading) {
   return `${escapeHtmlPrint(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--trace">${escapeHtmlPrint(reading)}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${escapeHtmlPrint(char)}</span></span>${escapeHtmlPrint(p.after)}`;
 }
 
-function kanjiHtmlReadingAdvanced(sentence, char) {
+function kanjiHtmlReadingAdvanced(sentence, char, reading) {
   const p = kanjiSplitAtTarget(sentence, char);
   if (!p) return escapeHtmlPrint(sentence);
-  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank"><span class="kanji-stack__blank-inner" aria-hidden="true">（　　　）</span></span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${escapeHtmlPrint(char)}</span></span>${escapeHtmlPrint(p.after)}`;
+  const n = Math.max(1, Array.from(reading).length);
+  let masu = '';
+  for (let i = 0; i < n; i++) {
+    masu += '<span class="kanji-masu kanji-masu--kana" aria-hidden="true"></span>';
+  }
+  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack kanji-stack--reading-adv" lang="ja"><span class="kanji-stack__masu-row kanji-stack__masu-row--kana">${masu}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${escapeHtmlPrint(char)}</span></span>${escapeHtmlPrint(p.after)}`;
 }
 
 function kanjiHtmlWritingIntermediate(sentence, char, yomi) {
@@ -561,7 +581,7 @@ function kanjiHtmlWritingBeginner(sentence, char, yomi) {
 function kanjiHtmlWritingAdvanced(sentence, char, yomi) {
   const p = kanjiSplitAtTarget(sentence, char);
   if (!p) return escapeHtmlPrint(sentence);
-  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank"><span class="kanji-stack__blank-inner" aria-hidden="true">（　　　）</span></span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${escapeHtmlPrint(yomi)}）</span></span>${escapeHtmlPrint(p.after)}`;
+  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack kanji-stack--writing-adv" lang="ja"><span class="kanji-stack__yomi-read kanji-stack__yomi-read--writing">${escapeHtmlPrint(yomi)}</span><span class="kanji-stack__masu-row kanji-stack__masu-row--kanji"><span class="kanji-masu kanji-masu--kanji" aria-hidden="true"></span></span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${escapeHtmlPrint(char)}</span></span>${escapeHtmlPrint(p.after)}`;
 }
 
 function buildKanjiReadingSentence(entry, sentence, reading, pool, level) {
@@ -592,7 +612,7 @@ function buildKanjiReadingSentence(entry, sentence, reading, pool, level) {
     return { html: inner, answer };
   }
 
-  const marked = kanjiHtmlReadingAdvanced(sentence, entry.char);
+  const marked = kanjiHtmlReadingAdvanced(sentence, entry.char, reading);
   const inner = `<div class="${lineClass}">${marked}</div>`;
   return { html: inner, answer: reading };
 }

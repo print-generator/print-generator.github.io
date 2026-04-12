@@ -65,11 +65,13 @@ function htmlReadingBeginner(sentence: string, char: string, reading: string): s
   return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--trace">${esc(reading)}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${esc(char)}</span></span>${esc(p.after)}`;
 }
 
-/** 読み・上級：上段＝記入欄、下段＝本文中の漢字 */
-function htmlReadingAdvanced(sentence: string, char: string): string {
+/** 読み・上級：よみ書き用マス（かな）＋本文中の漢字（よみのヒントは出さない） */
+function htmlReadingAdvanced(sentence: string, char: string, reading: string): string {
   const p = splitAtTarget(sentence, char);
   if (!p) return esc(sentence);
-  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank"><span class="kanji-stack__blank-inner" aria-hidden="true">（　　　）</span></span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${esc(char)}</span></span>${esc(p.after)}`;
+  const n = Math.max(1, [...reading].length);
+  const masu = Array.from({ length: n }, () => '<span class="kanji-masu kanji-masu--kana" aria-hidden="true"></span>').join('');
+  return `${esc(p.before)}<span class="kanji-stack kanji-stack--reading-adv" lang="ja"><span class="kanji-stack__masu-row kanji-stack__masu-row--kana">${masu}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${esc(char)}</span></span>${esc(p.after)}`;
 }
 
 /** 書き・中級：（よみ）に置換（従来どおり） */
@@ -86,11 +88,11 @@ function htmlWritingBeginner(sentence: string, char: string, yomi: string): stri
   return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--trace">${esc(char)}</span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${esc(yomi)}）</span></span>${esc(p.after)}`;
 }
 
-/** 書き・上級：上段＝記入欄、下段＝（よみ）。本文行に漢字は出さない */
+/** 書き・上級：読み仮名 → 漢字用マス → 本文中の漢字 */
 function htmlWritingAdvanced(sentence: string, char: string, yomi: string): string {
   const p = splitAtTarget(sentence, char);
   if (!p) return esc(sentence);
-  return `${esc(p.before)}<span class="kanji-stack" lang="ja"><span class="kanji-stack__top kanji-stack__top--blank"><span class="kanji-stack__blank-inner" aria-hidden="true">（　　　）</span></span><span class="kanji-stack__bottom kanji-stack__bottom--slot">（${esc(yomi)}）</span></span>${esc(p.after)}`;
+  return `${esc(p.before)}<span class="kanji-stack kanji-stack--writing-adv" lang="ja"><span class="kanji-stack__yomi-read kanji-stack__yomi-read--writing">${esc(yomi)}</span><span class="kanji-stack__masu-row kanji-stack__masu-row--kanji"><span class="kanji-masu kanji-masu--kanji" aria-hidden="true"></span></span><span class="kanji-stack__bottom kanji-stack__bottom--kanji">${esc(char)}</span></span>${esc(p.after)}`;
 }
 
 function questionCard(num: number, inner: string): string {
@@ -138,7 +140,7 @@ function buildReading(
     return { html: inner, answer, choices, format: formatKey('intermediate', 'reading') };
   }
 
-  const marked = htmlReadingAdvanced(sentence, entry.char);
+  const marked = htmlReadingAdvanced(sentence, entry.char, reading);
   const inner = `<div class="${lineClass}">${marked}</div>`;
   return { html: inner, answer: reading, format: formatKey('advanced', 'reading') };
 }

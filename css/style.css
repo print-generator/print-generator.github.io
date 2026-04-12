@@ -1160,17 +1160,74 @@ select.setting-select--locked {
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
-.kanji-stack__top--blank {
-  color: #64748b;
-  font-weight: 700;
+/* 漢字・上級：読み＝かなマス＋本文／書き＝よみ＋漢字マス＋本文 */
+.kanji-stack--reading-adv,
+.kanji-stack--writing-adv {
+  gap: 0.16em;
 }
-/* 上級の記入欄（本文よりやや大きめ・幅に余裕） */
-.kanji-stack__blank-inner {
-  display: inline-block;
-  font-size: 1.02em;
-  letter-spacing: 0.14em;
-  font-weight: 700;
+.kanji-stack__yomi-read--writing {
+  display: block;
+  font-size: 0.68em;
+  font-weight: 800;
   line-height: 1.2;
+  color: #94a3b8;
+  text-align: center;
+  width: 100%;
+  letter-spacing: 0.05em;
+}
+.kanji-stack__masu-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.24em;
+  flex-wrap: nowrap;
+}
+.kanji-stack__masu-row--kana {
+  gap: 0.2em;
+}
+.kanji-masu--kana {
+  box-sizing: border-box;
+  display: inline-block;
+  min-width: 1.05em;
+  width: 1.14em;
+  height: 1.42em;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  background: #fffdfb;
+  flex-shrink: 0;
+  position: relative;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.kanji-masu--kana::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  background: linear-gradient(to right, transparent calc(50% - 0.5px), var(--grid-line) calc(50% - 0.5px), var(--grid-line) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(50% - 0.5px), var(--grid-line) calc(50% - 0.5px), var(--grid-line) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+}
+.kanji-masu--kanji {
+  box-sizing: border-box;
+  display: inline-block;
+  width: clamp(50px, 13vw, 62px);
+  height: clamp(50px, 13vw, 62px);
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: #fffdfb;
+  position: relative;
+  flex-shrink: 0;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.kanji-masu--kanji::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent calc(50% - 0.5px), var(--grid-line) calc(50% - 0.5px), var(--grid-line) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(50% - 0.5px), var(--grid-line) calc(50% - 0.5px), var(--grid-line) calc(50% + 0.5px), transparent calc(50% + 0.5px));
 }
 .kanji-stack__bottom--kanji {
   font-weight: 900;
@@ -2695,9 +2752,21 @@ body.lp-pricing-page {
   .question-card .kanji-stack__top {
     font-size: 7.6pt !important;
   }
-  .question-card .kanji-stack__blank-inner {
-    font-size: 9.2pt !important;
-    letter-spacing: 0.12em !important;
+  .question-card .kanji-stack__yomi-read--writing {
+    font-size: 7.2pt !important;
+    color: #64748b !important;
+  }
+  .question-card .kanji-masu--kana {
+    width: 7.8pt !important;
+    min-width: 7.8pt !important;
+    height: 9.6pt !important;
+    border-width: 1.2pt !important;
+  }
+  .question-card .kanji-masu--kanji {
+    width: 14mm !important;
+    height: 14mm !important;
+    min-width: 14mm !important;
+    border-width: 1.2pt !important;
   }
   .question-card .kanji-stack__top--trace {
     color: #b8956a !important;

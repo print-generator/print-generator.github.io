@@ -5,8 +5,8 @@
 (function (g) {
   g.KANJI_GRADE_1 = [
     { char: '一', grade: 1, entries: [
-      { sentence: 'りんごが 一つ あります', reading: 'ひとつ' },
-      { sentence: 'いすが 一つ あります', reading: 'ひとつ' },
+      { sentence: 'すうじの 一 です。', reading: 'いち' },
+      { sentence: 'これは すうじの 一 です。', reading: 'いち' },
     ]},
     { char: '右', grade: 1, entries: [
       { sentence: '右に まがります', reading: 'みぎ' },
@@ -53,8 +53,8 @@
       { sentence: '気が つきました', reading: 'き' },
     ]},
     { char: '九', grade: 1, entries: [
-      { sentence: '九つ あります', reading: 'ここのつ' },
-      { sentence: '九の かずです', reading: 'きゅう' },
+      { sentence: 'すうじの 九 です。', reading: 'きゅう' },
+      { sentence: 'これは すうじの 九 です。', reading: 'きゅう' },
     ]},
     { char: '休', grade: 1, entries: [
       { sentence: '休みを とります', reading: 'やす' },
@@ -85,8 +85,8 @@
       { sentence: 'ちゃんと 見ます', reading: 'み' },
     ]},
     { char: '五', grade: 1, entries: [
-      { sentence: '五の かずです', reading: 'ご' },
-      { sentence: '五つ あります', reading: 'いつつ' },
+      { sentence: 'すうじの 五 です。', reading: 'ご' },
+      { sentence: 'これは すうじの 五 です。', reading: 'ご' },
     ]},
     { char: '口', grade: 1, entries: [
       { sentence: '口を あけます', reading: 'くち' },
@@ -101,8 +101,8 @@
       { sentence: '左の てです', reading: 'ひだり' },
     ]},
     { char: '三', grade: 1, entries: [
-      { sentence: '三つ あります', reading: 'みっつ' },
-      { sentence: '三の かずです', reading: 'さん' },
+      { sentence: 'すうじの 三 です。', reading: 'さん' },
+      { sentence: 'これは すうじの 三 です。', reading: 'さん' },
     ]},
     { char: '山', grade: 1, entries: [
       { sentence: 'とおくに 山が みえます', reading: 'やま' },
@@ -113,8 +113,8 @@
       { sentence: '子が ねています', reading: 'こ' },
     ]},
     { char: '四', grade: 1, entries: [
-      { sentence: '四つ あります', reading: 'よっつ' },
-      { sentence: '四の かずです', reading: 'し' },
+      { sentence: 'すうじの 四 です。', reading: 'し' },
+      { sentence: 'これは すうじの 四 です。', reading: 'し' },
     ]},
     { char: '糸', grade: 1, entries: [
       { sentence: '糸を つかいます', reading: 'いと' },
@@ -129,8 +129,8 @@
       { sentence: '耳が ちいさいです', reading: 'みみ' },
     ]},
     { char: '七', grade: 1, entries: [
-      { sentence: '七つ あります', reading: 'ななつ' },
-      { sentence: '七の かずです', reading: 'しち' },
+      { sentence: 'すうじの 七 です。', reading: 'なな' },
+      { sentence: 'これは すうじの 七 です。', reading: 'なな' },
     ]},
     { char: '車', grade: 1, entries: [
       { sentence: '車が とおります', reading: 'くるま' },
@@ -141,8 +141,8 @@
       { sentence: '手を あげて ください', reading: 'て' },
     ]},
     { char: '十', grade: 1, entries: [
-      { sentence: '十の かずです', reading: 'じゅう' },
-      { sentence: '十まで かぞえます', reading: 'じゅう' },
+      { sentence: 'すうじの 十 です。', reading: 'じゅう' },
+      { sentence: 'これは すうじの 十 です。', reading: 'じゅう' },
     ]},
     { char: '出', grade: 1, entries: [
       { sentence: '出て きました', reading: 'で' },
@@ -257,8 +257,8 @@
       { sentence: '土の うえを あるきます', reading: 'つち' },
     ]},
     { char: '二', grade: 1, entries: [
-      { sentence: '二つ あります', reading: 'ふたつ' },
-      { sentence: '二の かずです', reading: 'に' },
+      { sentence: 'すうじの 二 です。', reading: 'に' },
+      { sentence: 'これは すうじの 二 です。', reading: 'に' },
     ]},
     { char: '日', grade: 1, entries: [
       { sentence: '日が のぼりました', reading: 'ひ' },
@@ -277,8 +277,8 @@
       { sentence: '白い くもです', reading: 'しろ' },
     ]},
     { char: '八', grade: 1, entries: [
-      { sentence: '八つ あります', reading: 'やっつ' },
-      { sentence: '八の かずです', reading: 'はち' },
+      { sentence: 'すうじの 八 です。', reading: 'はち' },
+      { sentence: 'これは すうじの 八 です。', reading: 'はち' },
     ]},
     { char: '百', grade: 1, entries: [
       { sentence: '百まで かぞえます', reading: 'ひゃく' },
@@ -317,8 +317,8 @@
       { sentence: '林の そばです', reading: 'はやし' },
     ]},
     { char: '六', grade: 1, entries: [
-      { sentence: '六つ あります', reading: 'むっつ' },
-      { sentence: '六の かずです', reading: 'ろく' },
+      { sentence: 'すうじの 六 です。', reading: 'ろく' },
+      { sentence: 'これは すうじの 六 です。', reading: 'ろく' },
     ]},
   ];
 })(typeof window !== 'undefined' ? window : globalThis);
