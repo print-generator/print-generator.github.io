@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ===== SEO ===== -->
+  <title>家庭学習プリント生成｜学習プリント自動作成ツール</title>
+  <meta name="description" content="家庭学習や個別学習に使える学習プリント自動作成ツール。子ども向けのドリルとして、助詞・50音・めいろなどをワンクリックで作成。初級〜上級の3段階レベルに対応。印刷・PDF保存も簡単。" />
+  <meta name="keywords" content="家庭学習, 学習プリント, 子ども向け学習, ドリル, 個別学習, プリント, 自動生成, 助詞, 50音, ひらがな, カタカナ, 無料, 教材作成" />
+  <meta name="author" content="家庭学習プリント生成" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="家庭学習プリント生成｜学習プリント自動作成ツール" />
+  <meta property="og:description" content="家庭学習や個別学習に使える学習プリントをワンクリック生成。子ども向けドリルとして初級〜上級対応。印刷・PDF保存もできる無料ツール。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ja_JP" />
+
+  <!-- ===== CSS / Fonts ===== -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
+
+  <!-- ===== ライブラリ（スマホ PDF は html2canvas + jsPDF。PC の PDF 保存は印刷ダイアログ） ===== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- JSON-LD 構造化データ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "家庭学習プリント生成",
+    "description": "家庭学習や個別学習に使える学習プリント自動作成ツール。助詞・50音・めいろなどを初級〜上級で生成。",
+    "applicationCategory": "EducationalApplication",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+    "inLanguage": "ja"
+  }
+  </script>
+</head>
+<body>
+
+<!-- ===== ヘッダー ===== -->
+<header class="site-header no-print">
+  <div class="header-inner">
+    <div class="header-logo">
+      <span class="logo-icon"><i class="fas fa-star"></i></span>
+      <span class="logo-text">家庭学習プリント生成</span>
+      <span class="plan-badge plan-badge--free" id="planBadge" title="有料プランでは追加機能が使えます">無料版利用中</span>
+    </div>
+    <nav class="header-nav">
+      <a href="#how-to-use" class="nav-link">使い方</a>
+      <a href="#generator" class="nav-link">プリント作成</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+      <a href="pricing.html" class="nav-link nav-link--sub">説明</a>
+      <a href="pricing.html" class="nav-link nav-link--pro">有料版</a>
+      <button type="button" class="nav-btn-premium" onclick="openPlanModal()">
+        <i class="fas fa-crown"></i> 機能
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== ヒーローセクション ===== -->
+<section class="hero-section no-print">
+  <div class="hero-inner">
+
+    <!-- 対象者バッジ -->
+    <div class="hero-badge"><i class="fas fa-chalkboard-teacher"></i> 家庭学習や個別学習に使えるプリント生成ツール</div>
+
+    <!-- キャッチコピー -->
+    <h1 class="hero-title">
+      教材づくりの時間を<br>
+      <span class="hero-accent">もっと短くできる</span>
+    </h1>
+
+    <!-- 一言説明 -->
+    <p class="hero-lead">プリントを選んで、ボタンを押すだけ。<br>それだけで完成します。</p>
+
+    <!-- 何ができるか：箇条書き -->
+    <ul class="hero-list">
+      <li><i class="fas fa-check"></i> 助詞・50音・めいろなど（＋有料でカスタム問題）</li>
+      <li><i class="fas fa-check"></i> 初級〜上級の3段階レベルで出題</li>
+      <li><i class="fas fa-check"></i> そのまま印刷 or PDF保存できる</li>
+      <li><i class="fas fa-check"></i> 登録なし・無料で今すぐ使える</li>
+    </ul>
+
+    <!-- 数字 -->
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="stat-num">7</span><span class="stat-label">モード</span></div>
+      <div class="hero-stat"><span class="stat-num">3</span><span class="stat-label">レベル設定</span></div>
+      <div class="hero-stat"><span class="stat-num">0円</span><span class="stat-label">完全無料</span></div>
+    </div>
+
+    <a href="#generator" class="hero-cta">
+      <i class="fas fa-magic"></i> さっそくプリントを作る
+    </a>
+  </div>
+</section>
+
+<!-- ===== 使い方セクション ===== -->
+<section class="section how-to-section no-print" id="how-to-use">
+  <div class="section-inner">
+
+    <!-- このツールは誰向け？ -->
+    <div class="for-whom-box">
+      <p class="for-whom-label">📌 こんな方におすすめ</p>
+      <ul class="for-whom-list">
+        <li>📚 毎週プリントを手作りしていて時間がかかる</li>
+        <li>🎯 お子さまの習熟度に合わせた教材が欲しい</li>
+        <li>🖨️ 作ったらすぐ印刷して学習に使いたい</li>
+        <li>💰 コストをかけずに教材を用意したい</li>
+      </ul>
+    </div>
+
+    <!-- 何ができる？ -->
+    <div class="section-label">WHAT YOU CAN DO</div>
+    <h2 class="section-title">このツールで<br class="sp-only">できること</h2>
+    <p class="section-sub">難しい操作はゼロ。<strong>3ステップ</strong>でプリントが完成します。</p>
+
+    <div class="steps-grid">
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <div class="how-step-icon">📝</div>
+        <h3 class="how-step-title">教科を選ぶ</h3>
+        <p class="how-step-desc">
+          7種類から選ぶだけ。<br>
+          ・助詞（は・を・に）<br>
+          ・五十音（ひらがな・カタカナ）<br>
+          ・めいろ／並び替え／文章問題 など<br>
+          ・カスタム問題（自分の単語・有料）
+        </p>
+      </div>
+      <div class="how-step-arrow"><i class="fas fa-chevron-right"></i></div>
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <div class="how-step-icon">🎯</div>
+        <h3 class="how-step-title">レベルを選ぶ</h3>
+        <p class="how-step-desc">
+          レベルに合わせて3段階。<br>
+          🌱 初級 → なぞり書き<br>
+          🌼 中級 → 3択問題<br>
+          🌟 上級 → 自由記述
+        </p>
+      </div>
+      <div class="how-step-arrow"><i class="fas fa-chevron-right"></i></div>
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <div class="how-step-icon">✅</div>
+        <h3 class="how-step-title">生成して完成</h3>
+        <p class="how-step-desc">
+          ボタン1回でA4プリント完成。<br>
+          🖨️ そのまま印刷<br>
+          📄 PDFで保存<br>
+          🔁 再生成で別パターンも
+        </p>
+      </div>
+    </div>
+
+    <!-- 機能一覧 -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">🆓</span>
+        <h3 class="feature-title">完全無料</h3>
+        <p class="feature-desc">登録不要・ログイン不要。<br>今すぐ使えます。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📱</span>
+        <h3 class="feature-title">スマホ対応</h3>
+        <p class="feature-desc">PC・タブレット・スマホ、<br>どれでも使えます。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔀</span>
+        <h3 class="feature-title">毎回ランダム</h3>
+        <p class="feature-desc">再生成するたびに<br>問題が変わります。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🖨️</span>
+        <h3 class="feature-title">印刷・PDF保存</h3>
+        <p class="feature-desc">A4で印刷、または<br>PDFで保存できます。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎓</span>
+        <h3 class="feature-title">3段階レベル</h3>
+        <p class="feature-desc">初級〜上級で<br>習熟度に合わせられます。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <h3 class="feature-title">1秒で完成</h3>
+        <p class="feature-desc">ボタンを押した瞬間に<br>プリントが完成します。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== プリント生成セクション ===== -->
+<!-- 注: セクション全体に no-print を付けない（プレビューが印刷・PDF対象から外れるため） -->
+<section class="section generator-section" id="generator">
+  <div class="section-inner">
+    <div class="section-label no-print">GENERATOR</div>
+    <h2 class="section-title no-print">プリントを作成する</h2>
+    <p class="free-plan-notice no-print" id="freePlanNotice">
+      無料版は10問まで・生成5回までです
+    </p>
+
+    <section class="control-panel no-print" id="controlPanel">
+
+      <!-- ステップ1 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-badge">STEP 1</span>
+          <h3 class="step-title">プリントの内容を選ぼう</h3>
+        </div>
+        <div class="option-grid option-grid--four" id="contentOptions">
+          <button class="option-btn content-btn active" data-value="joshi" aria-pressed="true">
+            <span class="option-icon">📝</span>
+            <span class="option-label">助詞</span>
+            <span class="option-desc">は・を・に・が など</span>
+          </button>
+          <button class="option-btn content-btn" data-value="hiragana" aria-pressed="false">
+            <span class="option-icon">🔤</span>
+            <span class="option-label">五十音</span>
+            <span class="option-desc">ひらがな・カタカナ</span>
+          </button>
+          <button class="option-btn content-btn" data-value="maze" aria-pressed="false">
+            <span class="option-icon">🧩</span>
+            <span class="option-label">めいろ</span>
+            <span class="option-desc">ランダム生成</span>
+          </button>
+          <button class="option-btn content-btn content-btn--trial" data-value="narabikae" aria-pressed="false">
+            <span class="option-icon">🔀</span>
+            <span class="option-label">並び替え</span>
+            <span class="option-desc">語句をならべて文を作る</span>
+            <span class="option-pro-badge">🔒有料（体験あり）</span>
+          </button>
+          <button type="button" class="option-btn content-btn content-btn--custom" data-value="maze_hiragana" aria-pressed="false" id="contentBtnMazeHiragana" title="有料版のみ">
+            <span class="option-icon">🧩</span>
+            <span class="option-label">ひらがな迷路</span>
+            <span class="option-desc">ことばを完成</span>
+            <span class="option-pro-badge">🔒有料</span>
+          </button>
+          <button class="option-btn content-btn content-btn--trial" data-value="sentence" aria-pressed="false">
+            <span class="option-icon">📚</span>
+            <span class="option-label">文章問題</span>
+            <span class="option-desc">どこで・だれが・なにを</span>
+            <span class="option-pro-badge">🔒有料（体験あり）</span>
+          </button>
+          <button type="button" class="option-btn content-btn content-btn--custom" data-value="custom" aria-pressed="false" id="contentBtnCustom" title="有料版のみ">
+            <span class="option-icon">✏️</span>
+            <span class="option-label">好きな単語（なぞり、視写）</span>
+            <span class="option-desc">自分で入れた単語で練習</span>
+            <span class="option-pro-badge">🔒有料</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ステップ2 -->
+      <div class="step-card" id="levelStepCard">
+        <div class="step-header">
+          <span class="step-badge">STEP 2</span>
+          <h3 class="step-title">レベルを選ぼう</h3>
+        </div>
+        <div class="option-grid" id="levelOptions">
+          <button class="option-btn level-btn active" data-value="beginner" aria-pressed="true">
+            <span class="option-icon">🌱</span>
+            <span class="option-label">初級</span>
+            <span class="option-desc">なぞり書き</span>
+          </button>
+          <button class="option-btn level-btn" data-value="intermediate" aria-pressed="false">
+            <span class="option-icon">🌼</span>
+            <span class="option-label">中級</span>
+            <span class="option-desc">選択問題</span>
+          </button>
+          <button class="option-btn level-btn level-btn--pro" data-value="advanced" aria-pressed="false">
+            <span class="option-icon">🌟</span>
+            <span class="option-label">上級</span>
+            <span class="option-desc">記述問題</span>
+            <span class="option-pro-badge">🔒有料</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="step-card" id="customModeStepCard" hidden>
+        <div class="step-header">
+          <span class="step-badge">STEP 2</span>
+          <h3 class="step-title">カスタム問題の形式</h3>
+        </div>
+        <div class="option-grid option-grid--custom-mode" id="customModeOptions">
+          <button type="button" class="option-btn custom-mode-btn active" data-value="trace" aria-pressed="true">
+            <span class="option-icon">✍️</span>
+            <span class="option-label">なぞり書き</span>
+            <span class="option-desc">薄い文字をなぞる</span>
+          </button>
+          <button type="button" class="option-btn custom-mode-btn" data-value="copy" aria-pressed="false">
+            <span class="option-icon">📝</span>
+            <span class="option-label">視写</span>
+            <span class="option-desc">見て書きうつす</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ステップ3 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-badge">STEP 3</span>
+          <h3 class="step-title">プリントの設定</h3>
+        </div>
+        <div class="settings-row">
+          <div class="setting-item">
+            <label for="questionCount" class="setting-label">
+              <i class="fas fa-list-ol"></i> 問題数
+            </label>
+            <select id="questionCount" class="setting-select">
+              <option value="4">4問</option>
+              <option value="6" selected>6問</option>
+              <option value="8">8問</option>
+              <option value="10">10問</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label for="studentName" class="setting-label">
+              <i class="fas fa-user"></i> 名前欄
+            </label>
+            <select id="studentName" class="setting-select">
+              <option value="yes" selected>あり</option>
+              <option value="no">なし</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label for="dateField" class="setting-label">
+              <i class="fas fa-calendar"></i> 日付欄
+            </label>
+            <select id="dateField" class="setting-select">
+              <option value="yes" selected>あり</option>
+              <option value="no">なし</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-row settings-row--katakana" id="katakanaToggleRow" hidden>
+          <div class="setting-item setting-item--full">
+            <label class="setting-label setting-label--checkbox" for="includeKatakana">
+              <input type="checkbox" id="includeKatakana" class="setting-checkbox" checked />
+              <span><i class="fas fa-font"></i> カタカナを含める（有料）</span>
+            </label>
+            <p class="setting-hint" id="katakanaToggleHint">オン：ひらがな＋カタカナ／オフ：ひらがなのみ</p>
+          </div>
+        </div>
+        <div class="settings-row settings-row--kana-mode" id="kanaModeRow" hidden>
+          <div class="setting-item setting-item--full">
+            <label for="kanaMode" class="setting-label">
+              <i class="fas fa-layer-group"></i> 五十音の出題モード
+            </label>
+            <select id="kanaMode" class="setting-select">
+              <option value="mix" selected>ミックス（ひらがな＋カタカナ）</option>
+              <option value="hiragana">ひらがなのみ</option>
+              <option value="katakana">カタカナのみ</option>
+            </select>
+            <p class="setting-hint" id="kanaModeHint">有料版で「カタカナを含める」をONにすると選べます。</p>
+          </div>
+        </div>
+        <div class="settings-row settings-row--custom" id="customWordRow" hidden>
+          <div class="setting-item setting-item--full">
+            <label for="customWord1" class="setting-label">
+              <i class="fas fa-pen"></i> カスタム問題の単語（最大8個）
+            </label>
+            <div id="customWordsList" class="custom-words-list"></div>
+            <button type="button" class="custom-add-btn" id="addCustomWordBtn">
+              <i class="fas fa-plus"></i> 単語を追加
+            </button>
+            <p class="setting-hint" id="customWordHint">1単語15文字まで。入力した単語はすべて問題に反映されます。</p>
+          </div>
+        </div>
+        <div class="settings-row settings-row--answer" id="answerSheetRow" hidden>
+          <div class="setting-item setting-item--full">
+            <label class="setting-label setting-label--checkbox" for="includeAnswersSheet">
+              <input type="checkbox" id="includeAnswersSheet" class="setting-checkbox" />
+              <span><i class="fas fa-key"></i> 解答ページを含める（印刷・PDFに解答一覧を追加）</span>
+            </label>
+            <p class="setting-hint">有料版のみ利用できます。</p>
+          </div>
+        </div>
+
+        <div class="one-click-row no-print" id="oneClickRow" hidden>
+          <button type="button" class="one-click-btn" id="oneClickGenerateBtn" onclick="runOneClickGenerate()">
+            <i class="fas fa-bolt"></i> ワンクリック自動生成
+          </button>
+          <p class="one-click-hint">内容・レベル・問題数を自動で選びます（有料版）</p>
+        </div>
+      </div>
+
+      <!-- 生成ボタン -->
+      <div class="generate-section">
+        <button type="button" class="generate-btn" id="generateBtn" onclick="generatePrint()">
+          <i class="fas fa-magic"></i>
+          <span>プリントを生成する</span>
+        </button>
+        <p class="generate-quota" id="freeGenQuota" hidden>
+          無料版の生成：残り 5 回（5回まで）
+        </p>
+        <p class="generate-katakana-note no-print" id="katakanaGenerateNote" hidden>
+          ※カタカナは有料版で利用できます
+        </p>
+        <p class="generate-note">
+          <i class="fas fa-info-circle"></i> もっと使うには有料版（上級・30問・解答付きなど）
+          <button type="button" class="link-btn" onclick="openPlanModal()">詳しく見る</button>
+        </p>
+        <div class="sentence-trial-notice no-print" id="sentenceTrialNotice" hidden>
+          <button type="button" class="sentence-trial-close" id="trialNoticeCloseBtn" aria-label="閉じる">×</button>
+          <p class="sentence-trial-title" id="trialNoticeTitle">本日の無料体験は終了しました。</p>
+          <p class="sentence-trial-sub" id="trialNoticeSub">この機能は有料プランで無制限に利用できます。</p>
+          <ul class="sentence-trial-list">
+            <li>すべての問題が無制限に使える</li>
+            <li>上級・文章問題・カスタム問題も解放</li>
+          </ul>
+          <button type="button" class="sentence-trial-btn" onclick="openPricingPage()">300円で使い放題</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- プリントプレビュー -->
+    <section class="preview-section print-target" id="previewSection" style="display:none;">
+      <div class="preview-controls no-print">
+        <h2 class="preview-title"><i class="fas fa-file-alt"></i> 生成されたプリント</h2>
+        <div class="preview-actions">
+          <button class="action-btn btn-regenerate" onclick="generatePrint()">
+            <i class="fas fa-sync-alt"></i> 再生成
+          </button>
+          <button class="action-btn btn-print" onclick="printSheet()">
+            <i class="fas fa-print"></i> 印刷
+          </button>
+          <button class="action-btn btn-pdf" onclick="savePDF()">
+            <i class="fas fa-file-pdf"></i> PDF保存
+          </button>
+        </div>
+      </div>
+      <div class="a4-wrapper print-area">
+        <div class="a4-sheet" id="printSheet"></div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- ===== 有料プランCTAバナー ===== -->
+<section class="plan-cta-section no-print">
+  <div class="plan-cta-inner">
+    <div class="plan-cta-left">
+      <span class="plan-cta-badge"><i class="fas fa-crown"></i> PRO PLAN</span>
+      <h2 class="plan-cta-title">もっとできることを増やしませんか？</h2>
+      <p class="plan-cta-desc">月額300円で、解答付き・最大30問・上級レベルまで。考えずにすぐ使える家庭学習プリントを。</p>
+    </div>
+    <div class="plan-cta-right plan-cta-buttons">
+      <button type="button" class="plan-cta-btn plan-cta-btn--secondary" onclick="openPricingPage()">
+        <i class="fas fa-file-alt"></i> 説明・料金を見る
+      </button>
+      <button type="button" class="plan-cta-btn" onclick="openProAppPage()">
+        <i class="fas fa-line"></i> LINEで有料版を申し込む
+      </button>
+      <button type="button" class="plan-cta-btn plan-cta-btn--ghost" onclick="openPlanModal()">
+        機能一覧
+      </button>
+      <p class="plan-cta-note">月額300円（税込表記は運用に合わせてください）</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQセクション ===== -->
+<section class="section faq-section no-print" id="faq">
+  <div class="section-inner">
+    <div class="section-label">FAQ</div>
+    <h2 class="section-title">よくある質問</h2>
+    <p class="section-sub">お気軽にご利用ください。ご不明な点はFAQをご確認ください。</p>
+
+    <div class="faq-list" id="faqList">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span><i class="fas fa-question-circle faq-icon"></i> 無料で使えますか？</span>
+          <i class="fas fa-chevron-down faq-arrow"></i>
+        </button>
+        <div class="faq-a">
+          はい、基本機能は<strong>完全無料</strong>でご利用いただけます（1日5回まで生成可能）。登録やログインも不要です。有料プランでは回数制限なし・最大30問・上級レベル・解答付きなどがお使いいただけます。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span><i class="fas fa-question-circle faq-icon"></i> スマホでも使えますか？</span>
+          <i class="fas fa-chevron-down faq-arrow"></i>
+        </button>
+        <div class="faq-a">
+          はい、スマートフォン・タブレット・PCのすべてに対応しています。外出先からでもプリント作成が可能です。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span><i class="fas fa-question-circle faq-icon"></i> 問題の内容は毎回変わりますか？</span>
+          <i class="fas fa-chevron-down faq-arrow"></i>
+        </button>
+        <div class="faq-a">
+          はい、「再生成」ボタンを押すたびにランダムに問題が変わります。同じ内容・レベルでも毎回異なるプリントを作成できます。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span><i class="fas fa-question-circle faq-icon"></i> PDFで保存できますか？</span>
+          <i class="fas fa-chevron-down faq-arrow"></i>
+        </button>
+        <div class="faq-a">
+          はい、「PDF保存」ボタンでA4サイズのPDFをダウンロードできます。保存したPDFはいつでも印刷できます。また、ブラウザの印刷機能（Ctrl+P）からも「PDFに保存」が選べます。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span><i class="fas fa-question-circle faq-icon"></i> 対応している教科・内容を教えてください</span>
+          <i class="fas fa-chevron-down faq-arrow"></i>
+        </button>
+        <div class="faq-a">
+          「助詞」「五十音」「めいろ」など7モードに対応しています。無料は1日5回・最大10問まで。有料プランでは最大30問・上級レベル・解答付きプリントなどがご利用いただけます。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span><i class="fas fa-question-circle faq-icon"></i> 商用利用・学校での配布はできますか？</span>
+          <i class="fas fa-chevron-down faq-arrow"></i>
+        </button>
+        <div class="faq-a">
+          生成したプリントは学校・教育機関での使用（印刷・配布）が可能です。生成データの再配布・販売はご遠慮ください。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span><i class="fas fa-question-circle faq-icon"></i> 有料プランはどんな機能が増えますか？</span>
+          <i class="fas fa-chevron-down faq-arrow"></i>
+        </button>
+        <div class="faq-a">
+          有料プランでは①回数制限なし②最大30問③上級レベル④解答付きプリント⑤カスタム単語などがご利用いただけます。詳しくは「有料プランの詳細」ページをご覧ください。
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== フッター ===== -->
+<footer class="site-footer no-print">
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-icon"><i class="fas fa-star"></i></span>
+      <span>家庭学習プリント生成</span>
+    </div>
+    <p class="footer-desc">家庭学習プリント生成｜学習プリント自動作成ツール</p>
+    <div class="footer-links">
+      <a href="#how-to-use">使い方</a>
+      <a href="#generator">プリント作成</a>
+      <a href="#faq">FAQ</a>
+      <a href="pricing.html">有料プランの説明</a>
+      <a href="https://lin.ee/QrdTzUH" target="_blank" rel="noopener noreferrer" class="footer-link-pro">有料版を申し込む</a>
+    </div>
+    <p class="footer-copy">© 2026 家庭学習プリント生成　制作：あなたの名前</p>
+  </div>
+</footer>
+
+<!-- ===== ローディング ===== -->
+<div class="loading-overlay no-print" id="loadingOverlay" style="display:none;">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <p>プリントを生成しています…</p>
+  </div>
+</div>
+
+<!-- ===== 有料プランモーダル ===== -->
+<div class="modal-overlay no-print" id="planModal" onclick="closePlanModalOutside(event)">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <!-- モーダルヘッダー（固定） -->
+    <div class="modal-header">
+      <div>
+        <span class="modal-badge"><i class="fas fa-crown"></i> PRO PLAN</span>
+        <h2 class="modal-title" id="modalTitle">有料版のご案内</h2>
+      </div>
+      <button class="modal-close" onclick="closePlanModal()" aria-label="閉じる">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- モーダル本体（スクロール可能） -->
+    <div class="modal-body">
+      <p class="plan-modal-context" id="planModalContext" hidden></p>
+
+      <div class="plan-modal-pitch" data-modal-panel="pitch">
+        <h3 class="plan-pitch-title" id="planPitchHeading">有料版でできること</h3>
+        <ul class="plan-pitch-list">
+          <li>カスタム問題（自分の単語でプリント）が使える</li>
+          <li>※カタカナは有料版で利用できます</li>
+          <li>上級レベルが使える</li>
+          <li>15問／20問／25問／30問が選べる（＋4問から）</li>
+          <li>解答付きプリントが使える</li>
+          <li>問題生成回数が無制限</li>
+          <li>ワンクリック自動生成が使える</li>
+        </ul>
+        <p class="plan-pitch-line">有料版のお申し込みはLINEから</p>
+        <button type="button" class="plan-line-btn" onclick="openLineSignup()">
+          <i class="fab fa-line"></i> LINEでお申し込み・お問い合わせ
+        </button>
+        <p class="modal-note modal-note--soft">※ 料金・比較は <a href="pricing.html">有料プランの説明ページ</a>。利用開始はLINE登録後にご案内します。</p>
+      </div>
+
+      <div class="plan-modal-active-pro" data-modal-panel="pro-active" hidden>
+        <p class="plan-active-lead"><i class="fas fa-check-circle"></i> 有料プランをご利用中です</p>
+        <ul class="plan-pitch-list">
+          <li>全機能がお使いいただけます</li>
+        </ul>
+        <p class="modal-note modal-note--soft">ご不明点は LINE からお問い合わせください。</p>
+        <button type="button" class="plan-line-btn plan-line-btn--ghost" onclick="openLineSignup()">
+          <i class="fab fa-line"></i> LINEを開く
+        </button>
+      </div>
+    </div><!-- /modal-body -->
+
+    <!-- モーダルフッター（固定） -->
+    <div class="modal-footer modal-footer--plan">
+      <button type="button" class="modal-close-btn" onclick="closePlanModal()">閉じる</button>
+      <button type="button" class="modal-detail-btn" onclick="openPricingPage()">
+        <i class="fas fa-file-alt"></i> 有料プランの詳細を見る
+      </button>
+      <button type="button" class="modal-pro-app-btn" onclick="openProAppPage()">
+        <i class="fas fa-line"></i> LINEで有料版を申し込む
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/data/sortQuestionData.js"></script>
+<script src="js/sortQuestionGenerator.js"></script>
+<script src="js/data.js"></script>
+<script src="js/generator.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
