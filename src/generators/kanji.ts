@@ -91,7 +91,7 @@ function htmlWritingBeginner(sentence: string, char: string, yomi: string): stri
 function htmlWritingAdvanced(sentence: string, char: string, yomi: string): string {
   const p = splitAtTarget(sentence, char);
   if (!p) return esc(sentence);
-  return `${esc(p.before)}<span class="kanji-stack kanji-stack--writing-adv" lang="ja"><span class="kanji-stack__yomi-read kanji-stack__yomi-read--writing">${esc(yomi)}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji kanji-stack__bottom--primary">${esc(char)}</span><span class="kanji-stack__masu-row kanji-stack__masu-row--write"><span class="kanji-masu kanji-masu--kanji" aria-hidden="true"></span></span></span>${esc(p.after)}`;
+  return `${esc(p.before)}<span class="kanji-stack kanji-stack--writing-adv" lang="ja"><span class="kanji-stack__yomi-read kanji-stack__yomi-read--writing">${esc(yomi)}</span><span class="kanji-stack__masu-row kanji-stack__masu-row--write"><span class="kanji-blank-square" aria-hidden="true"></span></span></span>${esc(p.after)}`;
 }
 
 function questionCard(num: number, inner: string): string {

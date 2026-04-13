@@ -577,7 +577,8 @@ function kanjiHtmlWritingBeginner(sentence, char, yomi) {
 function kanjiHtmlWritingAdvanced(sentence, char, yomi) {
   const p = kanjiSplitAtTarget(sentence, char);
   if (!p) return escapeHtmlPrint(sentence);
-  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack kanji-stack--writing-adv" lang="ja"><span class="kanji-stack__yomi-read kanji-stack__yomi-read--writing">${escapeHtmlPrint(yomi)}</span><span class="kanji-stack__bottom kanji-stack__bottom--kanji kanji-stack__bottom--primary">${escapeHtmlPrint(char)}</span><span class="kanji-stack__masu-row kanji-stack__masu-row--write"><span class="kanji-masu kanji-masu--kanji" aria-hidden="true"></span></span></span>${escapeHtmlPrint(p.after)}`;
+  void char;
+  return `${escapeHtmlPrint(p.before)}<span class="kanji-stack kanji-stack--writing-adv" lang="ja"><span class="kanji-stack__yomi-read kanji-stack__yomi-read--writing">${escapeHtmlPrint(yomi)}</span><span class="kanji-stack__masu-row kanji-stack__masu-row--write"><span class="kanji-blank-square" aria-hidden="true"></span></span></span>${escapeHtmlPrint(p.after)}`;
 }
 
 function buildKanjiReadingSentence(entry, sentence, reading, pool, level) {
@@ -810,10 +811,12 @@ function buildJoshiAdvanced(count, _cw) {
   const data  = pickRandom(APP_DATA.joshi.advanced, count);
   const answers = data.map((q) => q.answer || '');
   const cards = data.map((q, i) => {
+    const sentence = escapeHtmlPrint(q.sentence).replace(
+      '（　）',
+      '<span class="joshi-inline-blank" aria-hidden="true">（　　　）</span>'
+    );
     const inner = `
-      <div class="desc-sentence">${q.sentence}</div>
-      <div class="hint-line">ヒント：${q.hint}</div>
-      <div class="answer-line"></div>`;
+      <div class="desc-sentence">${sentence}</div>`;
     return questionCard(i + 1, inner);
   });
   return { cardHtmls: cards, answers };

@@ -1230,6 +1230,19 @@ select.setting-select--locked {
 .kanji-stack__masu-row--write {
   margin-top: 0.06em;
 }
+/* 漢字上級（書き）：中が真っ白の四角い記入欄 */
+.kanji-blank-square {
+  box-sizing: border-box;
+  display: inline-block;
+  width: clamp(56px, 15vw, 72px);
+  height: clamp(56px, 15vw, 72px);
+  min-width: 56px;
+  min-height: 56px;
+  border: 2px solid #333333;
+  border-radius: 4px;
+  background: #ffffff;
+  flex-shrink: 0;
+}
 /* 書字マス：白地・濃い枠・十字（ぼかし・透明・影・opacity 不使用） */
 .kanji-masu--kanji {
   box-sizing: border-box;
@@ -1287,6 +1300,13 @@ select.setting-select--locked {
 /* 書き・初級：なぞり漢字を大きく、（よみ）を小さく */
 .kanji-stack__top--trace:has(+ .kanji-stack__bottom--slot) {
   font-size: 1.12em;
+}
+.question.joshi .joshi-inline-blank {
+  display: inline-block;
+  min-width: 4.8em;
+  text-align: center;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 .kanji-drill-target {
   font-weight: 900;
@@ -2807,8 +2827,20 @@ body.lp-pricing-page {
     font-size: 6.5pt !important;
     color: #888888 !important;
   }
+  .question-card .joshi-inline-blank {
+    min-width: 4.6em !important;
+    letter-spacing: 0.08em !important;
+  }
   .question-card .kanji-stack__bottom--kanji.kanji-stack__bottom--primary {
     font-size: 12.5pt !important;
+  }
+  .question-card .kanji-blank-square {
+    width: 16mm !important;
+    height: 16mm !important;
+    min-width: 16mm !important;
+    min-height: 16mm !important;
+    border: 1.2pt solid #333333 !important;
+    background: #ffffff !important;
   }
   .question-card .kanji-masu--kanji {
     width: 16mm !important;
@@ -3269,6 +3301,11 @@ body.lp-pricing-page {
   background: #ffffff !important;
   border: 2px solid #333333 !important;
 }
+.pdf-capturing .kanji-blank-square {
+  box-sizing: border-box !important;
+  background: #ffffff !important;
+  border: 2px solid #333333 !important;
+}
 .pdf-capturing .kanji-masu--kanji::before,
 .pdf-capturing .kanji-masu--kanji::after {
   background: #333333 !important;
@@ -3318,6 +3355,10 @@ body.pdf-mobile-capture .hira-write::after {
   background: none !important;
 }
 body.pdf-mobile-capture .kanji-masu--kanji {
+  background: #ffffff !important;
+  border-color: #333333 !important;
+}
+body.pdf-mobile-capture .kanji-blank-square {
   background: #ffffff !important;
   border-color: #333333 !important;
 }
