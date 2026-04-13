@@ -95,7 +95,7 @@ function htmlWritingAdvanced(sentence: string, char: string, yomi: string): stri
 }
 
 function questionCard(num: number, inner: string): string {
-  return `<div class="question-card">
+  return `<div class="question-card question kanji">
     <div class="question-num">${num}</div>
     <div class="question-card-content">${inner}</div>
   </div>`;
@@ -116,7 +116,7 @@ function buildReading(
 
   if (difficulty === 'beginner') {
     const marked = htmlReadingBeginner(sentence, entry.char, reading);
-    const inner = `<div class="${lineClass}">${marked}</div>`;
+    const inner = `<div class="kanji-wrap"><div class="${lineClass}">${marked}</div></div>`;
     return { html: inner, answer: reading, format: formatKey('beginner', 'reading') };
   }
 
@@ -130,17 +130,17 @@ function buildReading(
       .slice(0, 3);
     const choices = shuffle([answer, ...wrong]).slice(0, 4);
     const choicesHtml = choices.map((c) => `<span class="choice-item">${esc(c)}</span>`).join('');
-    const inner = `${line}
+    const inner = `<div class="kanji-wrap">${line}
       <div class="emoji-question-prompt">「${esc(entry.char)}」の よみかたは どれですか。</div>
       <div class="choices-row">
         <span class="choice-label">こたえ：</span>
         ${choicesHtml}
-      </div>`;
+      </div></div>`;
     return { html: inner, answer, choices, format: formatKey('intermediate', 'reading') };
   }
 
   const marked = htmlReadingAdvanced(sentence, entry.char, reading);
-  const inner = `<div class="${lineClass}">${marked}</div>`;
+  const inner = `<div class="kanji-wrap"><div class="${lineClass}">${marked}</div></div>`;
   return { html: inner, answer: reading, format: formatKey('advanced', 'reading') };
 }
 
@@ -155,7 +155,7 @@ function buildWriting(
 
   if (difficulty === 'beginner') {
     const marked = htmlWritingBeginner(sentence, entry.char, reading);
-    const inner = `<div class="${lineClass}">${marked}</div>`;
+    const inner = `<div class="kanji-wrap"><div class="${lineClass}">${marked}</div></div>`;
     return { html: inner, answer: entry.char, format: formatKey('beginner', 'writing') };
   }
 
@@ -169,17 +169,17 @@ function buildWriting(
       .slice(0, 3);
     const choices = shuffle([answer, ...wrong]).slice(0, 4);
     const choicesHtml = choices.map((c) => `<span class="choice-item">${esc(c)}</span>`).join('');
-    const inner = `${line}
+    const inner = `<div class="kanji-wrap">${line}
       <div class="emoji-question-prompt">（　）に 入る かんじは どれですか。</div>
       <div class="choices-row">
         <span class="choice-label">こたえ：</span>
         ${choicesHtml}
-      </div>`;
+      </div></div>`;
     return { html: inner, answer, choices, format: formatKey('intermediate', 'writing') };
   }
 
   const marked = htmlWritingAdvanced(sentence, entry.char, reading);
-  const inner = `<div class="${lineClass}">${marked}</div>`;
+  const inner = `<div class="kanji-wrap"><div class="${lineClass}">${marked}</div></div>`;
   return { html: inner, answer: entry.char, format: formatKey('advanced', 'writing') };
 }
 

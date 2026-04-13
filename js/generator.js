@@ -585,7 +585,7 @@ function buildKanjiReadingSentence(entry, sentence, reading, pool, level) {
 
   if (level === 'beginner') {
     const marked = kanjiHtmlReadingBeginner(sentence, entry.char, reading);
-    const inner = `<div class="${lineClass}">${marked}</div>`;
+    const inner = `<div class="kanji-wrap"><div class="${lineClass}">${marked}</div></div>`;
     return { html: inner, answer: reading };
   }
 
@@ -599,17 +599,17 @@ function buildKanjiReadingSentence(entry, sentence, reading, pool, level) {
       .slice(0, 3);
     const choices = shuffle([answer, ...wrong]).slice(0, 4);
     const choicesHtml = choices.map((c) => `<span class="choice-item">${escapeHtmlPrint(c)}</span>`).join('');
-    const inner = `${line}
+    const inner = `<div class="kanji-wrap">${line}
       <div class="emoji-question-prompt">「${escapeHtmlPrint(entry.char)}」の よみかたは どれですか。</div>
       <div class="choices-row">
         <span class="choice-label">こたえ：</span>
         ${choicesHtml}
-      </div>`;
+      </div></div>`;
     return { html: inner, answer };
   }
 
   const marked = kanjiHtmlReadingAdvanced(sentence, entry.char, reading);
-  const inner = `<div class="${lineClass}">${marked}</div>`;
+  const inner = `<div class="kanji-wrap"><div class="${lineClass}">${marked}</div></div>`;
   return { html: inner, answer: reading };
 }
 
@@ -618,7 +618,7 @@ function buildKanjiWritingSentence(entry, sentence, reading, pool, level) {
 
   if (level === 'beginner') {
     const marked = kanjiHtmlWritingBeginner(sentence, entry.char, reading);
-    const inner = `<div class="${lineClass}">${marked}</div>`;
+    const inner = `<div class="kanji-wrap"><div class="${lineClass}">${marked}</div></div>`;
     return { html: inner, answer: entry.char };
   }
 
@@ -632,17 +632,17 @@ function buildKanjiWritingSentence(entry, sentence, reading, pool, level) {
       .slice(0, 3);
     const choices = shuffle([answer, ...wrong]).slice(0, 4);
     const choicesHtml = choices.map((c) => `<span class="choice-item">${escapeHtmlPrint(c)}</span>`).join('');
-    const inner = `${line}
+    const inner = `<div class="kanji-wrap">${line}
       <div class="emoji-question-prompt">（　）に 入る かんじは どれですか。</div>
       <div class="choices-row">
         <span class="choice-label">こたえ：</span>
         ${choicesHtml}
-      </div>`;
+      </div></div>`;
     return { html: inner, answer };
   }
 
   const marked = kanjiHtmlWritingAdvanced(sentence, entry.char, reading);
-  const inner = `<div class="${lineClass}">${marked}</div>`;
+  const inner = `<div class="kanji-wrap"><div class="${lineClass}">${marked}</div></div>`;
   return { html: inner, answer: entry.char };
 }
 
@@ -679,6 +679,28 @@ function buildKanjiByLevel(count, customPayload, _allowKatakana, _kanaMode, leve
    問題本体ビルダー（コンテンツ×レベル）
 ───────────────────────────────────────────── */
 function buildQuestionBodyStructured(content, level, count, customPayload, allowKatakana, kanaMode) {
+  const genreClassMap = {
+    joshi: 'joshi',
+    hiragana: 'hiragana',
+    maze: 'maze',
+    maze_hiragana: 'maze-hiragana',
+    sentence: 'sentence',
+    narabikae: 'narabikae',
+    kanji: 'kanji',
+    custom: 'custom',
+  };
+  function withGenreClass(result, genreKey) {
+    const genreClass = genreClassMap[genreKey] || String(genreKey || '').replace(/_/g, '-');
+    if (!result || !Array.isArray(result.cardHtmls)) return result;
+    return {
+      ...result,
+      cardHtmls: result.cardHtmls.map((html) => {
+        if (html.includes(` question ${genreClass}`)) return html;
+        return html.replace('class="question-card question"', `class="question-card question ${genreClass}"`);
+      }),
+    };
+  }
+
   if (content === 'custom') {
     const words = Array.isArray(customPayload?.words)
       ? customPayload.words
@@ -689,12 +711,13 @@ function buildQuestionBodyStructured(content, level, count, customPayload, allow
     if (!words.length) {
       return { cardHtmls: [], answers: [] };
     }
-    return mode === 'copy'
+    const built = mode === 'copy'
       ? buildCustomCopy(count, words)
       : buildCustomTrace(count, words);
+    return withGenreClass(built, content);
   }
   if (content === 'maze_hiragana') {
-    return buildHiraganaMazeByLevel(count, '', false, 'mix', level, 'all');
+    return withGenreClass(buildHiraganaMazeByLevel(count, '', false, 'mix', level, 'all'), content);
   }
   const builders = {
     joshi: {
@@ -733,7 +756,8 @@ function buildQuestionBodyStructured(content, level, count, customPayload, allow
       advanced: buildKanjiByLevel,
     },
   };
-  return builders[content][level](count, customPayload || '', !!allowKatakana, kanaMode || 'mix', level);
+  const built = builders[content][level](count, customPayload || '', !!allowKatakana, kanaMode || 'mix', level);
+  return withGenreClass(built, content);
 }
 
 /** @deprecated 直接は使わず buildQuestionBodyStructured を優先 */
@@ -949,7 +973,7 @@ function buildCustomCopy(count, words) {
 
 /* ── 共通：問題カード ── */
 function questionCard(num, innerHtml) {
-  return `<div class="question-card">
+  return `<div class="question-card question">
     <div class="question-num">${num}</div>
     <div class="question-card-content">${innerHtml}</div>
   </div>`;
