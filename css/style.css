@@ -1281,16 +1281,16 @@ select.setting-select--locked {
 }
 .kanji-stack__bottom--kanji {
   font-weight: 900;
-  font-size: inherit;
-  line-height: 1.35;
+  font-size: 1em;
+  line-height: 1.32;
   text-decoration: underline;
   text-underline-offset: 0.14em;
   text-decoration-thickness: 2px;
   text-align: center;
 }
 .kanji-stack__bottom--kanji.kanji-stack__bottom--primary {
-  font-size: 1.38em;
-  line-height: 1.2;
+  font-size: 1.08em;
+  line-height: 1.24;
   text-decoration: none;
 }
 .kanji-stack__bottom--slot {
@@ -2835,7 +2835,8 @@ body.lp-pricing-page {
     letter-spacing: 0.08em !important;
   }
   .question-card .kanji-stack__bottom--kanji.kanji-stack__bottom--primary {
-    font-size: 12.5pt !important;
+    font-size: 10.8pt !important;
+    line-height: 1.22 !important;
   }
   .question-card .kanji-blank-square {
     width: 16mm !important;

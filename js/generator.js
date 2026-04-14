@@ -199,7 +199,7 @@ const PRINT_CARD_COUNT_PRESETS = {
   joshi: {
     beginner: { first: 7, rest: 8 },
     intermediate: { first: 7, rest: 8 },
-    advanced: { first: 5, rest: 6 },
+    advanced: { first: 6, rest: 6 },
   },
   hiragana: {
     beginner: { first: 4, rest: 5 },
@@ -208,24 +208,24 @@ const PRINT_CARD_COUNT_PRESETS = {
   },
   kanji: {
     reading: {
-      beginner: { first: 6, rest: 7 },
+      beginner: { first: 7, rest: 7 },
       intermediate: { first: 6, rest: 7 },
       advanced: { first: 5, rest: 6 },
     },
     writing: {
       beginner: { first: 5, rest: 6 },
       intermediate: { first: 5, rest: 6 },
-      advanced: { first: 4, rest: 5 },
+      advanced: { first: 4, rest: 4 },
     },
   },
   sentence: {
     beginner: { first: 5, rest: 6 },
     intermediate: { first: 4, rest: 5 },
-    advanced: { first: 3, rest: 4 },
+    advanced: { first: 4, rest: 4 },
   },
   narabikae: {
     beginner: { first: 4, rest: 5 },
-    intermediate: { first: 4, rest: 5 },
+    intermediate: { first: 5, rest: 5 },
     advanced: { first: 3, rest: 4 },
   },
   custom: {
@@ -236,7 +236,7 @@ const PRINT_CARD_COUNT_PRESETS = {
   maze: {
     beginner: { first: 2, rest: 2 },
     intermediate: { first: 2, rest: 2 },
-    advanced: { first: 2, rest: 2 },
+    advanced: { first: 1, rest: 2 },
   },
   maze_hiragana: {
     beginner: { first: 2, rest: 2 },
