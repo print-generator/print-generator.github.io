@@ -1067,8 +1067,10 @@ select.setting-select--locked {
   min-height: auto;
 }
 .question.kanji p {
-  font-size: 22px;
+  font-size: 28px;
   line-height: 1.2;
+  display: flex;
+  align-items: center;
   margin: 0;
 }
 .question.kanji .kanji-box,
@@ -1083,13 +1085,12 @@ select.setting-select--locked {
 }
 .question.kanji ruby {
   font-size: 1em;
-  line-height: 1.3;
-  ruby-align: center;
 }
 .question.kanji rt {
   font-size: 0.5em;
-  line-height: 1;
-  letter-spacing: 0.01em;
+}
+.question.kanji .question-card-content {
+  gap: 6px;
 }
 
 @media (max-width: 768px) {
@@ -3360,8 +3361,17 @@ body.lp-pricing-page {
   padding: 1pt 3pt !important;
   margin-bottom: 0.25mm !important;
 }
+.pdf-capturing .question.kanji p {
+  font-size: 28px !important;
+  line-height: 1.2 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.pdf-capturing .question.kanji ruby {
+  font-size: 1em !important;
+}
 .pdf-capturing .question.kanji .question-card-content {
-  gap: 0.8mm !important;
+  gap: 6px !important;
 }
 .pdf-capturing .question.kanji .kanji-stack__bottom--kanji {
   font-size: 1em !important;
@@ -3370,6 +3380,12 @@ body.lp-pricing-page {
 .pdf-capturing .question.kanji rt {
   font-size: 0.5em !important;
   line-height: 1 !important;
+}
+.pdf-capturing .question.kanji .kanji-box,
+.pdf-capturing .question.kanji .kanji-blank-square,
+.pdf-capturing .question.kanji .kanji-masu--kanji {
+  width: 40px !important;
+  height: 40px !important;
 }
 .pdf-capturing .question-num {
   background: #f97316 !important;
@@ -3461,8 +3477,17 @@ body.pdf-mobile-capture .question.kanji {
   padding: 1pt 3pt !important;
   margin-bottom: 0.25mm !important;
 }
+body.pdf-mobile-capture .question.kanji p {
+  font-size: 28px !important;
+  line-height: 1.2 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+body.pdf-mobile-capture .question.kanji ruby {
+  font-size: 1em !important;
+}
 body.pdf-mobile-capture .question.kanji .question-card-content {
-  gap: 0.8mm !important;
+  gap: 6px !important;
 }
 body.pdf-mobile-capture .question.kanji .choice-sentence,
 body.pdf-mobile-capture .question.kanji .desc-sentence,
@@ -3481,10 +3506,10 @@ body.pdf-mobile-capture .question.kanji rt {
 body.pdf-mobile-capture .question.kanji .kanji-box,
 body.pdf-mobile-capture .question.kanji .kanji-blank-square,
 body.pdf-mobile-capture .question.kanji .kanji-masu--kanji {
-  width: 38px !important;
-  height: 38px !important;
-  min-width: 38px !important;
-  min-height: 38px !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
 }
 body.pdf-mobile-capture .kanji-masu--kanji::before,
 body.pdf-mobile-capture .kanji-masu--kanji::after {
