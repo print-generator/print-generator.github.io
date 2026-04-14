@@ -175,10 +175,17 @@ function generatePrintHTML(content, level, count, showName, showDate, customPayl
     result = buildQuestionBodyStructured(content, level, count, customPayload, !!allowKatakana, kanaMode || 'mix');
   }
   const { cardHtmls, answers } = result;
-  const chunks = usesFirstFourRestFiveLayout(content)
-    ? chunkCardsFirstPageRest(cardHtmls, 5, 5)
-    : chunkCardsForPrint(cardHtmls, getCardsPerPage(content, level));
   const continuationStrip = buildPrintContinuationStrip(meta);
+  const pagePlan = resolvePrintCardsPerPagePlan(
+    content,
+    level,
+    customPayload || {},
+    cardHtmls,
+    header,
+    instr,
+    continuationStrip
+  );
+  const chunks = chunkCardsFirstPageRest(cardHtmls, pagePlan.first, pagePlan.rest);
   const withAnswers = !!includeAnswers && answers.length > 0;
 
   let html = wrapPrintPagesHtml(chunks, header, instr, continuationStrip, footer, !withAnswers, cardHtmls.length, content);
@@ -186,6 +193,147 @@ function generatePrintHTML(content, level, count, showName, showDate, customPayl
     html += wrapAnswerPagesHtml(answers, meta, footer);
   }
   return html;
+}
+
+const PRINT_CARD_COUNT_PRESETS = {
+  joshi: {
+    beginner: { first: 7, rest: 8 },
+    intermediate: { first: 7, rest: 8 },
+    advanced: { first: 5, rest: 6 },
+  },
+  hiragana: {
+    beginner: { first: 4, rest: 5 },
+    intermediate: { first: 6, rest: 7 },
+    advanced: { first: 5, rest: 6 },
+  },
+  kanji: {
+    reading: {
+      beginner: { first: 6, rest: 7 },
+      intermediate: { first: 6, rest: 7 },
+      advanced: { first: 5, rest: 6 },
+    },
+    writing: {
+      beginner: { first: 5, rest: 6 },
+      intermediate: { first: 5, rest: 6 },
+      advanced: { first: 4, rest: 5 },
+    },
+  },
+  sentence: {
+    beginner: { first: 5, rest: 6 },
+    intermediate: { first: 4, rest: 5 },
+    advanced: { first: 3, rest: 4 },
+  },
+  narabikae: {
+    beginner: { first: 4, rest: 5 },
+    intermediate: { first: 4, rest: 5 },
+    advanced: { first: 3, rest: 4 },
+  },
+  custom: {
+    beginner: { first: 6, rest: 7 },
+    intermediate: { first: 5, rest: 6 },
+    advanced: { first: 4, rest: 5 },
+  },
+  maze: {
+    beginner: { first: 2, rest: 2 },
+    intermediate: { first: 2, rest: 2 },
+    advanced: { first: 2, rest: 2 },
+  },
+  maze_hiragana: {
+    beginner: { first: 2, rest: 2 },
+    intermediate: { first: 2, rest: 2 },
+    advanced: { first: 2, rest: 2 },
+  },
+};
+
+function getPresetCardsPerPage(content, level, customPayload) {
+  if (content === 'kanji') {
+    const mode = customPayload && customPayload.kanjiMode === 'writing' ? 'writing' : 'reading';
+    return PRINT_CARD_COUNT_PRESETS.kanji[mode][level] || { first: 5, rest: 6 };
+  }
+  const byGenre = PRINT_CARD_COUNT_PRESETS[content];
+  if (!byGenre) return { first: 5, rest: 6 };
+  return byGenre[level] || { first: 5, rest: 6 };
+}
+
+function clampCardsPerPage(v, min, max) {
+  return Math.max(min, Math.min(max, v | 0));
+}
+
+function tryAutoMeasureCardsPerPage(cardHtmls, header, instr, continuationStrip, preset) {
+  if (typeof document === 'undefined' || !cardHtmls || !cardHtmls.length) return null;
+  const host = document.createElement('div');
+  host.style.position = 'fixed';
+  host.style.left = '-99999px';
+  host.style.top = '0';
+  host.style.width = '210mm';
+  host.style.visibility = 'hidden';
+  host.style.pointerEvents = 'none';
+  host.style.zIndex = '-1';
+
+  const pageBase = document.createElement('div');
+  pageBase.className = 'a4-sheet';
+  pageBase.style.width = '210mm';
+  pageBase.style.minHeight = '297mm';
+  pageBase.style.boxSizing = 'border-box';
+  pageBase.style.padding = '3mm 4mm';
+  pageBase.style.background = '#fff';
+  pageBase.style.fontFamily = 'Noto Sans JP, sans-serif';
+
+  const firstPage = pageBase.cloneNode(false);
+  firstPage.innerHTML = `${header}${instr}<div class="questions-grid"></div>`;
+  const firstGrid = firstPage.querySelector('.questions-grid');
+
+  const restPage = pageBase.cloneNode(false);
+  restPage.innerHTML = `${continuationStrip}<div class="questions-grid"></div>`;
+  const restGrid = restPage.querySelector('.questions-grid');
+
+  host.appendChild(firstPage);
+  host.appendChild(restPage);
+  document.body.appendChild(host);
+
+  try {
+    if (!firstGrid || !restGrid) return null;
+    const sampleCount = Math.min(cardHtmls.length, 12);
+    const heights = [];
+    for (let i = 0; i < sampleCount; i++) {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = cardHtmls[i];
+      const card = wrap.firstElementChild;
+      if (!card) continue;
+      firstGrid.appendChild(card);
+      const h = card.getBoundingClientRect().height;
+      heights.push(h);
+      firstGrid.removeChild(card);
+    }
+    if (!heights.length) return null;
+    const avgHeight = heights.reduce((a, b) => a + b, 0) / heights.length;
+    const cardGapPx = 2.2;
+    const reserveFooterPx = 28;
+
+    const firstAvail = firstPage.getBoundingClientRect().height - firstGrid.getBoundingClientRect().top + firstPage.getBoundingClientRect().top - reserveFooterPx;
+    const restAvail = restPage.getBoundingClientRect().height - restGrid.getBoundingClientRect().top + restPage.getBoundingClientRect().top - reserveFooterPx;
+
+    const firstFit = Math.floor((firstAvail + cardGapPx) / (avgHeight + cardGapPx));
+    const restFit = Math.floor((restAvail + cardGapPx) / (avgHeight + cardGapPx));
+    return {
+      first: clampCardsPerPage(firstFit, Math.max(2, preset.first - 1), preset.first + 2),
+      rest: clampCardsPerPage(restFit, Math.max(2, preset.rest - 1), preset.rest + 2),
+    };
+  } catch (e) {
+    return null;
+  } finally {
+    if (host.parentNode) host.parentNode.removeChild(host);
+  }
+}
+
+function resolvePrintCardsPerPagePlan(content, level, customPayload, cardHtmls, header, instr, continuationStrip) {
+  const preset = getPresetCardsPerPage(content, level, customPayload);
+  const auto = tryAutoMeasureCardsPerPage(cardHtmls, header, instr, continuationStrip, preset);
+  if (!auto) return preset;
+  return {
+    first: auto.first || preset.first,
+    rest: auto.rest || preset.rest,
+  };
 }
 
 function escapeHtmlPrint(s) {
@@ -244,25 +392,21 @@ function usesFirstFourRestFiveLayout(content) {
 
 /**
  * 各ページの問題数の配列（PDF分割・枚数確認と同一仕様）
- * @returns {number[]} 例: 12問 → [5,5,2]
+ * level/customPayload 未指定時は中級基準の既定値を使う（後方互換）。
  */
-function getPrintPageChunkSizes(totalCards, content) {
+function getPrintPageChunkSizes(totalCards, content, level, customPayload) {
   const n = Math.max(0, totalCards | 0);
   if (n === 0) return [];
-  if (!usesFirstFourRestFiveLayout(content)) {
-    const per = 2; /* めいろ・ひらがな迷路のみこの分岐（1ページ2問） */
-    const sizes = [];
-    for (let i = 0; i < n; ) {
-      const sz = Math.min(per, n - i);
-      sizes.push(sz);
-      i += sz;
-    }
-    return sizes;
-  }
+  const lv = level || 'intermediate';
+  const plan = getPresetCardsPerPage(content, lv, customPayload || {});
   const sizes = [];
-  let remaining = n;
+  const first = Math.max(1, plan.first | 0);
+  const rest = Math.max(1, plan.rest | 0);
+  const firstSize = Math.min(first, n);
+  sizes.push(firstSize);
+  let remaining = n - firstSize;
   while (remaining > 0) {
-    const sz = Math.min(5, remaining);
+    const sz = Math.min(rest, remaining);
     sizes.push(sz);
     remaining -= sz;
   }
