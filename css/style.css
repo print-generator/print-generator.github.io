@@ -1062,13 +1062,13 @@ select.setting-select--locked {
 .question.narabikae {}
 .question.custom {}
 .question.kanji {
-  padding: 8px 12px;
-  margin-bottom: 8px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
   min-height: auto;
 }
 .question.kanji p {
-  font-size: 28px;
-  line-height: 1.2;
+  font-size: 30px;
+  line-height: 1.18;
   display: flex;
   align-items: center;
   margin: 0;
@@ -1088,9 +1088,10 @@ select.setting-select--locked {
 }
 .question.kanji rt {
   font-size: 0.5em;
+  line-height: 1;
 }
 .question.kanji .question-card-content {
-  gap: 6px;
+  gap: 4px;
 }
 
 @media (max-width: 768px) {
@@ -3358,12 +3359,12 @@ body.lp-pricing-page {
   line-height: 1.18 !important;
 }
 .pdf-capturing .question.kanji {
-  padding: 1pt 3pt !important;
-  margin-bottom: 0.25mm !important;
+  padding: 0.8pt 2.6pt !important;
+  margin-bottom: 0.2mm !important;
 }
 .pdf-capturing .question.kanji p {
-  font-size: 28px !important;
-  line-height: 1.2 !important;
+  font-size: 30px !important;
+  line-height: 1.18 !important;
   display: flex !important;
   align-items: center !important;
 }
@@ -3371,7 +3372,7 @@ body.lp-pricing-page {
   font-size: 1em !important;
 }
 .pdf-capturing .question.kanji .question-card-content {
-  gap: 6px !important;
+  gap: 4px !important;
 }
 .pdf-capturing .question.kanji .kanji-stack__bottom--kanji {
   font-size: 1em !important;
@@ -3474,12 +3475,12 @@ body.pdf-mobile-capture .kanji-blank-square {
   border-color: #333333 !important;
 }
 body.pdf-mobile-capture .question.kanji {
-  padding: 1pt 3pt !important;
-  margin-bottom: 0.25mm !important;
+  padding: 0.8pt 2.6pt !important;
+  margin-bottom: 0.2mm !important;
 }
 body.pdf-mobile-capture .question.kanji p {
-  font-size: 28px !important;
-  line-height: 1.2 !important;
+  font-size: 30px !important;
+  line-height: 1.18 !important;
   display: flex !important;
   align-items: center !important;
 }
@@ -3487,7 +3488,7 @@ body.pdf-mobile-capture .question.kanji ruby {
   font-size: 1em !important;
 }
 body.pdf-mobile-capture .question.kanji .question-card-content {
-  gap: 6px !important;
+  gap: 4px !important;
 }
 body.pdf-mobile-capture .question.kanji .choice-sentence,
 body.pdf-mobile-capture .question.kanji .desc-sentence,

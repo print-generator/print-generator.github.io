@@ -208,14 +208,14 @@ const PRINT_CARD_COUNT_PRESETS = {
   },
   kanji: {
     reading: {
-      beginner: { first: 7, rest: 7 },
-      intermediate: { first: 6, rest: 7 },
-      advanced: { first: 5, rest: 6 },
+      beginner: { first: 8, rest: 9 },
+      intermediate: { first: 8, rest: 9 },
+      advanced: { first: 7, rest: 8 },
     },
     writing: {
-      beginner: { first: 5, rest: 6 },
-      intermediate: { first: 5, rest: 6 },
-      advanced: { first: 4, rest: 4 },
+      beginner: { first: 7, rest: 8 },
+      intermediate: { first: 7, rest: 8 },
+      advanced: { first: 6, rest: 7 },
     },
   },
   sentence: {
