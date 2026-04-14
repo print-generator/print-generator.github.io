@@ -53,28 +53,28 @@ export const kanjiGrade2SampleRows: KanjiGradeSourceRow[] = [
     { sentence: 'きれいな 絵です', reading: 'え' },
   ]},
   { grade: 2, kanji: '活', entries: [
-    { sentence: '活どうを します', reading: 'かつ' },
-    { sentence: '活やくしました', reading: 'かつ' },
+    { sentence: '活どうを がんばります', reading: 'かつ' },
+    { sentence: '活どうの じかんです', reading: 'かつ' },
   ]},
   { grade: 2, kanji: '汽', entries: [
     { sentence: '汽しゃが はしります', reading: 'き' },
     { sentence: '汽てきが なりました', reading: 'き' },
   ]},
   { grade: 2, kanji: '計', entries: [
-    { sentence: '計かくを たてます', reading: 'けい' },
-    { sentence: '計さんが はやいです', reading: 'けい' },
+    { sentence: '計さんを します', reading: 'けい' },
+    { sentence: '計さんが とくいです', reading: 'けい' },
   ]},
   { grade: 2, kanji: '元', entries: [
-    { sentence: '元から あそびます', reading: 'げん' },
-    { sentence: '元の ばしょに もどります', reading: 'げん' },
+    { sentence: '元どおりに ならべます', reading: 'もと' },
+    { sentence: '元の ばしょへ もどります', reading: 'もと' },
   ]},
   { grade: 2, kanji: '語', entries: [
-    { sentence: 'えい語を よみます', reading: 'ご' },
-    { sentence: '語くを ふやします', reading: 'ご' },
+    { sentence: 'えい語を べんきょうします', reading: 'ご' },
+    { sentence: '語いを ふやします', reading: 'ご' },
   ]},
   { grade: 2, kanji: '工', entries: [
-    { sentence: '工ふうして つくります', reading: 'く' },
-    { sentence: 'くふう工さくを します', reading: 'く' },
+    { sentence: '工ふうして あそびます', reading: 'く' },
+    { sentence: '工ふうして かんがえます', reading: 'く' },
   ]},
   { grade: 2, kanji: '公', entries: [
     { sentence: '公えんで あそびます', reading: 'こう' },
@@ -109,8 +109,8 @@ export const kanjiGrade2SampleRows: KanjiGradeSourceRow[] = [
     { sentence: '今は やすみじかんです', reading: 'いま' },
   ]},
   { grade: 2, kanji: '才', entries: [
+    { sentence: 'ろく才です', reading: 'さい' },
     { sentence: 'なな才です', reading: 'さい' },
-    { sentence: 'はち才に なりました', reading: 'さい' },
   ]},
   { grade: 2, kanji: '細', entries: [
     { sentence: '細い みちです', reading: 'ほそ' },

@@ -1183,6 +1183,8 @@ select.setting-select--locked {
   color: #d4a574;
   font-weight: 800;
   letter-spacing: 0.04em;
+  font-size: 0.94em;
+  line-height: 1.45;
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
@@ -1319,7 +1321,8 @@ select.setting-select--locked {
   margin-top: 10px;
 }
 .kanji-yomi-trace .trace-target {
-  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-size: clamp(1.22rem, 3.9vw, 1.78rem);
+  line-height: 1.45;
   min-width: 3.5em;
   padding: 4px 8px;
 }
@@ -2856,6 +2859,8 @@ body.lp-pricing-page {
   }
   .question-card .kanji-stack__top--trace {
     color: #b8956a !important;
+    font-size: 9.5pt !important;
+    line-height: 1.22 !important;
   }
 
   .question-card .hint-line {

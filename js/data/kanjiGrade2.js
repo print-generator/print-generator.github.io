@@ -49,28 +49,28 @@
       { sentence: 'きれいな 絵です', reading: 'え' },
     ]},
     { char: '活', grade: 2, entries: [
-      { sentence: '活どうを します', reading: 'かつ' },
-      { sentence: '活やくしました', reading: 'かつ' },
+      { sentence: '活どうを がんばります', reading: 'かつ' },
+      { sentence: '活どうの じかんです', reading: 'かつ' },
     ]},
     { char: '汽', grade: 2, entries: [
       { sentence: '汽しゃが はしります', reading: 'き' },
       { sentence: '汽てきが なりました', reading: 'き' },
     ]},
     { char: '計', grade: 2, entries: [
-      { sentence: '計かくを たてます', reading: 'けい' },
-      { sentence: '計さんが はやいです', reading: 'けい' },
+      { sentence: '計さんを します', reading: 'けい' },
+      { sentence: '計さんが とくいです', reading: 'けい' },
     ]},
     { char: '元', grade: 2, entries: [
-      { sentence: '元から あそびます', reading: 'げん' },
-      { sentence: '元の ばしょに もどります', reading: 'げん' },
+      { sentence: '元どおりに ならべます', reading: 'もと' },
+      { sentence: '元の ばしょへ もどります', reading: 'もと' },
     ]},
     { char: '語', grade: 2, entries: [
-      { sentence: 'えい語を よみます', reading: 'ご' },
-      { sentence: '語くを ふやします', reading: 'ご' },
+      { sentence: 'えい語を べんきょうします', reading: 'ご' },
+      { sentence: '語いを ふやします', reading: 'ご' },
     ]},
     { char: '工', grade: 2, entries: [
-      { sentence: '工ふうして つくります', reading: 'く' },
-      { sentence: 'くふう工さくを します', reading: 'く' },
+      { sentence: '工ふうして あそびます', reading: 'く' },
+      { sentence: '工ふうして かんがえます', reading: 'く' },
     ]},
     { char: '公', grade: 2, entries: [
       { sentence: '公えんで あそびます', reading: 'こう' },
@@ -105,8 +105,8 @@
       { sentence: '今は やすみじかんです', reading: 'いま' },
     ]},
     { char: '才', grade: 2, entries: [
+      { sentence: 'ろく才です', reading: 'さい' },
       { sentence: 'なな才です', reading: 'さい' },
-      { sentence: 'はち才に なりました', reading: 'さい' },
     ]},
     { char: '細', grade: 2, entries: [
       { sentence: '細い みちです', reading: 'ほそ' },
