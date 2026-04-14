@@ -472,11 +472,16 @@ function buildPrintContinuationStrip(meta) {
 }
 
 /* ====================================================
-   漢字（データ: js/data/kanjiGrade1.js → src/data/kanji/kanjiGrade1.ts と同期）
+   漢字（データ: js/data/kanjiGrade*.js → src/data/kanji/kanjiGrade*.ts と同期）
    短文1題・difficulty×kanjiMode（src/generators/kanji.ts と同ロジック）
    ==================================================== */
-function getKanjiPool(grade) {
+function getKanjiPool(grade, mode) {
   const g = typeof globalThis !== 'undefined' ? globalThis : {};
+  const m = mode === 'writing' ? 'writing' : 'reading';
+  if (g.KANJI_GRADE_CATALOG && g.KANJI_GRADE_CATALOG[grade]) {
+    const byMode = g.KANJI_GRADE_CATALOG[grade][m];
+    if (Array.isArray(byMode)) return byMode;
+  }
   if (grade === 1 && Array.isArray(g.KANJI_GRADE_1)) return g.KANJI_GRADE_1;
   return [];
 }
@@ -650,7 +655,7 @@ function buildKanjiWritingSentence(entry, sentence, reading, pool, level) {
 function buildKanjiByLevel(count, customPayload, _allowKatakana, _kanaMode, level) {
   const grade = customPayload && customPayload.kanjiGrade != null ? Number(customPayload.kanjiGrade) : 1;
   const mode = customPayload && customPayload.kanjiMode === 'writing' ? 'writing' : 'reading';
-  const pool = getKanjiPool(grade);
+  const pool = getKanjiPool(grade, mode);
   if (!pool.length) return { cardHtmls: [], answers: [] };
   const data = pickRandom(pool, count);
   const diff = level || 'beginner';

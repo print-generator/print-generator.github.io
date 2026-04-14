@@ -321,5 +321,12 @@
       { sentence: 'これは すうじの 六 です。', reading: 'ろく' },
     ]},
   ];
+
+  /* 学年×用途（読み／書き）で管理できる拡張カタログ。 */
+  g.KANJI_GRADE_CATALOG = g.KANJI_GRADE_CATALOG || {};
+  g.KANJI_GRADE_CATALOG[1] = {
+    reading: g.KANJI_GRADE_1,
+    writing: g.KANJI_GRADE_1,
+  };
 })(typeof window !== 'undefined' ? window : globalThis);
 

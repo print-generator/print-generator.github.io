@@ -19,3 +19,12 @@ export interface KanjiEntry {
   grade: KanjiGrade;
   entries: KanjiSentenceEntry[];
 }
+
+/** 学年ごとの用途別プール（読み／書き） */
+export interface KanjiGradeModePool {
+  reading: KanjiEntry[];
+  writing: KanjiEntry[];
+}
+
+/** 1〜6年の学年別カタログ */
+export type KanjiGradeCatalog = Partial<Record<KanjiGrade, KanjiGradeModePool>>;

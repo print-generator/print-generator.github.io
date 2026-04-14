@@ -1,5 +1,5 @@
 import type { Difficulty, GenerateOptions, KanjiGrade, KanjiMode, Problem } from '../types';
-import { getKanjiPool } from '../data/kanji/pools';
+import { getKanjiPoolByMode } from '../data/kanji/pools';
 import { resolveKanjiContextReading } from '../data/kanji/numeralReadings';
 import type { KanjiEntry, KanjiSentenceEntry } from '../data/kanji/types';
 
@@ -18,10 +18,6 @@ function shuffle<T>(arr: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
-}
-
-function poolForGrade(grade: KanjiGrade): KanjiEntry[] {
-  return getKanjiPool(grade);
 }
 
 function pickRandom<T>(arr: T[], n: number): T[] {
@@ -190,7 +186,7 @@ export function generateKanji(options: GenerateOptions): Problem[] {
   const grade = (options.kanjiGrade ?? 1) as KanjiGrade;
   const mode = (options.kanjiMode ?? 'reading') as KanjiMode;
   const difficulty = options.difficulty;
-  const pool = poolForGrade(grade);
+  const pool = getKanjiPoolByMode(grade, mode);
   const n = Math.max(1, options.questionCount | 0);
   const picked = pickRandom(pool, n);
   if (!picked.length) return [];
