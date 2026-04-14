@@ -2722,7 +2722,7 @@ body.lp-pricing-page {
     min-width: 0 !important;
     min-height: 0 !important;
     /* 用紙余白は @page に任せ、シート内は軽い内側余白（1ページ5問を収めるためやや詰める） */
-    padding: 3mm 4mm !important;
+    padding: 2.2mm 3mm !important;
     margin: 0 auto !important;
     box-shadow: none !important;
     border-radius: 0 !important;
@@ -2805,26 +2805,26 @@ body.lp-pricing-page {
     page-break-inside: avoid !important;
     -webkit-column-break-inside: avoid !important;
     border: 1.5pt solid #dadce0 !important;
-    padding: 1.2pt 3.2pt !important;
+    padding: 0.8pt 2.4pt !important;
     overflow: visible !important;
   }
   .questions-grid .question-card:not(:last-child) {
-    margin-bottom: 0.35mm !important;
+    margin-bottom: 0.2mm !important;
   }
   .print-page--cards-5 .question-card {
-    padding: 1pt 2.8pt !important;
+    padding: 0.7pt 2.1pt !important;
   }
   .print-page--cards-5 .question-card:not(:last-child) {
-    margin-bottom: 0.3mm !important;
+    margin-bottom: 0.18mm !important;
   }
   .question-card-content {
     display: flex !important;
     flex-direction: column !important;
-    gap: 1.1mm !important;
+    gap: 0.7mm !important;
     min-width: 0 !important;
   }
   .print-page--cards-5 .question-card-content {
-    gap: 0.8mm !important;
+    gap: 0.55mm !important;
   }
   .maze-svg {
     min-height: 84mm !important;
@@ -2901,7 +2901,7 @@ body.lp-pricing-page {
 
   .question-card .choice-sentence,
   .question-card .desc-sentence {
-    margin-bottom: 0.5pt !important;
+    margin-bottom: 0.25pt !important;
     font-size: 9.5pt !important;
     line-height: 1.18 !important;
   }
@@ -2963,7 +2963,7 @@ body.lp-pricing-page {
     font-size: 7.4pt !important;
     line-height: 1.25 !important;
     color: #5f6368 !important;
-    margin-bottom: 3pt !important;
+    margin-bottom: 2pt !important;
   }
 
   .question-card .trace-area {
@@ -2973,11 +2973,11 @@ body.lp-pricing-page {
   }
 
   .question-card .trace-second-row {
-    margin-top: 1pt !important;
+    margin-top: 0.6pt !important;
   }
 
   .question-card .choices-row {
-    gap: 1.5pt !important;
+    gap: 1pt !important;
   }
 
   .question-card .choice-item {
@@ -2995,21 +2995,43 @@ body.lp-pricing-page {
   }
 
   .question-card .emoji-question-prompt {
-    margin-bottom: 2pt !important;
+    margin-bottom: 1pt !important;
     line-height: 1.16 !important;
   }
 
   .question-card .adv-prompt {
-    margin-bottom: 3pt !important;
+    margin-bottom: 2pt !important;
   }
 
   .question-card .adv-prompt-sub {
-    margin-bottom: 3pt !important;
+    margin-bottom: 2pt !important;
     line-height: 1.2 !important;
   }
   .answer-line {
     height: 20px !important;
-    margin-top: 2px !important;
+    margin-top: 1px !important;
+  }
+
+  /* 上級ジャンル別：さらに縦密度を上げる（可読性は維持） */
+  .question.joshi .advanced-compact--joshi,
+  .question.sentence .advanced-compact--sentence,
+  .question.narabikae .advanced-compact--narabikae {
+    gap: 0.45mm !important;
+  }
+  .question.joshi .advanced-compact--joshi .desc-sentence,
+  .question.sentence .advanced-compact--sentence .choice-sentence,
+  .question.narabikae .advanced-compact--narabikae .emoji-question-prompt {
+    margin-bottom: 0 !important;
+    line-height: 1.14 !important;
+  }
+  .question.sentence .advanced-compact--sentence .answer-line,
+  .question.narabikae .advanced-compact--narabikae .answer-line {
+    height: 16px !important;
+    margin-top: 0 !important;
+  }
+  .question.narabikae .advanced-compact--narabikae .adv-prompt-sub {
+    margin-bottom: 1pt !important;
+    line-height: 1.15 !important;
   }
 
   /* 問題数が多いプリント向け：やや小さめ（ページ分割とは独立した微調整） */
@@ -3378,13 +3400,13 @@ body.lp-pricing-page {
   print-color-adjust: exact !important;
 }
 .pdf-capturing .question-card {
-  padding: 1.2pt 3.2pt !important;
+  padding: 0.8pt 2.4pt !important;
 }
 .pdf-capturing .questions-grid .question-card:not(:last-child) {
-  margin-bottom: 0.35mm !important;
+  margin-bottom: 0.2mm !important;
 }
 .pdf-capturing .question-card-content {
-  gap: 1.1mm !important;
+  gap: 0.7mm !important;
 }
 .pdf-capturing .question-card .choice-sentence,
 .pdf-capturing .question-card .desc-sentence {
@@ -3392,8 +3414,8 @@ body.lp-pricing-page {
   line-height: 1.18 !important;
 }
 .pdf-capturing .question.kanji {
-  padding: 0.8pt 2.6pt !important;
-  margin-bottom: 0.2mm !important;
+  padding: 0.6pt 2pt !important;
+  margin-bottom: 0.15mm !important;
 }
 .pdf-capturing .question.kanji p {
   font-size: 30px !important;
@@ -3526,8 +3548,8 @@ body.pdf-mobile-capture .kanji-blank-square {
   border-color: #333333 !important;
 }
 body.pdf-mobile-capture .question.kanji {
-  padding: 0.8pt 2.6pt !important;
-  margin-bottom: 0.2mm !important;
+  padding: 0.6pt 2pt !important;
+  margin-bottom: 0.15mm !important;
 }
 body.pdf-mobile-capture .question.kanji p {
   font-size: 30px !important;
