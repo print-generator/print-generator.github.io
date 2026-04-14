@@ -159,11 +159,6 @@ function generatePrintHTML(content, level, count, showName, showDate, customPayl
   const meta   = buildMeta(content, level);
   const header = buildPrintHeader(meta, showName, showDate);
   const instr  = buildInstruction(meta);
-  const footer = `<div class="print-footer">
-    <span>家庭学習プリント工房｜学習プリント自動作成ツール</span>
-    <span>${today()}</span>
-  </div>`;
-
   const lastSig = readLastPrintSig();
   let result = buildQuestionBodyStructured(content, level, count, customPayload, !!allowKatakana, kanaMode || 'mix');
   for (let attempt = 0; attempt < 24; attempt++) {
@@ -176,16 +171,16 @@ function generatePrintHTML(content, level, count, showName, showDate, customPayl
   }
   const { cardHtmls, answers } = result;
   const continuationStrip = buildPrintContinuationStrip(meta);
-  const pagePlan = resolvePrintCardsPerPagePlan(
+  const footer = `<div class="print-footer">
+    <span>家庭学習プリント工房｜学習プリント自動作成ツール</span>
+    <span>${today()}</span>
+  </div>`;
+  const sizes = measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, footer, {
     content,
     level,
-    customPayload || {},
-    cardHtmls,
-    header,
-    instr,
-    continuationStrip
-  );
-  const chunks = chunkCardsFirstPageRest(cardHtmls, pagePlan.first, pagePlan.rest);
+    customPayload: customPayload || {},
+  });
+  const chunks = chunkCardsBySizes(cardHtmls, sizes);
   const withAnswers = !!includeAnswers && answers.length > 0;
 
   let html = wrapPrintPagesHtml(chunks, header, instr, continuationStrip, footer, !withAnswers, cardHtmls.length, content);
@@ -255,85 +250,396 @@ function getPresetCardsPerPage(content, level, customPayload) {
   return byGenre[level] || { first: 5, rest: 6 };
 }
 
-function clampCardsPerPage(v, min, max) {
-  return Math.max(min, Math.min(max, v | 0));
+/**
+ * A4 縦・@page margin 12mm 想定の「印字可能領域の高さ」（273mm）を px で取得する。
+ */
+function getPrintableHeightLimitPx(host) {
+  const ruler = document.createElement('div');
+  ruler.style.cssText = 'position:absolute;left:0;top:0;height:273mm;width:1px;visibility:hidden;pointer-events:none;';
+  host.appendChild(ruler);
+  const h = ruler.getBoundingClientRect().height;
+  host.removeChild(ruler);
+  return h > 8 ? h : 0;
 }
 
-function tryAutoMeasureCardsPerPage(cardHtmls, header, instr, continuationStrip, preset) {
-  if (typeof document === 'undefined' || !cardHtmls || !cardHtmls.length) return null;
+/**
+ * プレビュー（#printSheet）と同じ祖先構造で測定用シートをぶら下げる。
+ * クラスだけを合わせ、インラインの幅・パディングは付けない（style.css の .a4-sheet と一致）。
+ */
+function appendPreviewLikeMeasureRoot(host, ctx) {
+  const content = (ctx && ctx.content) || '';
+  const wrapper = document.createElement('div');
+  wrapper.className = 'a4-wrapper print-area';
+  const sheet = document.createElement('div');
+  sheet.className = 'a4-sheet';
+  if (content === 'maze' || content === 'maze_hiragana') {
+    sheet.classList.add('a4-sheet--maze');
+  }
+  wrapper.appendChild(sheet);
+  host.appendChild(wrapper);
+  return { wrapper, sheet };
+}
+
+/** プレビュー出力と同系の .print-page クラス（total は wrapPrintPagesHtml の print-page--total-N に合わせる） */
+function buildPackMeterPrintPageClass(ctx, isFirstPage, totalQuestions) {
+  const content = (ctx && ctx.content) || '';
+  const n = Math.max(1, totalQuestions | 0);
+  const parts = ['print-page', isFirstPage ? 'print-page--first' : 'print-page--continuation'];
+  if (content === 'maze' || content === 'maze_hiragana') {
+    parts.push('print-page--maze');
+  }
+  parts.push(`print-page--total-${n}`);
+  return parts.join(' ');
+}
+
+/**
+ * 連続 len 枚（cardHtmls[start .. start+len-1]）だけを1ページ相当に載せたときの .questions-grid の scrollHeight。
+ * wrapPrintPagesHtml と同じ `print-page--cards-{len}` を付与する（5問ページの .print-page--cards-5 詰めを反映）。
+ */
+function measureSegmentStackPx(
+  host,
+  cardHtmls,
+  ctx,
+  start,
+  len,
+  useFirstTemplate,
+  header,
+  instr,
+  continuationStrip
+) {
+  if (!len) return 0;
+  const { wrapper, sheet } = appendPreviewLikeMeasureRoot(host, ctx);
+  const base = buildPackMeterPrintPageClass(ctx, useFirstTemplate, (ctx && ctx.totalQuestions) || 1);
+  const page = document.createElement('div');
+  page.className = `${base} print-page--cards-${len}`.trim();
+  const before = useFirstTemplate ? `${header}${instr}` : `${continuationStrip}`;
+  page.innerHTML = `${before}<div class="questions-grid"></div>`;
+  const grid = page.querySelector('.questions-grid');
+  sheet.appendChild(page);
+  const n = cardHtmls.length;
+  for (let i = 0; i < len; i++) {
+    const idx = start + i;
+    if (idx < 0 || idx >= n) continue;
+    const w = document.createElement('div');
+    w.innerHTML = cardHtmls[idx];
+    const card = w.firstElementChild;
+    if (card) grid.appendChild(card);
+  }
+  void wrapper.offsetHeight;
+  const h = grid.scrollHeight;
+  host.removeChild(wrapper);
+  return h;
+}
+
+/**
+ * 接頭辞差分ではなく「そのページ枚数 L の print-page--cards-L」付きで区間高さを測り、貪欲に分割する。
+ * メモで同一 (s,len,first) は1回だけ DOM を組む。
+ */
+function greedyPrintPackFromSegments(
+  host,
+  cardHtmls,
+  ctxMeasure,
+  header,
+  instr,
+  continuationStrip,
+  roomFirstOpen,
+  roomFirstClosed,
+  roomRestOpen,
+  roomRestClosed,
+  safetyPx,
+  debug
+) {
+  const n = cardHtmls.length;
+  const memo = new Map();
+  function spanFor(s, len) {
+    if (len <= 0) return 0;
+    const useFirst = s === 0;
+    const key = `${s}|${len}|${useFirst ? 1 : 0}`;
+    if (memo.has(key)) return memo.get(key);
+    const h = measureSegmentStackPx(
+      host,
+      cardHtmls,
+      ctxMeasure,
+      s,
+      len,
+      useFirst,
+      header,
+      instr,
+      continuationStrip
+    );
+    memo.set(key, h);
+    return h;
+  }
+
+  const sizes = [];
+  let s = 0;
+  let isFirstPage = true;
+  while (s < n) {
+    let e = s;
+    while (e < n) {
+      const nextE = e + 1;
+      const len = nextE - s;
+      const span = spanFor(s, len);
+      const remAfter = n - nextE;
+      const room =
+        remAfter === 0
+          ? isFirstPage
+            ? roomFirstClosed
+            : roomRestClosed
+          : isFirstPage
+            ? roomFirstOpen
+            : roomRestOpen;
+      if (span <= room - safetyPx) {
+        e = nextE;
+      } else {
+        if (debug && remAfter > 0 && span <= room && span > room - safetyPx) {
+          console.warn('[printPackDebug] segment: next chunk fits ROOM but blocked by safety only', {
+            page: sizes.length + 1,
+            isFirstPage,
+            start0: s,
+            len,
+            spanPx: Math.round(span * 100) / 100,
+            roomPx: Math.round(room * 100) / 100,
+            safetyPx,
+          });
+        }
+        if (debug && remAfter > 0 && span > room && span <= room + 2.5) {
+          console.warn('[printPackDebug] segment: slightly over ROOM', {
+            page: sizes.length + 1,
+            isFirstPage,
+            len,
+            spanPx: Math.round(span * 100) / 100,
+            roomPx: Math.round(room * 100) / 100,
+            safetyPx,
+          });
+        }
+        break;
+      }
+    }
+    if (e === s) {
+      e = s + 1;
+    }
+    sizes.push(e - s);
+    isFirstPage = false;
+    s = e;
+  }
+  return sizes;
+}
+
+/**
+ * ヘッダー＋空グリッド（＋任意でフッター）までの外装高さと空グリッド高さを測る。
+ */
+function measurePrintPageShell(host, ctx, isFirstPage, beforeGridHtml, withFooter, footerHtml) {
+  const { wrapper, sheet } = appendPreviewLikeMeasureRoot(host, ctx);
+  const totalQ = (ctx && ctx.totalQuestions) || 1;
+  const page = document.createElement('div');
+  page.className = buildPackMeterPrintPageClass(ctx, isFirstPage, totalQ);
+  page.innerHTML = `${beforeGridHtml}<div class="questions-grid"></div>${withFooter ? footerHtml : ''}`;
+  const grid = page.querySelector('.questions-grid');
+  sheet.appendChild(page);
+  void wrapper.offsetHeight;
+  const g0 = grid.getBoundingClientRect().height;
+  const baseAssembly = sheet.getBoundingClientRect().height;
+  host.removeChild(wrapper);
+  return { g0, baseAssembly };
+}
+
+/**
+ * グリッドに収められるカード列の最大の縦幅（px）。
+ * ROOM = H_LIMIT - (固定部分の高さ) + (空グリッドが占めていた分) + epsilonPx
+ * epsilonPx … scrollHeight / 小数丸めと印刷時の微差を吸収（過大にしない程度）
+ */
+function computePrintGridRoomPx(H_LIMIT, baseAssembly, g0, epsilonPx) {
+  const eps = Number.isFinite(epsilonPx) ? epsilonPx : 0;
+  return H_LIMIT - baseAssembly + g0 + eps;
+}
+
+/**
+ * 問題カード HTML を「実測高さの合計が 1 枚に収まるところ」で分割するための各ページ枚数配列。
+ * document が無い・測定失敗時は従来のジャンル別プリセット（first/rest）にフォールバック。
+ */
+function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, footerHtml, ctx) {
+  const n = cardHtmls.length;
+  if (!n) return [];
+  if (typeof document === 'undefined') {
+    return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload);
+  }
+
   const host = document.createElement('div');
-  host.style.position = 'fixed';
-  host.style.left = '-99999px';
-  host.style.top = '0';
-  host.style.width = '210mm';
-  host.style.visibility = 'hidden';
-  host.style.pointerEvents = 'none';
-  host.style.zIndex = '-1';
+  host.setAttribute('data-print-pack-meter', '1');
+  host.setAttribute('aria-hidden', 'true');
+  /* 幅はプレビューと同じ 186mm 相当になるよう確保（中の .a4-sheet は max-width:100% のため） */
+  host.style.cssText =
+    'position:fixed;left:-9999px;top:0;width:186mm;min-width:186mm;max-width:186mm;height:auto;overflow:visible;pointer-events:none;z-index:-1;opacity:0;visibility:hidden;';
 
-  const pageBase = document.createElement('div');
-  pageBase.className = 'a4-sheet';
-  pageBase.style.width = '210mm';
-  pageBase.style.minHeight = '297mm';
-  pageBase.style.boxSizing = 'border-box';
-  pageBase.style.padding = '3mm 4mm';
-  pageBase.style.background = '#fff';
-  pageBase.style.fontFamily = 'Noto Sans JP, sans-serif';
-
-  const firstPage = pageBase.cloneNode(false);
-  firstPage.innerHTML = `${header}${instr}<div class="questions-grid"></div>`;
-  const firstGrid = firstPage.querySelector('.questions-grid');
-
-  const restPage = pageBase.cloneNode(false);
-  restPage.innerHTML = `${continuationStrip}<div class="questions-grid"></div>`;
-  const restGrid = restPage.querySelector('.questions-grid');
-
-  host.appendChild(firstPage);
-  host.appendChild(restPage);
-  document.body.appendChild(host);
+  const SAFETY = 1.5;
+  /* 測定と実描画の小数差のみ。意図的に ROOM を大きくしない */
+  const ROOM_ROUND_EPS = 0.5;
+  const debug =
+    typeof localStorage !== 'undefined' &&
+    localStorage.getItem('printPackDebug') === '1';
 
   try {
-    if (!firstGrid || !restGrid) return null;
-    const sampleCount = Math.min(cardHtmls.length, 12);
-    const heights = [];
-    for (let i = 0; i < sampleCount; i++) {
-      const wrap = document.createElement('div');
-      wrap.innerHTML = cardHtmls[i];
-      const card = wrap.firstElementChild;
-      if (!card) continue;
-      firstGrid.appendChild(card);
-      const h = card.getBoundingClientRect().height;
-      heights.push(h);
-      firstGrid.removeChild(card);
+    document.body.appendChild(host);
+    const H_LIMIT = getPrintableHeightLimitPx(host);
+    if (!H_LIMIT) {
+      return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload);
     }
-    if (!heights.length) return null;
-    const avgHeight = heights.reduce((a, b) => a + b, 0) / heights.length;
-    const cardGapPx = 2.2;
-    const reserveFooterPx = 28;
 
-    const firstAvail = firstPage.getBoundingClientRect().height - firstGrid.getBoundingClientRect().top + firstPage.getBoundingClientRect().top - reserveFooterPx;
-    const restAvail = restPage.getBoundingClientRect().height - restGrid.getBoundingClientRect().top + restPage.getBoundingClientRect().top - reserveFooterPx;
-
-    const firstFit = Math.floor((firstAvail + cardGapPx) / (avgHeight + cardGapPx));
-    const restFit = Math.floor((restAvail + cardGapPx) / (avgHeight + cardGapPx));
-    return {
-      first: clampCardsPerPage(firstFit, Math.max(2, preset.first - 1), preset.first + 1),
-      rest: clampCardsPerPage(restFit, Math.max(2, preset.rest - 1), preset.rest + 1),
+    const ctxMeasure = {
+      content: ctx.content,
+      level: ctx.level,
+      customPayload: ctx.customPayload,
+      totalQuestions: n,
     };
+
+    const shFirstOpen = measurePrintPageShell(host, ctxMeasure, true, `${header}${instr}`, false, footerHtml);
+    const shFirstClosed = measurePrintPageShell(host, ctxMeasure, true, `${header}${instr}`, true, footerHtml);
+    const shRestOpen = measurePrintPageShell(host, ctxMeasure, false, `${continuationStrip}`, false, footerHtml);
+    const shRestClosed = measurePrintPageShell(host, ctxMeasure, false, `${continuationStrip}`, true, footerHtml);
+
+    const roomFirstOpen = computePrintGridRoomPx(H_LIMIT, shFirstOpen.baseAssembly, shFirstOpen.g0, ROOM_ROUND_EPS);
+    const roomFirstClosed = computePrintGridRoomPx(H_LIMIT, shFirstClosed.baseAssembly, shFirstClosed.g0, ROOM_ROUND_EPS);
+    const roomRestOpen = computePrintGridRoomPx(H_LIMIT, shRestOpen.baseAssembly, shRestOpen.g0, ROOM_ROUND_EPS);
+    const roomRestClosed = computePrintGridRoomPx(H_LIMIT, shRestClosed.baseAssembly, shRestClosed.g0, ROOM_ROUND_EPS);
+
+    if (
+      roomFirstOpen < 48 ||
+      roomFirstClosed < 48 ||
+      roomRestOpen < 48 ||
+      roomRestClosed < 48 ||
+      roomFirstClosed > roomFirstOpen ||
+      roomRestClosed > roomRestOpen
+    ) {
+      return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload);
+    }
+
+    const sizes = greedyPrintPackFromSegments(
+      host,
+      cardHtmls,
+      ctxMeasure,
+      header,
+      instr,
+      continuationStrip,
+      roomFirstOpen,
+      roomFirstClosed,
+      roomRestOpen,
+      roomRestClosed,
+      SAFETY,
+      debug
+    );
+
+    const sum = sizes.reduce((a, b) => a + b, 0);
+    if (!sizes.length || sum !== n) {
+      return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload);
+    }
+    if (debug) {
+      const k0 = sizes[0] | 0;
+      let firstPageSegH = 0;
+      if (k0 > 0) {
+        firstPageSegH = measureSegmentStackPx(
+          host,
+          cardHtmls,
+          ctxMeasure,
+          0,
+          k0,
+          true,
+          header,
+          instr,
+          continuationStrip
+        );
+      }
+      try {
+        globalThis.__PRINT_PACK_LAST = {
+          firstPageCardsClass: k0,
+          firstPageGridHeightPx: Math.round(firstPageSegH * 100) / 100,
+          totalQuestions: n,
+          /* app.js 互換: 先頭1枚の getBoundingClientRect と比べる用途 */
+          firstCardStackDeltaPx: Math.round(
+            measureSegmentStackPx(
+              host,
+              cardHtmls,
+              ctxMeasure,
+              0,
+              1,
+              true,
+              header,
+              instr,
+              continuationStrip
+            ) * 100
+          ) / 100,
+        };
+      } catch (e) {
+        /* ignore */
+      }
+      console.warn('[printPackDebug] plan', {
+        sizes,
+        H_LIMIT: Math.round(H_LIMIT * 100) / 100,
+        firstPageCardsClass: k0,
+        firstPageGridHeightPx: Math.round(firstPageSegH * 100) / 100,
+        rooms: {
+          roomFirstOpen: Math.round(roomFirstOpen * 100) / 100,
+          roomFirstClosed: Math.round(roomFirstClosed * 100) / 100,
+          roomRestOpen: Math.round(roomRestOpen * 100) / 100,
+          roomRestClosed: Math.round(roomRestClosed * 100) / 100,
+        },
+        SAFETY,
+        ROOM_ROUND_EPS,
+      });
+      console.warn(
+        '[printPackDebug] compare after preview: 1ページ目グリッド高さは firstPageGridHeightPx（print-page--cards-' +
+          k0 +
+          '）。先頭1枚だけなら firstCardStackDeltaPx。'
+      );
+    }
+    return sizes;
   } catch (e) {
-    return null;
+    return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload);
   } finally {
     if (host.parentNode) host.parentNode.removeChild(host);
   }
 }
 
-function resolvePrintCardsPerPagePlan(content, level, customPayload, cardHtmls, header, instr, continuationStrip) {
-  const preset = getPresetCardsPerPage(content, level, customPayload);
-  const auto = tryAutoMeasureCardsPerPage(cardHtmls, header, instr, continuationStrip, preset);
-  if (!auto) return preset;
-  return {
-    first: auto.first || preset.first,
-    rest: auto.rest || preset.rest,
-  };
+/** measurePrintPackSizes 用：sizes から cardHtmls を分割 */
+function chunkCardsBySizes(cardHtmls, sizes) {
+  if (!cardHtmls.length || !sizes || !sizes.length) return [];
+  const out = [];
+  let i = 0;
+  for (let p = 0; p < sizes.length; p++) {
+    const sz = Math.max(0, sizes[p] | 0);
+    if (sz === 0) continue;
+    out.push(cardHtmls.slice(i, i + sz));
+    i += sz;
+  }
+  if (i < cardHtmls.length) {
+    if (out.length) {
+      const last = out[out.length - 1];
+      out[out.length - 1] = last.concat(cardHtmls.slice(i));
+    } else {
+      out.push(cardHtmls.slice(i));
+    }
+  }
+  return out.filter((ch) => ch.length);
+}
+
+/** document 非存在時・測定失敗時：従来の first/rest 固定分割 */
+function getFallbackPrintChunkSizes(totalCards, content, level, customPayload) {
+  const n = Math.max(0, totalCards | 0);
+  if (n === 0) return [];
+  const lv = level || 'intermediate';
+  const plan = getPresetCardsPerPage(content, lv, customPayload || {});
+  const sizes = [];
+  const first = Math.max(1, plan.first | 0);
+  const rest = Math.max(1, plan.rest | 0);
+  const firstSize = Math.min(first, n);
+  sizes.push(firstSize);
+  let remaining = n - firstSize;
+  while (remaining > 0) {
+    const sz = Math.min(rest, remaining);
+    sizes.push(sz);
+    remaining -= sz;
+  }
+  return sizes;
 }
 
 function escapeHtmlPrint(s) {
@@ -391,26 +697,11 @@ function usesFirstFourRestFiveLayout(content) {
 }
 
 /**
- * 各ページの問題数の配列（PDF分割・枚数確認と同一仕様）
- * level/customPayload 未指定時は中級基準の既定値を使う（後方互換）。
+ * 各ページの問題数の配列（実測レイアウトが無い環境向けのフォールバック）
+ * スマホ PDF は app.js 側で .print-page 単位の実 DOM を使うため、ここは主に後方互換用。
  */
 function getPrintPageChunkSizes(totalCards, content, level, customPayload) {
-  const n = Math.max(0, totalCards | 0);
-  if (n === 0) return [];
-  const lv = level || 'intermediate';
-  const plan = getPresetCardsPerPage(content, lv, customPayload || {});
-  const sizes = [];
-  const first = Math.max(1, plan.first | 0);
-  const rest = Math.max(1, plan.rest | 0);
-  const firstSize = Math.min(first, n);
-  sizes.push(firstSize);
-  let remaining = n - firstSize;
-  while (remaining > 0) {
-    const sz = Math.min(rest, remaining);
-    sizes.push(sz);
-    remaining -= sz;
-  }
-  return sizes;
+  return getFallbackPrintChunkSizes(Math.max(0, totalCards | 0), content, level, customPayload || {});
 }
 
 /** question-card HTML の配列を固定サイズで分割 */
@@ -420,21 +711,6 @@ function chunkCardsForPrint(cardHtmls, perPage) {
     pages.push(cardHtmls.slice(i, i + perPage));
   }
   return pages;
-}
-
-/** 1ページ目 first 問・それ以降 rest 問で分割 */
-function chunkCardsFirstPageRest(cardHtmls, first, rest) {
-  if (!cardHtmls.length) return [];
-  const out = [];
-  const n = cardHtmls.length;
-  const firstChunk = cardHtmls.slice(0, Math.min(first, n));
-  out.push(firstChunk);
-  let i = firstChunk.length;
-  while (i < n) {
-    out.push(cardHtmls.slice(i, i + rest));
-    i += rest;
-  }
-  return out;
 }
 
 /**

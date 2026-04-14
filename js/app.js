@@ -825,6 +825,28 @@ function generatePrint() {
       /* 迷路系のみ a4-sheet--maze（印刷・プレビュー・PDF で共通レイアウト最適化の影響を切り離す） */
       sheet.classList.toggle('a4-sheet--maze', content === 'maze' || content === 'maze_hiragana');
 
+      if (typeof localStorage !== 'undefined' && localStorage.getItem('printPackDebug') === '1') {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            try {
+              const firstPage = sheet.querySelector('.print-page:not(.print-page--answer)');
+              const card = firstPage && firstPage.querySelector(':scope > .questions-grid > .question-card');
+              const m = typeof globalThis !== 'undefined' ? globalThis.__PRINT_PACK_LAST : null;
+              if (card && m && typeof m.firstCardStackDeltaPx === 'number') {
+                const h = card.getBoundingClientRect().height;
+                console.warn('[printPackDebug] rendered 1st card vs meter stack delta', {
+                  renderedCardHeightPx: Math.round(h * 100) / 100,
+                  meterFirstCardStackDeltaPx: m.firstCardStackDeltaPx,
+                  diffPx: Math.round((h - m.firstCardStackDeltaPx) * 100) / 100,
+                });
+              }
+            } catch (eDbg) {
+              /* ignore */
+            }
+          });
+        });
+      }
+
       const section = document.getElementById('previewSection');
       section.style.display = 'block';
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -961,18 +983,12 @@ async function savePdfViaHtml2Canvas() {
     const dpr = window.devicePixelRatio || 2;
     const scale = Math.min(3, Math.max(2.5, dpr * 1.1));
 
-    const cards = Array.from(sheet.querySelectorAll('.question-card'));
-    /* generator.js の getPrintPageChunkSizes と同一：通常は各ページ5問（めいろ系は2問刻み） */
-    const payload = buildPrintChunkPayloadForContent(contentSel);
-    const sizes = typeof getPrintPageChunkSizes === 'function'
-      ? getPrintPageChunkSizes(cards.length, contentSel, levelSel, payload)
-      : [cards.length];
-    const pageSlices = [];
-    let offset = 0;
-    sizes.forEach((sz) => {
-      pageSlices.push(cards.slice(offset, offset + sz));
-      offset += sz;
-    });
+    /* 改ページは generator.js の実測パック結果を .print-page 単位でそのまま踏襲（枚数推定とズレない） */
+    const pageSlices = getQuestionCardSlicesFromPrintSheet(sheet);
+    if (!pageSlices.length) {
+      alert('PDFのページ分割に失敗しました。プリントを再生成してからお試しください。');
+      return;
+    }
 
     const host = document.createElement('div');
     host.id = 'pdfTempCaptureHost';
@@ -1076,7 +1092,7 @@ function addCanvasPageToPdf(pdf, canvas, sideMarginMm, contentWidthMm, addPageBe
 
 /**
  * スマホPDF用：既存プリントから question-card を複製し、186mm 幅の 1 ページ相当 DOM を組み立てる。
- * PC 印刷の getPrintPageChunkSizes（各ページ5問）に合わせた枚数。
+ * 分割枚数は .print-page ごと（generatePrintHTML の実測ベース改ページと一致）。
  */
 function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc) {
   const header = sheet.querySelector('.print-header');
@@ -1127,19 +1143,24 @@ function buildPrintChunkPayloadForContent(contentSel) {
   return {};
 }
 
+/**
+ * プレビュー済み .a4-sheet 内の「問題用 .print-page」ごとに question-card を束ねる。
+ * （解答ページ・カード無しページは除外）
+ */
+function getQuestionCardSlicesFromPrintSheet(sheet) {
+  if (!sheet) return [];
+  const pages = Array.from(sheet.querySelectorAll('.print-page:not(.print-page--answer)'));
+  const slices = pages
+    .map((pp) => Array.from(pp.querySelectorAll(':scope > .questions-grid > .question-card')))
+    .filter((cards) => cards.length > 0);
+  if (slices.length) return slices;
+  const flat = Array.from(sheet.querySelectorAll('.question-card'));
+  return flat.length ? [flat] : [];
+}
+
 /** 万一 .print-page キャプチャが失敗したとき用（非表示DOM・同じ分割ルール） */
 async function savePdfViaHtml2CanvasFallbackSlices(sheet, contentSel, levelSel) {
-  const cards = Array.from(sheet.querySelectorAll('.question-card'));
-  const payload = buildPrintChunkPayloadForContent(contentSel);
-  const sizes = typeof getPrintPageChunkSizes === 'function'
-    ? getPrintPageChunkSizes(cards.length, contentSel, levelSel, payload)
-    : [cards.length];
-  const pageSlices = [];
-  let offset = 0;
-  sizes.forEach((sz) => {
-    pageSlices.push(cards.slice(offset, offset + sz));
-    offset += sz;
-  });
+  const pageSlices = getQuestionCardSlicesFromPrintSheet(sheet);
 
   const host = document.createElement('div');
   host.setAttribute('aria-hidden', 'true');

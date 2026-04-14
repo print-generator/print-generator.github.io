@@ -1172,6 +1172,24 @@ select.setting-select--locked {
   flex-direction: column;
   gap: 6px;
 }
+
+/*
+ * ちょうど5問のページ（.print-page--cards-5）だけ、印刷時と同じ詰めをプレビュー・実測でも再現する。
+ * ページ分割の segment 測定と実表示のズレをなくすため @media print と同値の pt/mm を使う。
+ */
+.print-page--cards-5 .question-card {
+  padding: 0.7pt 2.1pt;
+}
+.print-page--cards-5 .question-card:not(:last-child) {
+  margin-bottom: 0.18mm;
+}
+.print-page--cards-5 .question-card-content {
+  gap: 0.55mm;
+}
+.print-page--maze.print-page--cards-5 .question-card {
+  padding: 1.6pt 3.8pt;
+}
+
 .question-num {
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--primary); color: var(--white);
@@ -3607,6 +3625,12 @@ body.pdf-mobile-capture .kanji-masu--kanji::before,
 body.pdf-mobile-capture .kanji-masu--kanji::after {
   background: #333333 !important;
 }
+
+/*
+ * ページ分割の実測（measurePrintPackSizes）は、プレビューと同じ
+ * .a4-wrapper.print-area > .a4-sheet > .print-page 構造で行う。
+ * [data-print-pack-meter] 専用のタイポ上書きは置かず、プレビュー用 CSS と同一条件で測る。
+ */
 
 /* savePDF() が組み立てる一時ページ（画面外DOM）。画面表示には使わない */
 .a4-sheet.pdf-export-surface {
