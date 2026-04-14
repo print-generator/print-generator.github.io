@@ -316,8 +316,8 @@ function tryAutoMeasureCardsPerPage(cardHtmls, header, instr, continuationStrip,
     const firstFit = Math.floor((firstAvail + cardGapPx) / (avgHeight + cardGapPx));
     const restFit = Math.floor((restAvail + cardGapPx) / (avgHeight + cardGapPx));
     return {
-      first: clampCardsPerPage(firstFit, Math.max(2, preset.first - 1), preset.first + 2),
-      rest: clampCardsPerPage(restFit, Math.max(2, preset.rest - 1), preset.rest + 2),
+      first: clampCardsPerPage(firstFit, Math.max(2, preset.first - 1), preset.first + 1),
+      rest: clampCardsPerPage(restFit, Math.max(2, preset.rest - 1), preset.rest + 1),
     };
   } catch (e) {
     return null;

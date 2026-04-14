@@ -963,8 +963,9 @@ async function savePdfViaHtml2Canvas() {
 
     const cards = Array.from(sheet.querySelectorAll('.question-card'));
     /* generator.js の getPrintPageChunkSizes と同一：通常は各ページ5問（めいろ系は2問刻み） */
+    const payload = buildPrintChunkPayloadForContent(contentSel);
     const sizes = typeof getPrintPageChunkSizes === 'function'
-      ? getPrintPageChunkSizes(cards.length, contentSel)
+      ? getPrintPageChunkSizes(cards.length, contentSel, levelSel, payload)
       : [cards.length];
     const pageSlices = [];
     let offset = 0;
@@ -1119,12 +1120,19 @@ function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc)
   return wrap;
 }
 
+function buildPrintChunkPayloadForContent(contentSel) {
+  if (contentSel === 'kanji' && typeof getKanjiPayloadFromUI === 'function') {
+    return getKanjiPayloadFromUI();
+  }
+  return {};
+}
+
 /** 万一 .print-page キャプチャが失敗したとき用（非表示DOM・同じ分割ルール） */
 async function savePdfViaHtml2CanvasFallbackSlices(sheet, contentSel, levelSel) {
-  void levelSel;
   const cards = Array.from(sheet.querySelectorAll('.question-card'));
+  const payload = buildPrintChunkPayloadForContent(contentSel);
   const sizes = typeof getPrintPageChunkSizes === 'function'
-    ? getPrintPageChunkSizes(cards.length, contentSel)
+    ? getPrintPageChunkSizes(cards.length, contentSel, levelSel, payload)
     : [cards.length];
   const pageSlices = [];
   let offset = 0;
