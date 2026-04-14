@@ -199,7 +199,7 @@ const PRINT_CARD_COUNT_PRESETS = {
   joshi: {
     beginner: { first: 7, rest: 8 },
     intermediate: { first: 7, rest: 8 },
-    advanced: { first: 6, rest: 6 },
+    advanced: { first: 7, rest: 7 },
   },
   hiragana: {
     beginner: { first: 4, rest: 5 },
@@ -221,12 +221,12 @@ const PRINT_CARD_COUNT_PRESETS = {
   sentence: {
     beginner: { first: 5, rest: 6 },
     intermediate: { first: 4, rest: 5 },
-    advanced: { first: 4, rest: 4 },
+    advanced: { first: 5, rest: 5 },
   },
   narabikae: {
     beginner: { first: 4, rest: 5 },
     intermediate: { first: 5, rest: 5 },
-    advanced: { first: 3, rest: 4 },
+    advanced: { first: 4, rest: 5 },
   },
   custom: {
     beginner: { first: 6, rest: 7 },
@@ -965,7 +965,9 @@ function buildJoshiAdvanced(count, _cw) {
       '<span class="joshi-inline-blank" aria-hidden="true">（　　　）</span>'
     );
     const inner = `
-      <div class="desc-sentence">${sentence}</div>`;
+      <div class="advanced-compact advanced-compact--joshi">
+        <div class="desc-sentence">${sentence}</div>
+      </div>`;
     return questionCard(i + 1, inner);
   });
   return { cardHtmls: cards, answers };
@@ -1706,9 +1708,11 @@ function buildSentenceAdvanced(count) {
         : qType === 1
           ? `だれが どこで ${s.action}か。`
           : 'どこで なにを していますか。';
-    const inner = `<div class="choice-sentence">${s.sentence}</div>
+    const inner = `<div class="advanced-compact advanced-compact--sentence">
+      <div class="choice-sentence">${s.sentence}</div>
       <div class="emoji-question-prompt">しつもん：${pattern}</div>
-      <div class="answer-line"></div>`;
+      <div class="answer-line"></div>
+    </div>`;
     return questionCard(i + 1, inner);
   });
   const answers = scenes.map((s, i) => {
@@ -1746,10 +1750,11 @@ function buildNarabikaeSentence(level) {
 function buildNarabikaeCard(num, level) {
   const made = buildNarabikaeSentence(level);
   const chips = made.questionParts.map((p) => `<span class="choice-item">${escapeHtmlPrint(p)}</span>`).join('');
-  const inner = `<div class="emoji-question-prompt">ことばを ならべかえて、ただしい ぶんを つくろう</div>
+  const compactCls = level === 'advanced' ? 'advanced-compact advanced-compact--narabikae' : '';
+  const inner = `<div class="${compactCls}"><div class="emoji-question-prompt">ことばを ならべかえて、ただしい ぶんを つくろう</div>
     <div class="choices-row">${chips}</div>
     <div class="adv-prompt-sub">こたえを したに かこう</div>
-    <div class="answer-line"></div>`;
+    <div class="answer-line"></div></div>`;
   return { html: questionCard(num, inner), answer: made.answerText };
 }
 

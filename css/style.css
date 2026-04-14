@@ -1093,6 +1093,39 @@ select.setting-select--locked {
 .question.kanji .question-card-content {
   gap: 4px;
 }
+/* 上級（助詞・文章・並べ替え）だけ縦密度を少し上げる */
+.question.joshi .advanced-compact--joshi,
+.question.sentence .advanced-compact--sentence,
+.question.narabikae .advanced-compact--narabikae {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.question.joshi .advanced-compact--joshi .desc-sentence,
+.question.sentence .advanced-compact--sentence .choice-sentence,
+.question.narabikae .advanced-compact--narabikae .emoji-question-prompt {
+  line-height: 1.16;
+  margin-bottom: 0;
+}
+.question.sentence .advanced-compact--sentence .answer-line,
+.question.narabikae .advanced-compact--narabikae .answer-line {
+  height: 18px;
+  margin-top: 1px;
+}
+.question.narabikae .advanced-compact--narabikae .adv-prompt-sub {
+  margin-bottom: 1px;
+  line-height: 1.18;
+}
+
+/* 漢字の読み問題だけ少し大きく（書き問題バランスは維持） */
+.question.kanji .kanji-stack--reading-adv .kanji-stack__bottom--kanji {
+  font-size: 1.08em;
+  line-height: 1.28;
+}
+.question.kanji .kanji-stack--reading-adv .kanji-reading-blank-line {
+  font-size: 0.68em;
+  line-height: 1.18;
+}
 
 @media (max-width: 768px) {
   .question.kanji {
@@ -3388,6 +3421,24 @@ body.lp-pricing-page {
   width: 40px !important;
   height: 40px !important;
 }
+.pdf-capturing .question.joshi .advanced-compact--joshi,
+.pdf-capturing .question.sentence .advanced-compact--sentence,
+.pdf-capturing .question.narabikae .advanced-compact--narabikae {
+  gap: 3px !important;
+}
+.pdf-capturing .question.sentence .advanced-compact--sentence .answer-line,
+.pdf-capturing .question.narabikae .advanced-compact--narabikae .answer-line {
+  height: 18px !important;
+  margin-top: 1px !important;
+}
+.pdf-capturing .question.kanji .kanji-stack--reading-adv .kanji-stack__bottom--kanji {
+  font-size: 1.08em !important;
+  line-height: 1.28 !important;
+}
+.pdf-capturing .question.kanji .kanji-stack--reading-adv .kanji-reading-blank-line {
+  font-size: 0.68em !important;
+  line-height: 1.18 !important;
+}
 .pdf-capturing .question-num {
   background: #f97316 !important;
   color: #fff !important;
@@ -3511,6 +3562,24 @@ body.pdf-mobile-capture .question.kanji .kanji-masu--kanji {
   height: 40px !important;
   min-width: 40px !important;
   min-height: 40px !important;
+}
+body.pdf-mobile-capture .question.joshi .advanced-compact--joshi,
+body.pdf-mobile-capture .question.sentence .advanced-compact--sentence,
+body.pdf-mobile-capture .question.narabikae .advanced-compact--narabikae {
+  gap: 3px !important;
+}
+body.pdf-mobile-capture .question.sentence .advanced-compact--sentence .answer-line,
+body.pdf-mobile-capture .question.narabikae .advanced-compact--narabikae .answer-line {
+  height: 18px !important;
+  margin-top: 1px !important;
+}
+body.pdf-mobile-capture .question.kanji .kanji-stack--reading-adv .kanji-stack__bottom--kanji {
+  font-size: 1.08em !important;
+  line-height: 1.28 !important;
+}
+body.pdf-mobile-capture .question.kanji .kanji-stack--reading-adv .kanji-reading-blank-line {
+  font-size: 0.68em !important;
+  line-height: 1.18 !important;
 }
 body.pdf-mobile-capture .kanji-masu--kanji::before,
 body.pdf-mobile-capture .kanji-masu--kanji::after {
