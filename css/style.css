@@ -1061,6 +1061,22 @@ select.setting-select--locked {
 .question.sentence {}
 .question.narabikae {}
 .question.custom {}
+.question.kanji {
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  min-height: auto;
+}
+.question.kanji p {
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 0;
+}
+.question.kanji .kanji-box,
+.question.kanji .kanji-blank-square,
+.question.kanji .kanji-masu--kanji {
+  width: 40px;
+  height: 40px;
+}
 
 .question-card {
   display: grid;
