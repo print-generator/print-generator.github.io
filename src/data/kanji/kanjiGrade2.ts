@@ -46,14 +46,14 @@ export const kanjiGrade2SampleRows: KanjiGradeSourceRow[] = [
   ]},
   { grade: 2, kanji: '海', entries: [
     { sentence: '海で およぎます', reading: 'うみ' },
-    { sentence: '海が きらきら しています', reading: 'うみ' },
+    { sentence: '海が ひかっています', reading: 'うみ' },
   ]},
   { grade: 2, kanji: '絵', entries: [
     { sentence: '絵を かきます', reading: 'え' },
     { sentence: 'きれいな 絵です', reading: 'え' },
   ]},
   { grade: 2, kanji: '活', entries: [
-    { sentence: '活どうを がんばります', reading: 'かつ' },
+    { sentence: '活どうを します', reading: 'かつ' },
     { sentence: '活どうの じかんです', reading: 'かつ' },
   ]},
   { grade: 2, kanji: '汽', entries: [
@@ -82,7 +82,7 @@ export const kanjiGrade2SampleRows: KanjiGradeSourceRow[] = [
   ]},
   { grade: 2, kanji: '広', entries: [
     { sentence: '広い へやです', reading: 'ひろ' },
-    { sentence: '広く つかいます', reading: 'ひろ' },
+    { sentence: 'へやを 広く つかいます', reading: 'ひろ' },
   ]},
   { grade: 2, kanji: '考', entries: [
     { sentence: 'こたえを 考えます', reading: 'かんが' },
@@ -109,8 +109,8 @@ export const kanjiGrade2SampleRows: KanjiGradeSourceRow[] = [
     { sentence: '今は やすみじかんです', reading: 'いま' },
   ]},
   { grade: 2, kanji: '才', entries: [
-    { sentence: 'ろく才です', reading: 'さい' },
-    { sentence: 'なな才です', reading: 'さい' },
+    { sentence: 'わたしは ろく才です', reading: 'さい' },
+    { sentence: 'いもうとは なな才です', reading: 'さい' },
   ]},
   { grade: 2, kanji: '細', entries: [
     { sentence: '細い みちです', reading: 'ほそ' },

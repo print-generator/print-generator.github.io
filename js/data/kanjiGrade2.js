@@ -42,14 +42,14 @@
     ]},
     { char: '海', grade: 2, entries: [
       { sentence: '海で およぎます', reading: 'うみ' },
-      { sentence: '海が きらきら しています', reading: 'うみ' },
+      { sentence: '海が ひかっています', reading: 'うみ' },
     ]},
     { char: '絵', grade: 2, entries: [
       { sentence: '絵を かきます', reading: 'え' },
       { sentence: 'きれいな 絵です', reading: 'え' },
     ]},
     { char: '活', grade: 2, entries: [
-      { sentence: '活どうを がんばります', reading: 'かつ' },
+      { sentence: '活どうを します', reading: 'かつ' },
       { sentence: '活どうの じかんです', reading: 'かつ' },
     ]},
     { char: '汽', grade: 2, entries: [
@@ -78,7 +78,7 @@
     ]},
     { char: '広', grade: 2, entries: [
       { sentence: '広い へやです', reading: 'ひろ' },
-      { sentence: '広く つかいます', reading: 'ひろ' },
+      { sentence: 'へやを 広く つかいます', reading: 'ひろ' },
     ]},
     { char: '考', grade: 2, entries: [
       { sentence: 'こたえを 考えます', reading: 'かんが' },
@@ -105,8 +105,8 @@
       { sentence: '今は やすみじかんです', reading: 'いま' },
     ]},
     { char: '才', grade: 2, entries: [
-      { sentence: 'ろく才です', reading: 'さい' },
-      { sentence: 'なな才です', reading: 'さい' },
+      { sentence: 'わたしは ろく才です', reading: 'さい' },
+      { sentence: 'いもうとは なな才です', reading: 'さい' },
     ]},
     { char: '細', grade: 2, entries: [
       { sentence: '細い みちです', reading: 'ほそ' },
