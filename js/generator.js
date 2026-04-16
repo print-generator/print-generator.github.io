@@ -347,6 +347,7 @@ function greedyPrintPackFromSegments(
   roomRestOpen,
   roomRestClosed,
   safetyPx,
+  overflowAllowPx,
   debug
 ) {
   const n = cardHtmls.length;
@@ -389,7 +390,7 @@ function greedyPrintPackFromSegments(
           : isFirstPage
             ? roomFirstOpen
             : roomRestOpen;
-      if (span <= room - safetyPx) {
+      if (span <= room - safetyPx + overflowAllowPx) {
         e = nextE;
       } else {
         if (debug && remAfter > 0 && span <= room && span > room - safetyPx) {
@@ -401,9 +402,10 @@ function greedyPrintPackFromSegments(
             spanPx: Math.round(span * 100) / 100,
             roomPx: Math.round(room * 100) / 100,
             safetyPx,
+            overflowAllowPx,
           });
         }
-        if (debug && remAfter > 0 && span > room && span <= room + 2.5) {
+        if (debug && remAfter > 0 && span > room && span <= room + overflowAllowPx + 2.5) {
           console.warn('[printPackDebug] segment: slightly over ROOM', {
             page: sizes.length + 1,
             isFirstPage,
@@ -411,6 +413,7 @@ function greedyPrintPackFromSegments(
             spanPx: Math.round(span * 100) / 100,
             roomPx: Math.round(room * 100) / 100,
             safetyPx,
+            overflowAllowPx,
           });
         }
         break;
@@ -502,6 +505,23 @@ function computePrintGridRoomPx(H_LIMIT, baseAssembly, g0, epsilonPx) {
   return H_LIMIT - baseAssembly + g0 + eps;
 }
 
+function getPackAggressiveTuning(ctx) {
+  const content = (ctx && ctx.content) || '';
+  const level = (ctx && ctx.level) || '';
+  const target =
+    (content === 'sentence' && (level === 'beginner' || level === 'intermediate' || level === 'advanced')) ||
+    (content === 'joshi' && (level === 'intermediate' || level === 'advanced')) ||
+    (content === 'narabikae' && (level === 'beginner' || level === 'intermediate' || level === 'advanced'));
+  if (!target) {
+    return { safetyPx: 1.5, roomRoundEpsPx: 0.5, overflowAllowPx: 0 };
+  }
+  return {
+    safetyPx: 0.35,
+    roomRoundEpsPx: 3.5,
+    overflowAllowPx: 6,
+  };
+}
+
 /**
  * 問題カード HTML を「実測高さの合計が 1 枚に収まるところ」で分割するための各ページ枚数配列。
  * document が無い・測定失敗時は従来のジャンル別プリセット（first/rest）にフォールバック。
@@ -520,9 +540,10 @@ function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, foot
   host.style.cssText =
     'position:fixed;left:-9999px;top:0;width:186mm;min-width:186mm;max-width:186mm;height:auto;overflow:visible;pointer-events:none;z-index:-1;opacity:0;visibility:hidden;';
 
-  const SAFETY = 1.5;
-  /* 測定と実描画の小数差のみ。意図的に ROOM を大きくしない */
-  const ROOM_ROUND_EPS = 0.5;
+  const tuning = getPackAggressiveTuning(ctx);
+  const SAFETY = tuning.safetyPx;
+  const ROOM_ROUND_EPS = tuning.roomRoundEpsPx;
+  const OVERFLOW_ALLOW = tuning.overflowAllowPx;
   const debug =
     typeof localStorage !== 'undefined' &&
     localStorage.getItem('printPackDebug') === '1';
@@ -574,6 +595,7 @@ function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, foot
       roomRestOpen,
       roomRestClosed,
       SAFETY,
+      OVERFLOW_ALLOW,
       debug
     );
 
@@ -647,6 +669,7 @@ function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, foot
         },
         SAFETY,
         ROOM_ROUND_EPS,
+        OVERFLOW_ALLOW,
       });
       try {
         if (globalThis.__PRINT_PACK_LAST && globalThis.__PRINT_PACK_LAST.pageDiagnostics) {
