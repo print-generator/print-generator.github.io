@@ -1107,6 +1107,14 @@ select.setting-select--locked {
   line-height: 1.16;
   margin-bottom: 0;
 }
+
+/* 助詞 上級：本文を読みやすく（スマホ表示＆スマホPDFの差が出にくいよう同じセレクタで上書き） */
+.question.joshi .advanced-compact--joshi .desc-sentence {
+  font-size: 1.875rem;
+  line-height: 1.25;
+  margin-bottom: 0;
+}
+
 .question.sentence .advanced-compact--sentence .answer-line,
 .question.narabikae .advanced-compact--narabikae .answer-line {
   height: 18px;
@@ -3466,6 +3474,12 @@ body.lp-pricing-page {
 .pdf-capturing .question.narabikae .advanced-compact--narabikae {
   gap: 3px !important;
 }
+
+.pdf-capturing .question.joshi .advanced-compact--joshi .desc-sentence {
+  font-size: 14.25pt !important; /* 9.5pt の 1.5倍 */
+  line-height: 1.25 !important;
+  margin-bottom: 0 !important;
+}
 .pdf-capturing .question.sentence .advanced-compact--sentence .answer-line,
 .pdf-capturing .question.narabikae .advanced-compact--narabikae .answer-line {
   height: 18px !important;
@@ -3607,6 +3621,12 @@ body.pdf-mobile-capture .question.joshi .advanced-compact--joshi,
 body.pdf-mobile-capture .question.sentence .advanced-compact--sentence,
 body.pdf-mobile-capture .question.narabikae .advanced-compact--narabikae {
   gap: 3px !important;
+}
+
+body.pdf-mobile-capture .question.joshi .advanced-compact--joshi .desc-sentence {
+  font-size: 14.25pt !important; /* 9.5pt の 1.5倍 */
+  line-height: 1.25 !important;
+  margin-bottom: 0 !important;
 }
 body.pdf-mobile-capture .question.sentence .advanced-compact--sentence .answer-line,
 body.pdf-mobile-capture .question.narabikae .advanced-compact--narabikae .answer-line {
