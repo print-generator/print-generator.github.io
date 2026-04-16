@@ -426,6 +426,54 @@ function greedyPrintPackFromSegments(
   return sizes;
 }
 
+function buildPackDebugDiagnostics(
+  host,
+  cardHtmls,
+  ctxMeasure,
+  sizes,
+  header,
+  instr,
+  continuationStrip,
+  roomFirstOpen,
+  roomFirstClosed,
+  roomRestOpen,
+  roomRestClosed
+) {
+  const pages = [];
+  let start = 0;
+  for (let i = 0; i < sizes.length; i++) {
+    const len = sizes[i] | 0;
+    const isFirst = i === 0;
+    const isLast = i === sizes.length - 1;
+    const room = isLast
+      ? (isFirst ? roomFirstClosed : roomRestClosed)
+      : (isFirst ? roomFirstOpen : roomRestOpen);
+    const span = measureSegmentStackPx(
+      host,
+      cardHtmls,
+      ctxMeasure,
+      start,
+      len,
+      isFirst,
+      header,
+      instr,
+      continuationStrip
+    );
+    pages.push({
+      page: i + 1,
+      start0: start,
+      cards: len,
+      cardsClass: `print-page--cards-${len}`,
+      kind: isFirst ? (isLast ? 'first+last' : 'first') : (isLast ? 'last' : 'middle'),
+      measuredGridPx: Math.round(span * 100) / 100,
+      roomPx: Math.round(room * 100) / 100,
+      slackPx: Math.round((room - span) * 100) / 100,
+    });
+    start += len;
+  }
+  return pages;
+}
+
 /**
  * ヘッダー＋空グリッド（＋任意でフッター）までの外装高さと空グリッド高さを測る。
  */
@@ -550,10 +598,24 @@ function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, foot
         );
       }
       try {
+        const pageDiagnostics = buildPackDebugDiagnostics(
+          host,
+          cardHtmls,
+          ctxMeasure,
+          sizes,
+          header,
+          instr,
+          continuationStrip,
+          roomFirstOpen,
+          roomFirstClosed,
+          roomRestOpen,
+          roomRestClosed
+        );
         globalThis.__PRINT_PACK_LAST = {
           firstPageCardsClass: k0,
           firstPageGridHeightPx: Math.round(firstPageSegH * 100) / 100,
           totalQuestions: n,
+          pageDiagnostics,
           /* app.js 互換: 先頭1枚の getBoundingClientRect と比べる用途 */
           firstCardStackDeltaPx: Math.round(
             measureSegmentStackPx(
@@ -586,6 +648,13 @@ function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, foot
         SAFETY,
         ROOM_ROUND_EPS,
       });
+      try {
+        if (globalThis.__PRINT_PACK_LAST && globalThis.__PRINT_PACK_LAST.pageDiagnostics) {
+          console.table(globalThis.__PRINT_PACK_LAST.pageDiagnostics);
+        }
+      } catch (eTable) {
+        /* ignore */
+      }
       console.warn(
         '[printPackDebug] compare after preview: 1ページ目グリッド高さは firstPageGridHeightPx（print-page--cards-' +
           k0 +

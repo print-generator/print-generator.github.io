@@ -831,6 +831,7 @@ function generatePrint() {
             try {
               const firstPage = sheet.querySelector('.print-page:not(.print-page--answer)');
               const card = firstPage && firstPage.querySelector(':scope > .questions-grid > .question-card');
+              const firstGrid = firstPage && firstPage.querySelector(':scope > .questions-grid');
               const m = typeof globalThis !== 'undefined' ? globalThis.__PRINT_PACK_LAST : null;
               if (card && m && typeof m.firstCardStackDeltaPx === 'number') {
                 const h = card.getBoundingClientRect().height;
@@ -838,6 +839,15 @@ function generatePrint() {
                   renderedCardHeightPx: Math.round(h * 100) / 100,
                   meterFirstCardStackDeltaPx: m.firstCardStackDeltaPx,
                   diffPx: Math.round((h - m.firstCardStackDeltaPx) * 100) / 100,
+                });
+              }
+              if (firstGrid && m && typeof m.firstPageGridHeightPx === 'number') {
+                const gridH = firstGrid.scrollHeight;
+                console.warn('[printPackDebug] rendered 1st page grid vs meter', {
+                  renderedFirstPageGridPx: Math.round(gridH * 100) / 100,
+                  meterFirstPageGridPx: m.firstPageGridHeightPx,
+                  diffPx: Math.round((gridH - m.firstPageGridHeightPx) * 100) / 100,
+                  firstPageCardsClass: m.firstPageCardsClass,
                 });
               }
             } catch (eDbg) {
