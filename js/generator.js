@@ -508,18 +508,34 @@ function computePrintGridRoomPx(H_LIMIT, baseAssembly, g0, epsilonPx) {
 function getPackAggressiveTuning(ctx) {
   const content = (ctx && ctx.content) || '';
   const level = (ctx && ctx.level) || '';
-  const target =
-    (content === 'sentence' && (level === 'beginner' || level === 'intermediate' || level === 'advanced')) ||
-    (content === 'joshi' && (level === 'intermediate' || level === 'advanced')) ||
-    (content === 'narabikae' && (level === 'beginner' || level === 'intermediate' || level === 'advanced'));
-  if (!target) {
-    return { safetyPx: 1.5, roomRoundEpsPx: 0.5, overflowAllowPx: 0 };
+  const isJoshiTarget = content === 'joshi' && (level === 'intermediate' || level === 'advanced');
+  const isSentenceTarget =
+    content === 'sentence' && (level === 'beginner' || level === 'intermediate' || level === 'advanced');
+  const isNarabikaeTarget =
+    content === 'narabikae' && (level === 'beginner' || level === 'intermediate' || level === 'advanced');
+
+  if (isJoshiTarget) {
+    return {
+      safetyPx: 0,
+      roomRoundEpsPx: 7.5,
+      overflowAllowPx: 14,
+    };
   }
-  return {
-    safetyPx: 0.35,
-    roomRoundEpsPx: 3.5,
-    overflowAllowPx: 6,
-  };
+  if (isSentenceTarget) {
+    return {
+      safetyPx: 0.1,
+      roomRoundEpsPx: 5.5,
+      overflowAllowPx: 11,
+    };
+  }
+  if (isNarabikaeTarget) {
+    return {
+      safetyPx: 0.15,
+      roomRoundEpsPx: 4.5,
+      overflowAllowPx: 9,
+    };
+  }
+  return { safetyPx: 1.5, roomRoundEpsPx: 0.5, overflowAllowPx: 0 };
 }
 
 /**
