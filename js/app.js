@@ -68,6 +68,9 @@ const LS_NARABIKAE_TRIAL_COUNT_KEY = 'homePrint_narabikaeTrialCount_v1';
 /** ひらがな迷路：無料1回体験済み（'1'） */
 const LS_MAZE_HIRAGANA_TRIAL_KEY = 'homePrint_mazeHiraganaTrialConsumed_v1';
 
+/** 履歴からの再生成時、保存済み customPayload をそのまま使う */
+let __historyGenOverride = null;
+
 function isMazeHiraganaTrialConsumed() {
   if (isProUser) return false;
   try {
@@ -519,6 +522,356 @@ function getCustomWordsFromUI() {
     .slice(0, CUSTOM_WORD_MAX_COUNT);
 }
 
+function setCustomWordsFromSnapshot(words) {
+  ensureCustomWordInputsReady();
+  const list = document.getElementById('customWordsList');
+  if (!list) return;
+  const arr = Array.isArray(words) ? words.slice(0, CUSTOM_WORD_MAX_COUNT) : [];
+  list.innerHTML = '';
+  list.dataset.ready = '1';
+  if (arr.length === 0) {
+    list.appendChild(buildCustomWordRow('', 'customWord1', 0));
+  } else {
+    arr.forEach((w, i) => {
+      const id = i === 0 ? 'customWord1' : `customWord${i + 1}`;
+      list.appendChild(buildCustomWordRow(w, id, i));
+    });
+  }
+  refreshCustomWordButtons();
+}
+
+const HISTORY_CONTENT_LABELS = {
+  joshi: '助詞',
+  hiragana: '五十音',
+  maze: 'めいろ',
+  kanji: '漢字',
+  narabikae: '並び替え',
+  maze_hiragana: 'ひらがな迷路',
+  sentence: '文章問題',
+  custom: 'カスタム',
+};
+
+function cloneJson(obj) {
+  if (obj === undefined) return undefined;
+  try {
+    return JSON.parse(JSON.stringify(obj));
+  } catch (_e) {
+    return obj;
+  }
+}
+
+function formatAutoHistoryTitle(entry) {
+  const c = HISTORY_CONTENT_LABELS[entry.content] || entry.content || 'プリント';
+  const eff =
+    entry.effectiveLevel ||
+    getEffectiveLevelForContent(entry.content, entry.levelRaw || 'beginner');
+  const lvl = getLevelLabel(eff, entry.content);
+  const n = entry.effectiveCount;
+  if (typeof n === 'number' && Number.isFinite(n)) {
+    return `${c}・${lvl}・${n}問`;
+  }
+  return `${c}・${lvl}`;
+}
+
+function formatDisplayTitle(entry) {
+  const t = entry.title != null ? String(entry.title).trim() : '';
+  if (t) return t;
+  return formatAutoHistoryTitle(entry);
+}
+
+function formatHistoryDate(ts) {
+  try {
+    const d = new Date(ts);
+    return new Intl.DateTimeFormat('ja-JP', { dateStyle: 'short', timeStyle: 'short' }).format(d);
+  } catch (_e) {
+    return '';
+  }
+}
+
+function saveSuccessfulGenerationToHistory({
+  content,
+  levelRaw,
+  level,
+  count,
+  customPayload,
+  wantAnswers,
+}) {
+  const HS = typeof HistoryStore !== 'undefined' ? HistoryStore : null;
+  if (!HS) return;
+  const kanji = getKanjiPayloadFromUI();
+  const snap = {
+    content,
+    levelRaw: levelRaw || selectedLevel,
+    effectiveLevel: level,
+    effectiveCount: count,
+    customMode: selectedCustomMode,
+    kanaMode: document.getElementById('kanaMode')?.value || selectedKanaMode,
+    includeKatakana: !!document.getElementById('includeKatakana')?.checked,
+    kanjiGrade: kanji.kanjiGrade,
+    kanjiMode: kanji.kanjiMode,
+    questionCountPro: document.getElementById('questionCountPro')?.value || '5',
+    customWords: getCustomWordsFromUI(),
+    includeAnswersSheet: !!wantAnswers,
+    customPayload: cloneJson(customPayload),
+    title: '',
+  };
+  HS.prependHistory(snap, isProUser);
+}
+
+/**
+ * 履歴／お気に入りの1件を UI に反映（再編集・再生成の前に実行）
+ */
+function applySnapshotToUI(entry) {
+  if (!entry || typeof entry !== 'object') return;
+  const content = entry.content || 'joshi';
+  selectedContent = content;
+  document.querySelectorAll('.content-btn').forEach((b) => {
+    const on = b.dataset.value === content;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+
+  const levelRaw = entry.levelRaw || 'beginner';
+  selectedLevel = levelRaw;
+  document.querySelectorAll('.level-btn').forEach((b) => {
+    const on = b.dataset.value === levelRaw;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+
+  selectedCustomMode = entry.customMode === 'copy' ? 'copy' : 'trace';
+  document.querySelectorAll('.custom-mode-btn').forEach((b) => {
+    const on = b.dataset.value === selectedCustomMode;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+
+  const kanaEl = document.getElementById('kanaMode');
+  if (kanaEl && entry.kanaMode) {
+    kanaEl.value = entry.kanaMode;
+    selectedKanaMode = entry.kanaMode;
+  }
+
+  const kat = document.getElementById('includeKatakana');
+  if (kat) kat.checked = !!entry.includeKatakana;
+
+  const kg = document.getElementById('kanjiGrade');
+  if (kg && entry.kanjiGrade != null) kg.value = String(entry.kanjiGrade);
+  selectedKanjiGrade = kg ? parseInt(kg.value, 10) || 1 : entry.kanjiGrade || 1;
+
+  const km = document.getElementById('kanjiMode');
+  if (km) {
+    const wm = entry.kanjiMode === 'writing' ? 'writing' : 'reading';
+    km.value = wm;
+    selectedKanjiMode = wm;
+  }
+
+  const qc = document.getElementById('questionCountPro');
+  if (qc && entry.questionCountPro != null) qc.value = String(entry.questionCountPro);
+
+  const as = document.getElementById('includeAnswersSheet');
+  if (as) as.checked = !!entry.includeAnswersSheet;
+
+  setCustomWordsFromSnapshot(entry.customWords);
+
+  refreshCustomWordControl();
+  refreshKatakanaToggleRow();
+  refreshKanjiSettingsRow();
+  refreshQuestionCountRow();
+  refreshKanaModeControl();
+  refreshAnswerSheetRow();
+  applyPlanTierToUI();
+}
+
+function openHistoryModal() {
+  const modal = document.getElementById('historyModal');
+  renderHistoryPanels();
+  if (modal) {
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeHistoryModal() {
+  const modal = document.getElementById('historyModal');
+  if (modal) modal.classList.remove('open');
+  if (!document.getElementById('planModal')?.classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+}
+
+function closeHistoryModalOutside(event) {
+  if (event.target === document.getElementById('historyModal')) {
+    closeHistoryModal();
+  }
+}
+
+function setHistoryTab(which) {
+  const listPanel = document.getElementById('historyListPanel');
+  const favPanel = document.getElementById('historyFavPanel');
+  const tabList = document.getElementById('historyTabBtn');
+  const tabFav = document.getElementById('historyFavTabBtn');
+  const isList = which === 'list';
+  if (listPanel) listPanel.hidden = !isList;
+  if (favPanel) favPanel.hidden = isList;
+  tabList?.classList.toggle('history-tab--active', isList);
+  tabFav?.classList.toggle('history-tab--active', !isList);
+  tabList?.setAttribute('aria-selected', isList ? 'true' : 'false');
+  tabFav?.setAttribute('aria-selected', !isList ? 'true' : 'false');
+}
+
+function renderHistoryPanels() {
+  const HS = typeof HistoryStore !== 'undefined' ? HistoryStore : null;
+  const listEl = document.getElementById('historyListPanel');
+  const favEl = document.getElementById('historyFavPanel');
+  const hint = document.getElementById('historyPlanHint');
+  if (!listEl || !favEl) return;
+
+  if (hint) {
+    hint.textContent = isProUser
+      ? '有料版：履歴・お気に入りは無制限です。'
+      : '無料版：履歴は最大3件（古い順に自動削除）・お気に入りは1件まで。';
+  }
+
+  if (!HS) {
+    listEl.innerHTML = '<p class="history-empty">履歴機能を読み込めませんでした。</p>';
+    favEl.innerHTML = '';
+    return;
+  }
+
+  const items = HS.loadHistory();
+  if (!items.length) {
+    listEl.innerHTML =
+      '<p class="history-empty">まだ履歴がありません。<br>「プリントを生成する」ときに自動で保存されます。</p>';
+  } else {
+    listEl.innerHTML = '';
+    items.forEach((entry) => {
+      listEl.appendChild(buildHistoryCardEl(entry, 'history'));
+    });
+  }
+
+  const favs = HS.loadFavorites();
+  if (!favs.length) {
+    favEl.innerHTML =
+      '<p class="history-empty">お気に入りはありません。<br>履歴の「お気に入り」から追加できます（無料版は1件まで）。</p>';
+  } else {
+    favEl.innerHTML = '';
+    favs.forEach((entry) => {
+      favEl.appendChild(buildHistoryCardEl(entry, 'favorite'));
+    });
+  }
+}
+
+function buildHistoryCardEl(entry, kind) {
+  const wrap = document.createElement('div');
+  wrap.className = 'history-card';
+
+  const titleEl = document.createElement('p');
+  titleEl.className = 'history-card-title';
+  titleEl.textContent = formatDisplayTitle(entry);
+
+  const metaEl = document.createElement('p');
+  metaEl.className = 'history-card-meta';
+  const auto = formatAutoHistoryTitle(entry);
+  metaEl.textContent = `${formatHistoryDate(entry.createdAt || entry.favoritedAt)} · ${auto}`;
+
+  const actions = document.createElement('div');
+  actions.className = 'history-card-actions';
+
+  const regen = document.createElement('button');
+  regen.type = 'button';
+  regen.className = 'history-mini-btn history-mini-btn--primary';
+  regen.innerHTML = '<i class="fas fa-bolt"></i> 再生成';
+  regen.onclick = () => historyRegenerate(entry);
+
+  const edit = document.createElement('button');
+  edit.type = 'button';
+  edit.className = 'history-mini-btn';
+  edit.innerHTML = '<i class="fas fa-sliders-h"></i> 編集';
+  edit.onclick = () => historyEdit(entry);
+
+  const rename = document.createElement('button');
+  rename.type = 'button';
+  rename.className = 'history-mini-btn';
+  rename.innerHTML = '<i class="fas fa-pen"></i> 名前';
+  rename.onclick = () => historyRename(entry, kind);
+
+  actions.appendChild(regen);
+  actions.appendChild(edit);
+  actions.appendChild(rename);
+
+  if (kind === 'history') {
+    const HS = HistoryStore;
+    const fav = document.createElement('button');
+    fav.type = 'button';
+    fav.className = 'history-mini-btn';
+    fav.innerHTML = HS.isHistoryFavorited(entry.id)
+      ? '<i class="fas fa-star"></i> お気に入り解除'
+      : '<i class="far fa-star"></i> お気に入り';
+    if (HS.isHistoryFavorited(entry.id)) fav.classList.add('history-mini-btn--fav-on');
+    fav.onclick = () => historyToggleFavorite(entry);
+    actions.appendChild(fav);
+  } else {
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'history-mini-btn history-mini-btn--danger';
+    del.innerHTML = '<i class="fas fa-trash"></i> 削除';
+    del.onclick = () => historyRemoveFavorite(entry.id);
+    actions.appendChild(del);
+  }
+
+  wrap.appendChild(titleEl);
+  wrap.appendChild(metaEl);
+  wrap.appendChild(actions);
+  return wrap;
+}
+
+function historyRegenerate(entry) {
+  closeHistoryModal();
+  applySnapshotToUI(entry);
+  __historyGenOverride = {
+    fromHistory: true,
+    forContent: entry.content,
+    customPayload: entry.customPayload === undefined ? null : cloneJson(entry.customPayload),
+  };
+  generatePrint();
+}
+
+function historyEdit(entry) {
+  closeHistoryModal();
+  applySnapshotToUI(entry);
+  document.getElementById('controlPanel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function historyToggleFavorite(entry) {
+  const HS = HistoryStore;
+  const res = HS.toggleFavoriteFromHistory(entry, isProUser);
+  if (!res.ok && res.reason === 'limit') {
+    openPlanModal('お気に入りは無料版では1件までです。有料版なら無制限に保存できます。');
+    return;
+  }
+  renderHistoryPanels();
+}
+
+function historyRemoveFavorite(id) {
+  HistoryStore.removeFavorite(id);
+  renderHistoryPanels();
+}
+
+function historyRename(entry, kind) {
+  const HS = HistoryStore;
+  const cur = formatDisplayTitle(entry);
+  const next = window.prompt('表示名（一覧に表示されます）', cur);
+  if (next === null) return;
+  const trimmed = String(next).trim();
+  if (kind === 'history') {
+    HS.updateHistoryTitle(entry.id, trimmed);
+  } else {
+    HS.updateFavoriteTitle(entry.id, trimmed);
+  }
+  renderHistoryPanels();
+}
+
 /** 無料時は上級を選べないよう UI を更新 */
 function refreshLevelButtons() {
   const adv = document.querySelector('.level-btn[data-value="advanced"]');
@@ -694,6 +1047,9 @@ document.getElementById('trialNoticeCloseBtn')?.addEventListener('click', () => 
    プリント生成
 ════════════════════════════════════════ */
 function generatePrint() {
+  const histOverrideSnap = __historyGenOverride;
+  __historyGenOverride = null;
+
   const levelRaw = document.querySelector('.level-btn.active')?.dataset.value || selectedLevel;
   const content  = document.querySelector('.content-btn.active')?.dataset.value || selectedContent;
   const level = getEffectiveLevelForContent(content, levelRaw);
@@ -773,8 +1129,16 @@ function generatePrint() {
   const wantAnswers =
     isProUser && document.getElementById('includeAnswersSheet')?.checked;
 
+  const useHistPayload =
+    histOverrideSnap &&
+    histOverrideSnap.fromHistory &&
+    histOverrideSnap.forContent === content;
+
   let customPayload = null;
-  if (content === 'custom') {
+  if (useHistPayload) {
+    customPayload =
+      histOverrideSnap.customPayload === undefined ? null : cloneJson(histOverrideSnap.customPayload);
+  } else if (content === 'custom') {
     const words = getCustomWordsFromUI();
     if (words.length < 1) {
       alert('カスタム問題では単語を1つ以上入力してください。');
@@ -860,6 +1224,14 @@ function generatePrint() {
       const section = document.getElementById('previewSection');
       section.style.display = 'block';
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      saveSuccessfulGenerationToHistory({
+        content,
+        levelRaw,
+        level,
+        count,
+        customPayload,
+        wantAnswers,
+      });
       incrementFreeGenerationCount();
       if (
         !isProUser &&
@@ -1377,8 +1749,13 @@ function toggleFaq(btn) {
    キーボードショートカット
 ════════════════════════════════════════ */
 document.addEventListener('keydown', e => {
-  // Escape → モーダルを閉じる
+  // Escape → 手前のモーダルを閉じる
   if (e.key === 'Escape') {
+    const hist = document.getElementById('historyModal');
+    if (hist && hist.classList.contains('open')) {
+      closeHistoryModal();
+      return;
+    }
     closePlanModal();
   }
   // Enter（input以外）→ プリント生成

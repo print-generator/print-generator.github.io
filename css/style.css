@@ -149,6 +149,31 @@ body {
   outline-offset: 2px;
 }
 
+.nav-btn-history {
+  background: var(--white);
+  color: var(--primary);
+  border: 2px solid rgba(249, 115, 22, 0.35);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-family: var(--font);
+  font-size: .85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .2s;
+  margin-left: 4px;
+}
+.nav-btn-history:hover {
+  border-color: var(--primary);
+  background: rgba(249, 115, 22, 0.06);
+}
+.nav-btn-history:focus-visible {
+  outline: 3px solid var(--primary-soft);
+  outline-offset: 2px;
+}
+
 /* ============================================
    ヒーロー
    ============================================ */
@@ -2417,6 +2442,128 @@ body.lp-pricing-page {
 .modal-detail-btn:focus-visible {
   outline: 3px solid var(--primary-soft);
   outline-offset: 2px;
+}
+
+/* ── 履歴モーダル ── */
+.history-modal-box {
+  max-width: 520px;
+  width: 92vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+.history-modal-plan-hint {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  margin: 6px 0 0;
+  font-weight: 500;
+}
+.history-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  flex-shrink: 0;
+  background: var(--white);
+}
+.history-tab {
+  flex: 1;
+  padding: 12px 10px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.history-tab:hover {
+  color: var(--text);
+}
+.history-tab--active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+.history-modal-body {
+  flex: 1;
+  min-height: 120px;
+  max-height: min(52vh, 420px);
+  overflow-y: auto;
+  padding-top: 8px;
+}
+.modal-footer--history {
+  justify-content: flex-end;
+}
+.history-empty {
+  text-align: center;
+  color: var(--text-sub);
+  font-size: 0.9rem;
+  padding: 28px 16px;
+}
+.history-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  background: var(--bg);
+}
+.history-card-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin: 0 0 4px;
+  line-height: 1.35;
+}
+.history-card-meta {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  margin: 0 0 10px;
+}
+.history-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.history-mini-btn {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.history-mini-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.history-mini-btn--primary {
+  border-color: var(--primary);
+  background: rgba(249, 115, 22, 0.08);
+  color: var(--primary);
+}
+.history-mini-btn--danger {
+  border-color: rgba(220, 38, 38, 0.35);
+  color: #b91c1c;
+}
+.history-mini-btn--danger:hover {
+  border-color: #dc2626;
+  background: rgba(254, 226, 226, 0.5);
+}
+.history-mini-btn--fav-on {
+  border-color: rgba(234, 179, 8, 0.6);
+  background: rgba(254, 249, 195, 0.6);
+  color: #a16207;
 }
 
 /* ============================================

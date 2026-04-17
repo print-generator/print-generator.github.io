@@ -60,6 +60,9 @@
       <a href="#faq" class="nav-link">FAQ</a>
       <a href="pricing.html" class="nav-link nav-link--sub">説明</a>
       <a href="pricing.html" class="nav-link nav-link--pro">有料版</a>
+      <button type="button" class="nav-btn-history" onclick="openHistoryModal()" title="生成した設定の履歴・お気に入り">
+        <i class="fas fa-clock-rotate-left"></i> 履歴
+      </button>
       <button type="button" class="nav-btn-premium" onclick="openPlanModal()">
         <i class="fas fa-crown"></i> 機能
       </button>
@@ -654,6 +657,33 @@
   </div>
 </div>
 
+<!-- ===== 履歴・お気に入りモーダル ===== -->
+<div class="modal-overlay no-print" id="historyModal" onclick="closeHistoryModalOutside(event)">
+  <div class="modal-box history-modal-box" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+    <div class="modal-header">
+      <div>
+        <span class="modal-badge"><i class="fas fa-clock-rotate-left"></i> 履歴</span>
+        <h2 class="modal-title" id="historyModalTitle">プリントの履歴</h2>
+        <p class="history-modal-plan-hint" id="historyPlanHint"></p>
+      </div>
+      <button class="modal-close" type="button" onclick="closeHistoryModal()" aria-label="閉じる">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="history-tabs" role="tablist">
+      <button type="button" class="history-tab history-tab--active" id="historyTabBtn" data-history-tab="list" onclick="setHistoryTab('list')" role="tab" aria-selected="true">履歴一覧</button>
+      <button type="button" class="history-tab" id="historyFavTabBtn" data-history-tab="fav" onclick="setHistoryTab('fav')" role="tab" aria-selected="false">お気に入り</button>
+    </div>
+    <div class="modal-body history-modal-body">
+      <div id="historyListPanel" class="history-panel"></div>
+      <div id="historyFavPanel" class="history-panel" hidden></div>
+    </div>
+    <div class="modal-footer modal-footer--history">
+      <button type="button" class="modal-close-btn" onclick="closeHistoryModal()">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/data/sortQuestionData.js"></script>
 <script src="js/sortQuestionGenerator.js"></script>
 <script src="js/data.js"></script>
@@ -662,6 +692,7 @@
 <script src="js/data/kanjiGrade3.js"></script>
 <script src="js/generator.js"></script>
 <script src="js/plan-core.bundle.js"></script>
+<script src="js/historyStore.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
