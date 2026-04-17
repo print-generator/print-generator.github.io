@@ -348,6 +348,7 @@ function greedyPrintPackFromSegments(
   roomRestClosed,
   safetyPx,
   overflowAllowPx,
+  kindRoomBonusPx,
   debug
 ) {
   const n = cardHtmls.length;
@@ -382,6 +383,8 @@ function greedyPrintPackFromSegments(
       const len = nextE - s;
       const span = spanFor(s, len);
       const remAfter = n - nextE;
+      const isLastPageCandidate = remAfter === 0;
+      const kindBonus = getKindRoomBonusPx(kindRoomBonusPx, isFirstPage, isLastPageCandidate);
       const room =
         remAfter === 0
           ? isFirstPage
@@ -390,10 +393,11 @@ function greedyPrintPackFromSegments(
           : isFirstPage
             ? roomFirstOpen
             : roomRestOpen;
-      if (span <= room - safetyPx + overflowAllowPx) {
+      const effectiveRoom = room + kindBonus;
+      if (span <= effectiveRoom - safetyPx + overflowAllowPx) {
         e = nextE;
       } else {
-        if (debug && remAfter > 0 && span <= room && span > room - safetyPx) {
+        if (debug && remAfter > 0 && span <= effectiveRoom && span > effectiveRoom - safetyPx) {
           console.warn('[printPackDebug] segment: next chunk fits ROOM but blocked by safety only', {
             page: sizes.length + 1,
             isFirstPage,
@@ -401,17 +405,21 @@ function greedyPrintPackFromSegments(
             len,
             spanPx: Math.round(span * 100) / 100,
             roomPx: Math.round(room * 100) / 100,
+            effectiveRoomPx: Math.round(effectiveRoom * 100) / 100,
+            kindBonusPx: kindBonus,
             safetyPx,
             overflowAllowPx,
           });
         }
-        if (debug && remAfter > 0 && span > room && span <= room + overflowAllowPx + 2.5) {
+        if (debug && remAfter > 0 && span > effectiveRoom && span <= effectiveRoom + overflowAllowPx + 2.5) {
           console.warn('[printPackDebug] segment: slightly over ROOM', {
             page: sizes.length + 1,
             isFirstPage,
             len,
             spanPx: Math.round(span * 100) / 100,
             roomPx: Math.round(room * 100) / 100,
+            effectiveRoomPx: Math.round(effectiveRoom * 100) / 100,
+            kindBonusPx: kindBonus,
             safetyPx,
             overflowAllowPx,
           });
@@ -440,7 +448,8 @@ function buildPackDebugDiagnostics(
   roomFirstOpen,
   roomFirstClosed,
   roomRestOpen,
-  roomRestClosed
+  roomRestClosed,
+  kindRoomBonusPx
 ) {
   const pages = [];
   let start = 0;
@@ -451,6 +460,8 @@ function buildPackDebugDiagnostics(
     const room = isLast
       ? (isFirst ? roomFirstClosed : roomRestClosed)
       : (isFirst ? roomFirstOpen : roomRestOpen);
+    const kindBonus = getKindRoomBonusPx(kindRoomBonusPx, isFirst, isLast);
+    const effectiveRoom = room + kindBonus;
     const span = measureSegmentStackPx(
       host,
       cardHtmls,
@@ -470,7 +481,10 @@ function buildPackDebugDiagnostics(
       kind: isFirst ? (isLast ? 'first+last' : 'first') : (isLast ? 'last' : 'middle'),
       measuredGridPx: Math.round(span * 100) / 100,
       roomPx: Math.round(room * 100) / 100,
+      kindBonusPx: Math.round(kindBonus * 100) / 100,
+      effectiveRoomPx: Math.round(effectiveRoom * 100) / 100,
       slackPx: Math.round((room - span) * 100) / 100,
+      effectiveSlackPx: Math.round((effectiveRoom - span) * 100) / 100,
     });
     start += len;
   }
@@ -519,6 +533,7 @@ function getPackAggressiveTuning(ctx) {
       safetyPx: 0,
       roomRoundEpsPx: 7.5,
       overflowAllowPx: 14,
+      kindRoomBonusPx: { first: 2, middle: 3.5, last: 1 },
     };
   }
   if (isSentenceTarget) {
@@ -526,6 +541,7 @@ function getPackAggressiveTuning(ctx) {
       safetyPx: 0.1,
       roomRoundEpsPx: 5.5,
       overflowAllowPx: 11,
+      kindRoomBonusPx: { first: 1.5, middle: 3, last: 0.8 },
     };
   }
   if (isNarabikaeTarget) {
@@ -533,9 +549,23 @@ function getPackAggressiveTuning(ctx) {
       safetyPx: 0.15,
       roomRoundEpsPx: 4.5,
       overflowAllowPx: 9,
+      kindRoomBonusPx: { first: 1.2, middle: 2.2, last: 0.6 },
     };
   }
-  return { safetyPx: 1.5, roomRoundEpsPx: 0.5, overflowAllowPx: 0 };
+  return {
+    safetyPx: 1.5,
+    roomRoundEpsPx: 0.5,
+    overflowAllowPx: 0,
+    kindRoomBonusPx: { first: 0, middle: 0, last: 0 },
+  };
+}
+
+function getKindRoomBonusPx(kindRoomBonusPx, isFirstPage, isLastPage) {
+  const map = kindRoomBonusPx || {};
+  if (isFirstPage && isLastPage) return Number(map.first || 0);
+  if (isFirstPage) return Number(map.first || 0);
+  if (isLastPage) return Number(map.last || 0);
+  return Number(map.middle || 0);
 }
 
 /**
@@ -612,6 +642,7 @@ function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, foot
       roomRestClosed,
       SAFETY,
       OVERFLOW_ALLOW,
+      tuning.kindRoomBonusPx,
       debug
     );
 
@@ -647,7 +678,8 @@ function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, foot
           roomFirstOpen,
           roomFirstClosed,
           roomRestOpen,
-          roomRestClosed
+          roomRestClosed,
+          tuning.kindRoomBonusPx
         );
         globalThis.__PRINT_PACK_LAST = {
           firstPageCardsClass: k0,
@@ -686,6 +718,7 @@ function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, foot
         SAFETY,
         ROOM_ROUND_EPS,
         OVERFLOW_ALLOW,
+        KIND_ROOM_BONUS: tuning.kindRoomBonusPx,
       });
       try {
         if (globalThis.__PRINT_PACK_LAST && globalThis.__PRINT_PACK_LAST.pageDiagnostics) {
