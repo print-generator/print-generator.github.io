@@ -59,10 +59,10 @@ export interface PlanGateInput {
   genre: AppGenre;
   difficulty: Difficulty;
   freeGenerationsUsed: number;
+  /** 無料版かつ当該ジャンルで「本日の体験」を既に消費したか（日付リセットは app 側） */
   premiumGenreTrialConsumed: boolean;
   /**
-   * @deprecated validateGenerationGate では未使用。互換のため残す（常に false でよい）
-   * ひらがな迷路体験済みは premiumGenreTrialConsumed に統合済み。
+   * 旧 bundle 互換：迷路で本日体験済みなら true（app は迷路ジャンル時に premium と同趣旨で渡す）
    */
   mazeHiraganaTrialConsumed: boolean;
 }

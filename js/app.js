@@ -67,24 +67,98 @@ const MAZE_HIRAGANA_MAX_QUESTIONS = PlanCore?.MAZE_HIRAGANA_MAX_QUESTIONS ?? 10;
 const PREMIUM_TRIAL_GENRE_LABEL = '文章問題・並び替え・ひらがな迷路';
 const LS_FREE_GEN_TOTAL_KEY = 'homePrint_freeGenTotal_v2';
 const LS_FREE_GEN_DATE_KEY = 'homePrint_freeGenDateJst_v2';
-/** 文章問題・並び替え・ひらがな迷路の「有料ジャンル体験」は通算1回まで（'1' で使用済み） */
+/** 旧「通算1回」体験フラグ（日次 trial へ移行時に参照） */
 const LS_PREMIUM_GENRE_TRIAL_KEY = 'homePrint_premiumGenreTrialConsumed_v1';
 const LS_SENTENCE_TRIAL_COUNT_KEY = 'homePrint_sentenceTrialCount_v1';
 const LS_NARABIKAE_TRIAL_COUNT_KEY = 'homePrint_narabikaeTrialCount_v1';
-/** ひらがな迷路：無料1回体験済み（'1'） */
 const LS_MAZE_HIRAGANA_TRIAL_KEY = 'homePrint_mazeHiraganaTrialConsumed_v1';
+/** 日次 trial（v2）移行済みマーカー */
+const LS_TRIAL_DAILY_MIGRATED_V2 = 'homePrint_premiumTrialDailyMigration_v2';
+
+/** ジャンルごとに「最後に無料体験を使った日」（YYYY-MM-DD JST）。当日と一致すれば本日分消化済み */
+function getTrialLastYmdStorageKey(genre) {
+  return `homePrint_premiumTrialLastYmd_${genre}`;
+}
 
 /** 履歴からの再生成時、保存済み customPayload をそのまま使う */
 let __historyGenOverride = null;
 
-/** 旧キー：迷路のみ体験済みのユーザー → 共通フラグへ寄せる */
-function migrateMazeTrialIntoPremiumConsumed() {
+/** 前日の日付キー（JST・移行用） */
+function getYesterdayJstDateKey() {
+  try {
+    const parts = new Intl.DateTimeFormat('ja-JP', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date(Date.now() - 86400000));
+    const y = parts.find((p) => p.type === 'year')?.value || '0000';
+    const m = parts.find((p) => p.type === 'month')?.value || '00';
+    const d = parts.find((p) => p.type === 'day')?.value || '00';
+    return `${y}-${m}-${d}`;
+  } catch (_e) {
+    return new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  }
+}
+
+function getTrialLastUseYmd(genre) {
+  try {
+    return localStorage.getItem(getTrialLastYmdStorageKey(genre)) || '';
+  } catch (_e) {
+    return '';
+  }
+}
+
+function setTrialLastUseYmd(genre, ymd) {
+  try {
+    localStorage.setItem(getTrialLastYmdStorageKey(genre), ymd);
+  } catch (_e) {
+    /* ignore */
+  }
+}
+
+/**
+ * 旧「通算1回」ストレージを「前日に使った」日次 trial に移す（翌日から毎日1回に戻す）
+ */
+function migrateLegacyTrialKeysToDailyPerGenre() {
   if (isProUser) return;
   try {
-    if (localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) === '1') return;
-    if (localStorage.getItem(LS_MAZE_HIRAGANA_TRIAL_KEY) === '1') {
-      localStorage.setItem(LS_PREMIUM_GENRE_TRIAL_KEY, '1');
+    if (localStorage.getItem(LS_TRIAL_DAILY_MIGRATED_V2) === '1') return;
+
+    const yYesterday = getYesterdayJstDateKey();
+    const legacyPrem = localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) === '1';
+    const legacyMaze = localStorage.getItem(LS_MAZE_HIRAGANA_TRIAL_KEY) === '1';
+    let s = 0;
+    let n = 0;
+    try {
+      s = parseInt(localStorage.getItem(LS_SENTENCE_TRIAL_COUNT_KEY) || '0', 10) || 0;
+      n = parseInt(localStorage.getItem(LS_NARABIKAE_TRIAL_COUNT_KEY) || '0', 10) || 0;
+    } catch (_e) {
+      /* ignore */
     }
+
+    if (legacyPrem || s > 0 || n > 0) {
+      if (!getTrialLastUseYmd('sentence')) setTrialLastUseYmd('sentence', yYesterday);
+      if (!getTrialLastUseYmd('narabikae')) setTrialLastUseYmd('narabikae', yYesterday);
+    }
+    if (legacyMaze) {
+      if (!getTrialLastUseYmd('maze_hiragana')) setTrialLastUseYmd('maze_hiragana', yYesterday);
+    }
+
+    localStorage.setItem(LS_TRIAL_DAILY_MIGRATED_V2, '1');
+  } catch (_e) {
+    /* ignore */
+  }
+}
+
+/** 旧キーからの移行（日次キーが未設定のときのみ） */
+function migratePremiumGenreTrialFromLegacy() {
+  if (isProUser) return;
+  try {
+    if (localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) !== null) return;
+    const s = parseInt(localStorage.getItem(LS_SENTENCE_TRIAL_COUNT_KEY) || '0', 10) || 0;
+    const n = parseInt(localStorage.getItem(LS_NARABIKAE_TRIAL_COUNT_KEY) || '0', 10) || 0;
+    if (s > 0 || n > 0) localStorage.setItem(LS_PREMIUM_GENRE_TRIAL_KEY, '1');
   } catch (_e) {
     /* ignore */
   }
@@ -122,44 +196,61 @@ function ensureDailyFreeQuotaSynced() {
   }
 }
 
-/** 旧キーから移行：すでに文章／並び替えを使っていたユーザーは体験済みとみなす */
-function migratePremiumGenreTrialFromLegacy() {
+/** trial 判定の直前に必ず呼ぶ（レガシー移行・日次 v2 移行） */
+function ensurePremiumTrialStorageReady() {
   if (isProUser) return;
-  try {
-    if (localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) !== null) return;
-    const s = parseInt(localStorage.getItem(LS_SENTENCE_TRIAL_COUNT_KEY) || '0', 10) || 0;
-    const n = parseInt(localStorage.getItem(LS_NARABIKAE_TRIAL_COUNT_KEY) || '0', 10) || 0;
-    if (s > 0 || n > 0) localStorage.setItem(LS_PREMIUM_GENRE_TRIAL_KEY, '1');
-  } catch (_e) {
-    /* ignore */
-  }
-}
-
-function isPremiumGenreTrialConsumed() {
-  if (isProUser) return false;
   migratePremiumGenreTrialFromLegacy();
-  migrateMazeTrialIntoPremiumConsumed();
-  try {
-    return localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) === '1';
-  } catch (_e) {
-    return false;
-  }
+  migrateLegacyTrialKeysToDailyPerGenre();
 }
 
-function markPremiumGenreTrialConsumed() {
-  if (isProUser) return;
-  try {
-    localStorage.setItem(LS_PREMIUM_GENRE_TRIAL_KEY, '1');
-    /* 旧キーと整合（移行済みユーザー向け） */
-    localStorage.setItem(LS_MAZE_HIRAGANA_TRIAL_KEY, '1');
-  } catch (_e) {
-    /* ignore */
-  }
+/** 無料版：当該ジャンルで「本日の体験分」を既に使ったか（JST の日付キーで比較） */
+function isPremiumTrialUsedToday(genre) {
+  if (!isPremiumTrialGenre(genre) || isProUser) return false;
+  ensurePremiumTrialStorageReady();
+  const last = getTrialLastUseYmd(genre);
+  const today = getJstDateKey();
+  return last === today;
+}
+
+function isPremiumTrialAvailableToday(genre) {
+  if (!isPremiumTrialGenre(genre) || isProUser) return true;
+  return !isPremiumTrialUsedToday(genre);
+}
+
+function markPremiumTrialUsedTodayForGenre(genre) {
+  if (!isPremiumTrialGenre(genre) || isProUser) return;
+  setTrialLastUseYmd(genre, getJstDateKey());
 }
 
 /** 有料ジャンル体験の対象ジャンルか（判定・マークの共通化） */
 function isPremiumTrialGenre(content) {
   return content === 'sentence' || content === 'narabikae' || content === 'maze_hiragana';
+}
+
+/**
+ * 無料体験カードの見た目（本日分消化済み）
+ */
+function refreshPremiumTrialGenreCards() {
+  document.querySelectorAll('.content-btn--trial').forEach((btn) => {
+    const g = btn.dataset.value;
+    if (!g || !isPremiumTrialGenre(g)) return;
+    const exhausted = !isProUser && isPremiumTrialUsedToday(g);
+    btn.classList.toggle('genre-card--trial-exhausted-today', exhausted);
+    let badge = btn.querySelector('.genre-trial-day-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'genre-trial-day-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      btn.appendChild(badge);
+    }
+    badge.textContent = '本日の無料体験は終了';
+    badge.hidden = !exhausted;
+    if (exhausted) {
+      btn.setAttribute('aria-label', `${btn.querySelector('.genre-card-name')?.textContent?.trim() || ''}（本日の無料体験は終了）`);
+    } else {
+      btn.removeAttribute('aria-label');
+    }
+  });
 }
 
 /** 有料版のみ選択可。五十音・初級は教材上10問固定で選択より優先 */
@@ -253,8 +344,8 @@ function updateTrialNotice(show, featureName = '', mode = 'limit') {
       sub.textContent = `${PREMIUM_TRIAL_GENRE_LABEL}は有料プランでいつでもご利用いただけます。`;
       if (btn) btn.textContent = '有料プランを見る';
     } else {
-      title.textContent = '有料ジャンルの体験は終了しました。';
-      sub.textContent = `${featureName || PREMIUM_TRIAL_GENRE_LABEL}は有料プランでご利用いただけます。`;
+      title.textContent = '本日の無料体験は終了しました';
+      sub.textContent = `${featureName || PREMIUM_TRIAL_GENRE_LABEL}は、きょうはもう無料で生成できません。明日になればまた1回お試しいただけます。続けて使うには有料プランをご利用ください。`;
       if (btn) btn.textContent = '有料プランを見る';
     }
   }
@@ -942,7 +1033,7 @@ function applyPlanTierToUI() {
   refreshOneClickRow();
   updateFreeGenQuotaUI();
   migratePremiumGenreTrialFromLegacy();
-  migrateMazeTrialIntoPremiumConsumed();
+  migrateLegacyTrialKeysToDailyPerGenre();
   updateTrialNotice(false);
   refreshKatakanaGenerateNote();
   refreshKatakanaToggleRow();
@@ -957,6 +1048,7 @@ function applyPlanTierToUI() {
     customBtn.classList.toggle('content-btn--locked', !isProUser);
     customBtn.setAttribute('aria-disabled', !isProUser ? 'true' : 'false');
   }
+  refreshPremiumTrialGenreCards();
 }
 
 /* ════════════════════════════════════════
@@ -978,6 +1070,11 @@ function scrollMobileFlowStepIntoView(stepId) {
 
 document.querySelectorAll('.content-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    const pick = btn.dataset.value;
+    if (!isProUser && isPremiumTrialGenre(pick) && isPremiumTrialUsedToday(pick)) {
+      showPremiumGenreTrialExhaustedNotice();
+      return;
+    }
     if (!isProUser && btn.dataset.value === 'custom') {
       openFeatureLockedModal('custom');
       return;
@@ -1165,7 +1262,8 @@ function generatePrint() {
   const showName = true;
   const showDate = true;
 
-  const premiumTrialStillAvailable = !isProUser && !isPremiumGenreTrialConsumed();
+  const premiumTrialUsedTodayGate =
+    !isProUser && isPremiumTrialGenre(content) && isPremiumTrialUsedToday(content);
 
   if (PlanCore && typeof PlanCore.validateGenerationGate === 'function') {
     const gate = PlanCore.validateGenerationGate({
@@ -1173,9 +1271,9 @@ function generatePrint() {
       genre: content,
       difficulty: level,
       freeGenerationsUsed: getFreeGenerationsUsed(),
-      premiumGenreTrialConsumed: isPremiumGenreTrialConsumed(),
-      /* 旧 bundle の maze_hiragana_locked 判定用（体験済みは premium と同一フラグに統合済み） */
-      mazeHiraganaTrialConsumed: isPremiumGenreTrialConsumed(),
+      premiumGenreTrialConsumed: premiumTrialUsedTodayGate,
+      mazeHiraganaTrialConsumed:
+        !isProUser && content === 'maze_hiragana' && isPremiumTrialUsedToday('maze_hiragana'),
     });
     if (!gate.ok) {
       if (gate.kind === 'quota') {
@@ -1211,7 +1309,7 @@ function generatePrint() {
       openFeatureLockedModal('custom');
       return;
     }
-    if (isPremiumTrialGenre(content) && isPremiumGenreTrialConsumed()) {
+    if (premiumTrialUsedTodayGate) {
       showPremiumGenreTrialExhaustedNotice();
       return;
     }
@@ -1243,7 +1341,7 @@ function generatePrint() {
     customPayload = { words, mode: selectedCustomMode };
   } else if (content === 'hiragana') {
     customPayload = { hiraganaSetOrder: selectedHiraganaOrder };
-  } else if (content === 'sentence' && premiumTrialStillAvailable) {
+  } else if (content === 'sentence' && isPremiumTrialAvailableToday('sentence')) {
     customPayload = { sentenceTrialQuality: true };
   } else if (content === 'kanji') {
     customPayload = getKanjiPayloadFromUI();
@@ -1327,8 +1425,8 @@ function generatePrint() {
         wantAnswers,
       });
       incrementFreeGenerationCount();
-      if (!isProUser && premiumTrialStillAvailable && isPremiumTrialGenre(content)) {
-        markPremiumGenreTrialConsumed();
+      if (!isProUser && isPremiumTrialGenre(content)) {
+        markPremiumTrialUsedTodayForGenre(content);
         updateTrialNotice(true, '', 'after-first-use');
         applyPlanTierToUI();
       }

@@ -113,7 +113,10 @@ export function validateGenerationGate(input: PlanGateInput): PlanGateResult {
     if (input.genre === 'custom') {
       return { ok: false, kind: 'custom_locked' };
     }
-    /** 文章問題・並び替え・ひらがな迷路は同一の「有料ジャンル体験」フラグで判定（app.js と localStorage を同期） */
+    /**
+     * 文章問題・並び替え・ひらがな迷路：無料版はジャンルごとに 1 日 1 回まで。
+     * premiumGenreTrialConsumed = そのジャンルで「本日の体験分」を既に使った（app が日付キーで判定）
+     */
     const isPremiumTrialGenre =
       input.genre === 'sentence' || input.genre === 'narabikae' || input.genre === 'maze_hiragana';
     if (isPremiumTrialGenre && input.premiumGenreTrialConsumed) {

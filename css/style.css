@@ -4260,6 +4260,44 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
   opacity: 0.55;
 }
 
+/* 並び替え・文章・ひらがな迷路：本日の無料体験を使い切った状態（無料版） */
+.genre-card.content-btn--trial.genre-card--trial-exhausted-today {
+  cursor: pointer;
+  opacity: 0.8;
+  filter: grayscale(0.3) saturate(0.72);
+  background: #f1efec;
+  border-color: rgba(120, 113, 108, 0.42);
+  box-shadow: none;
+  padding-bottom: 40px;
+}
+.genre-card.content-btn--trial.genre-card--trial-exhausted-today:hover {
+  border-color: rgba(100, 95, 90, 0.55);
+  background: #ebe8e4;
+}
+.genre-card.content-btn--trial.genre-card--trial-exhausted-today.genre-card.active,
+.genre-card.content-btn--trial.genre-card--trial-exhausted-today.content-btn.active {
+  border-color: rgba(100, 95, 90, 0.6);
+  background: #e5e2de;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07);
+}
+.genre-trial-day-badge {
+  display: block;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #44403c;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(120, 113, 108, 0.4);
+  border-radius: 6px;
+  padding: 5px 6px;
+  line-height: 1.3;
+  text-align: center;
+  z-index: 2;
+}
+
 .level-row {
   display: flex;
   flex-wrap: wrap;
@@ -4791,6 +4829,15 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
     border-width: 3px;
     background: rgba(249, 115, 22, 0.14);
     box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+  }
+  .genre-card.content-btn--trial.genre-card--trial-exhausted-today.genre-card.active,
+  .genre-card.content-btn--trial.genre-card--trial-exhausted-today.content-btn.active {
+    border-width: 2px;
+    border-color: rgba(100, 95, 90, 0.65);
+    background: #e5e2de;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    filter: grayscale(0.3) saturate(0.72);
+    opacity: 0.82;
   }
 
   /* レベル：横3のまま高さアップ */
