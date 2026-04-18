@@ -74,7 +74,7 @@
 <section class="hero-flow no-print" id="top">
   <div class="hero-flow-inner">
     <h1 class="hero-flow-title">家庭学習プリントを1クリックで作成</h1>
-    <p class="hero-flow-sub">助詞・50音・めいろ・文章問題・漢字に対応</p>
+    <p class="hero-flow-sub">助詞・50音・めいろ・文章問題に対応</p>
     <p class="hero-flow-note"><i class="fas fa-gift"></i> 無料で今すぐ使えます</p>
     <a href="#generator" class="hero-flow-cta"><i class="fas fa-magic"></i> さっそくプリントを作る</a>
   </div>
@@ -98,7 +98,7 @@
       <!-- STEP 1 ジャンル -->
       <div class="flow-step">
         <div class="flow-step-head">
-          <span class="flow-step-badge">STEP 1</span>
+          <span class="flow-step-badge">ステップ 1</span>
           <h3 class="flow-step-title">ジャンルを選ぶ</h3>
         </div>
         <div class="genre-grid" id="contentOptions">
@@ -156,7 +156,7 @@
       <!-- STEP 2 レベル -->
       <div class="flow-step" id="levelStepCard">
         <div class="flow-step-head">
-          <span class="flow-step-badge">STEP 2</span>
+          <span class="flow-step-badge">ステップ 2</span>
           <h3 class="flow-step-title">レベルを選ぶ</h3>
         </div>
         <div class="level-row" id="levelOptions">
@@ -169,7 +169,7 @@
       <!-- STEP 3 詳細設定 -->
       <div class="flow-step flow-step--detail" id="detailSettingsCard">
         <div class="flow-step-head">
-          <span class="flow-step-badge">STEP 3</span>
+          <span class="flow-step-badge">ステップ 3</span>
           <h3 class="flow-step-title">詳細設定</h3>
         </div>
 
@@ -528,6 +528,14 @@
       <button type="button" class="modal-close-btn" onclick="closeHistoryModal()">閉じる</button>
     </div>
   </div>
+</div>
+
+<!-- スマホ：画面下部に生成へすぐアクセス（メインの生成ボタンが見えているときは非表示） -->
+<div class="mobile-gen-sticky no-print" id="mobileGenSticky" hidden>
+  <button type="button" class="mobile-gen-sticky__btn" onclick="generatePrint()" id="mobileGenStickyBtn">
+    <i class="fas fa-magic" aria-hidden="true"></i>
+    <span>プリントを生成する</span>
+  </button>
 </div>
 
 <script src="js/data/sortQuestionData.js"></script>

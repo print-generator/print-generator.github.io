@@ -1031,10 +1031,56 @@ document.querySelectorAll('#hiraganaOrderPills .pill-duo-btn').forEach((btn) => 
   });
 });
 
+/** スマホ用：下部固定の生成ボタン（メインの #generateBtn が見えているときは隠す） */
+let mobileGenStickyObserver = null;
+
+function initMobileGenStickyBar() {
+  const bar = document.getElementById('mobileGenSticky');
+  const btn = document.getElementById('generateBtn');
+  if (!bar || !btn) return;
+
+  function apply() {
+    document.documentElement.classList.remove('has-mobile-gen-sticky-pad');
+    bar.hidden = true;
+    if (mobileGenStickyObserver) {
+      mobileGenStickyObserver.disconnect();
+      mobileGenStickyObserver = null;
+    }
+    if (window.innerWidth > 768) return;
+
+    mobileGenStickyObserver = new IntersectionObserver(
+      ([e]) => {
+        const mainInView = e.isIntersecting;
+        bar.hidden = mainInView;
+        document.documentElement.classList.toggle('has-mobile-gen-sticky-pad', !mainInView);
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -8% 0px' }
+    );
+    mobileGenStickyObserver.observe(btn);
+  }
+
+  apply();
+  if (!initMobileGenStickyBar._resizeBound) {
+    initMobileGenStickyBar._resizeBound = true;
+    window.addEventListener(
+      'resize',
+      () => {
+        clearTimeout(initMobileGenStickyBar._t);
+        initMobileGenStickyBar._t = setTimeout(apply, 150);
+      },
+      { passive: true }
+    );
+  }
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', applyPlanTierToUI);
+  document.addEventListener('DOMContentLoaded', () => {
+    applyPlanTierToUI();
+    initMobileGenStickyBar();
+  });
 } else {
   applyPlanTierToUI();
+  initMobileGenStickyBar();
 }
 
 document.getElementById('trialNoticeCloseBtn')?.addEventListener('click', () => {
