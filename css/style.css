@@ -929,6 +929,36 @@ select.setting-select--locked {
   min-height: auto;
   overflow: visible;
 }
+
+/*
+ * PC・タブレット幅のプレビュー／印刷パック実測用：迷路は 273mm 印字域に 2 枚載せる高さに合わせる。
+ * （スマホは (max-width:600px) 側の .maze-svg と競合しないよう min-width:601px に限定）
+ */
+@media (min-width: 601px) {
+  .a4-sheet--maze .maze-card {
+    padding: 4px 4px 6px;
+  }
+  .a4-sheet--maze .maze-svg {
+    min-height: 58mm;
+    max-height: 72mm;
+  }
+  .a4-sheet--maze .maze-card--normal .maze-svg {
+    min-height: 58mm;
+    max-height: 74mm;
+  }
+  .a4-sheet--maze .maze-card--hiragana .maze-svg {
+    min-height: 52mm;
+    max-height: 66mm;
+  }
+  .a4-sheet--maze .maze-word-question {
+    margin-top: 2px;
+    font-size: 0.8rem;
+  }
+  .a4-sheet--maze .maze-answer-row {
+    margin-top: 6px;
+    gap: 5px;
+  }
+}
 .print-header {
   margin-bottom: 10px; padding-bottom: 8px;
   border-bottom: 3px solid var(--primary);
@@ -3000,22 +3030,22 @@ body.lp-pricing-page {
     gap: 0.55mm !important;
   }
   .maze-svg {
-    min-height: 84mm !important;
-    max-height: 92mm !important;
+    min-height: 64mm !important;
+    max-height: 76mm !important;
   }
   .maze-card {
-    padding: 2.5mm 2.5mm 3mm !important;
+    padding: 2.2mm 2.2mm 2.6mm !important;
     border-radius: 6px !important;
     border: 1pt solid #fed7aa !important;
     background: #ffffff !important;
   }
   .maze-card--normal .maze-svg {
-    min-height: 86mm !important;
-    max-height: 94mm !important;
+    min-height: 64mm !important;
+    max-height: 78mm !important;
   }
   .maze-card--hiragana .maze-svg {
-    min-height: 76mm !important;
-    max-height: 84mm !important;
+    min-height: 56mm !important;
+    max-height: 68mm !important;
   }
   .maze-word-question {
     margin-top: 2mm !important;
@@ -3481,16 +3511,16 @@ body.lp-pricing-page {
     padding-bottom: 1mm !important;
   }
   .print-page--maze.print-page--first .print-instruction {
-    padding: 6pt 9pt !important;
-    margin-bottom: 10pt !important;
-    font-size: 8.5pt !important;
-    line-height: 1.35 !important;
+    padding: 5pt 8pt !important;
+    margin-bottom: 8pt !important;
+    font-size: 8.4pt !important;
+    line-height: 1.32 !important;
   }
   .print-page--maze.print-page--first .question-card-content {
     gap: 1.4mm !important;
   }
   .print-page--maze .questions-grid .question-card:not(:last-child) {
-    margin-bottom: 0.85mm !important;
+    margin-bottom: 0.55mm !important;
   }
   .print-page--maze .question-card {
     padding: 1.6pt 3.8pt !important;
@@ -3499,16 +3529,16 @@ body.lp-pricing-page {
     padding: 1.6pt 3.8pt !important;
   }
   .print-page--maze .maze-svg {
-    min-height: 78mm !important;
-    max-height: 86mm !important;
+    min-height: 64mm !important;
+    max-height: 74mm !important;
   }
   .print-page--maze .maze-card--normal .maze-svg {
-    min-height: 78mm !important;
-    max-height: 88mm !important;
+    min-height: 64mm !important;
+    max-height: 76mm !important;
   }
   .print-page--maze .maze-card--hiragana .maze-svg {
-    min-height: 68mm !important;
-    max-height: 78mm !important;
+    min-height: 56mm !important;
+    max-height: 66mm !important;
   }
 
   /* ── ⑯ 絵付き単語カードを印刷向けに ── */

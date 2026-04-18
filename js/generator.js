@@ -552,6 +552,15 @@ function getPackAggressiveTuning(ctx) {
       kindRoomBonusPx: { first: 1.2, middle: 2.2, last: 0.6 },
     };
   }
+  const isMazePack = content === 'maze' || content === 'maze_hiragana';
+  if (isMazePack) {
+    return {
+      safetyPx: 0.35,
+      roomRoundEpsPx: 2,
+      overflowAllowPx: 5,
+      kindRoomBonusPx: { first: 1, middle: 1.5, last: 0.6 },
+    };
+  }
   return {
     safetyPx: 1.5,
     roomRoundEpsPx: 0.5,
@@ -1682,6 +1691,51 @@ function randomStartGoal(w, h) {
   return { start, goal };
 }
 
+/** BFS でスタートからの最短ステップ数（隣接セル＝1）。未到達は -1。 */
+function shortestStepDistances(cells, sx, sy, w, h) {
+  const dist = Array.from({ length: h }, () => Array(w).fill(-1));
+  const q = [[sx, sy]];
+  dist[sy][sx] = 0;
+  for (let i = 0; i < q.length; i++) {
+    const [x, y] = q[i];
+    const d = dist[y][x];
+    mazeNeighbors(x, y, w, h).forEach(([nx, ny]) => {
+      if (dist[ny][nx] !== -1) return;
+      if (!isConnected(cells, x, y, nx, ny)) return;
+      dist[ny][nx] = d + 1;
+      q.push([nx, ny]);
+    });
+  }
+  return dist;
+}
+
+/**
+ * 境界上のスタートから、境界上で到達可能な最遠セルをゴールにする（最短経路が長くなりやすい）。
+ * 数回ランダムスタートを試し、最良の（境界上の最大ステップ数）組を採用。
+ */
+function pickStartGoalLongBorderPath(cells, w, h) {
+  const pts = buildBorderPoints(w, h);
+  if (!pts.length) return randomStartGoal(w, h);
+  let bestPair = null;
+  let bestSteps = -1;
+  const trials = Math.min(18, Math.max(8, Math.floor((w + h) / 2)));
+  for (let t = 0; t < trials; t++) {
+    const startPt = pickOne(pts);
+    const distMap = shortestStepDistances(cells, startPt.x, startPt.y, w, h);
+    for (const g of pts) {
+      if (g.x === startPt.x && g.y === startPt.y) continue;
+      const s = distMap[g.y][g.x];
+      if (s < 0) continue;
+      if (s > bestSteps) {
+        bestSteps = s;
+        bestPair = { start: startPt, goal: g };
+      }
+    }
+  }
+  if (bestPair) return bestPair;
+  return randomStartGoal(w, h);
+}
+
 function buildMazeModel(level, mazeType, requireMinPathLen) {
   const confByLevel = {
     beginner: { w: 12, h: 9, cell: 30, width: [2.4, 3.4] },
@@ -1698,10 +1752,10 @@ function buildMazeModel(level, mazeType, requireMinPathLen) {
     base.w += 1;
     base.h += 1;
   }
-  for (let attempt = 0; attempt < 30; attempt++) {
+  for (let attempt = 0; attempt < 34; attempt++) {
     const cells = buildPerfectMaze(base.w, base.h);
     openExtraWalls(cells, typeExtra[mazeType] || 0);
-    const { start, goal } = randomStartGoal(base.w, base.h);
+    const { start, goal } = pickStartGoalLongBorderPath(cells, base.w, base.h);
     const path = solveMazePath(cells, [start.x, start.y], [goal.x, goal.y]);
     if (!path) continue;
     if (requireMinPathLen && path.length < requireMinPathLen) continue;
@@ -1862,7 +1916,9 @@ function buildMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelArg, force
   const answers = [];
   for (let i = 0; i < count; i++) {
     const mazeType = forcedType || pickOne(typePoolByLevel[level] || typePoolByLevel.beginner);
-    const model = buildMazeModel(level, mazeType, level === 'beginner' ? 10 : 14);
+    const minLenByLevel =
+      level === 'beginner' ? 17 : level === 'intermediate' ? 22 : 28;
+    const model = buildMazeModel(level, mazeType, minLenByLevel);
     if (!model) continue;
     const svg = buildMazeSvgWithLetters(model);
     cards.push(questionCard(i + 1, `<div class="maze-card maze-card--normal">${svg}</div>`));
@@ -1948,7 +2004,7 @@ function buildHiraganaMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelAr
     let done = false;
     for (let attempt = 0; attempt < 40 && !done; attempt++) {
       const picked = pickHiraganaMazeWord(categoryArg);
-      const model = buildMazeModel(level, pickOne(['normal', 'soft']), [...picked.word].length + 8);
+      const model = buildMazeModel(level, pickOne(['normal', 'soft']), [...picked.word].length + 10);
       if (!model || !model.path) continue;
       const letters = buildPathLetterPlacements(model.path, picked.word);
       if (!letters) continue;
