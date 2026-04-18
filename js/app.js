@@ -938,6 +938,20 @@ function applyPlanTierToUI() {
 /* ════════════════════════════════════════
    ボタントグル（コンテンツ / レベル）
 ════════════════════════════════════════ */
+/** スマホ：STEP2 / STEP3 へ自然にスクロール（768px以下のみ） */
+function scrollMobileFlowStepIntoView(stepId) {
+  if (window.innerWidth > 768) return;
+  const el = document.getElementById(stepId);
+  if (!el) return;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  requestAnimationFrame(() => {
+    el.scrollIntoView({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  });
+}
+
 document.querySelectorAll('.content-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (!isProUser && btn.dataset.value === 'maze_hiragana' && isMazeHiraganaTrialConsumed()) {
@@ -961,6 +975,7 @@ document.querySelectorAll('.content-btn').forEach(btn => {
     refreshKatakanaToggleRow();
     refreshKanjiSettingsRow();
     refreshQuestionCountUI();
+    scrollMobileFlowStepIntoView('levelStepCard');
   });
 });
 
@@ -978,6 +993,7 @@ document.querySelectorAll('.level-btn').forEach(btn => {
     btn.setAttribute('aria-pressed', 'true');
     selectedLevel = btn.dataset.value;
     refreshQuestionCountUI();
+    scrollMobileFlowStepIntoView('detailSettingsCard');
   });
 });
 
@@ -1031,15 +1047,25 @@ document.querySelectorAll('#hiraganaOrderPills .pill-duo-btn').forEach((btn) => 
   });
 });
 
-/** スマホ用：下部固定の生成ボタン（メインの #generateBtn が見えているときは隠す） */
+/** スマホ用：下部固定の生成（メイン #generateBtn が1pxでも見えたら非表示） */
 let mobileGenStickyObserver = null;
+let mobileGenStickyShown = false;
+let mobileGenStickyRaf = 0;
 
 function initMobileGenStickyBar() {
   const bar = document.getElementById('mobileGenSticky');
   const btn = document.getElementById('generateBtn');
   if (!bar || !btn) return;
 
+  function setStickyBarVisible(show) {
+    if (show === mobileGenStickyShown) return;
+    mobileGenStickyShown = show;
+    bar.hidden = !show;
+    document.documentElement.classList.toggle('has-mobile-gen-sticky-pad', show);
+  }
+
   function apply() {
+    mobileGenStickyShown = false;
     document.documentElement.classList.remove('has-mobile-gen-sticky-pad');
     bar.hidden = true;
     if (mobileGenStickyObserver) {
@@ -1049,12 +1075,21 @@ function initMobileGenStickyBar() {
     if (window.innerWidth > 768) return;
 
     mobileGenStickyObserver = new IntersectionObserver(
-      ([e]) => {
-        const mainInView = e.isIntersecting;
-        bar.hidden = mainInView;
-        document.documentElement.classList.toggle('has-mobile-gen-sticky-pad', !mainInView);
+      (entries) => {
+        const e = entries[0];
+        if (!e) return;
+        /* viewport と少しでも交差していればメインが見えている → 固定バーは出さない */
+        const mainVisible = e.isIntersecting;
+        cancelAnimationFrame(mobileGenStickyRaf);
+        mobileGenStickyRaf = requestAnimationFrame(() => {
+          setStickyBarVisible(!mainVisible);
+        });
       },
-      { threshold: 0.08, rootMargin: '0px 0px -8% 0px' }
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: [0, 0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1],
+      }
     );
     mobileGenStickyObserver.observe(btn);
   }
@@ -1073,14 +1108,25 @@ function initMobileGenStickyBar() {
   }
 }
 
+/** スマホ：FAQ は初期ですべて閉じる（復元状態の差し引き用） */
+function closeAllFaqItems() {
+  document.querySelectorAll('.faq-q').forEach((q) => {
+    q.classList.remove('open');
+    const a = q.nextElementSibling;
+    if (a && a.classList) a.classList.remove('open');
+  });
+}
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     applyPlanTierToUI();
     initMobileGenStickyBar();
+    if (window.innerWidth <= 768) closeAllFaqItems();
   });
 } else {
   applyPlanTierToUI();
   initMobileGenStickyBar();
+  if (window.innerWidth <= 768) closeAllFaqItems();
 }
 
 document.getElementById('trialNoticeCloseBtn')?.addEventListener('click', () => {

@@ -532,9 +532,15 @@
 
 <!-- スマホ：画面下部に生成へすぐアクセス（メインの生成ボタンが見えているときは非表示） -->
 <div class="mobile-gen-sticky no-print" id="mobileGenSticky" hidden>
-  <button type="button" class="mobile-gen-sticky__btn" onclick="generatePrint()" id="mobileGenStickyBtn">
-    <i class="fas fa-magic" aria-hidden="true"></i>
-    <span>プリントを生成する</span>
+  <button
+    type="button"
+    class="mobile-gen-sticky__btn"
+    onclick="generatePrint()"
+    id="mobileGenStickyBtn"
+    aria-label="プリントを生成する"
+  >
+    <i class="fas fa-magic mobile-gen-sticky__icon" aria-hidden="true"></i>
+    <span class="mobile-gen-sticky__label">生成</span>
   </button>
 </div>
 
