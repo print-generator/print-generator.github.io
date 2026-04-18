@@ -10,7 +10,7 @@ import type {
 } from '../types';
 
 /** 無料：1日あたりの生成回数上限（app.js の localStorage と値を一致させる） */
-export const FREE_GENERATION_LIMIT = 3;
+export const FREE_GENERATION_LIMIT = 5;
 
 export const PRO_QUESTION_COUNT_OPTIONS = [5, 10, 15, 20, 25] as const;
 

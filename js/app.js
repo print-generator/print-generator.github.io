@@ -24,7 +24,9 @@ let selectedContent = 'joshi';
 let selectedLevel   = 'beginner';
 let selectedCustomMode = 'trace';
 let selectedKanaMode = 'mix';
-/** 漢字：学年（UI #kanjiGrade、データ追加まで 1 のみ） */
+/** 五十音・初級：出題順（ランダム／あ〜わ順） */
+let selectedHiraganaOrder = 'random';
+/** 漢字：学年（履歴互換・UIからは非表示） */
 let selectedKanjiGrade = 1;
 /** 漢字：読み／書き（#kanjiMode） */
 let selectedKanjiMode = 'reading';
@@ -57,8 +59,8 @@ function getLevelLabel(level, content) {
 /** plan-core.bundle.js（src/config/planRules.ts）と同一値 */
 const PlanCore = typeof window !== 'undefined' ? window.PlanCore : undefined;
 
-/** 無料版のみカウント（1日あたり3回まで） */
-const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 3;
+/** 無料版のみカウント（planRules と一致） */
+const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 5;
 const LS_FREE_GEN_TOTAL_KEY = 'homePrint_freeGenTotal_v2';
 const LS_FREE_GEN_DATE_KEY = 'homePrint_freeGenDateJst_v2';
 /** 文章問題・並び替えの「有料ジャンル体験」は通算1回まで（'1' で使用済み） */
@@ -176,28 +178,36 @@ function resolveQuestionCountForPrint(content, level) {
   return 5;
 }
 
-/** 問題数行：五十音・初級のみ非表示（10問固定）。無料は表示のまま disabled＋固定5問 */
-function refreshQuestionCountRow() {
-  const row = document.getElementById('questionCountRow');
+/** 問題数ピルとヒント（五十音・初級は10問固定でピルは無効化） */
+function refreshQuestionCountUI() {
   const hint = document.getElementById('questionCountProHint');
   const sel = document.getElementById('questionCountPro');
-  if (!row) return;
   const levelRaw = document.querySelector('.level-btn.active')?.dataset.value || selectedLevel;
   const level = getEffectiveLevelForContent(selectedContent, levelRaw);
   const fixedHiraganaBeginner = selectedContent === 'hiragana' && level === 'beginner';
-  row.hidden = fixedHiraganaBeginner;
-  if (sel) {
-    sel.disabled = !isProUser;
-    sel.classList.toggle('setting-select--locked', !isProUser);
-    if (!isProUser) sel.value = '5';
-  }
+
+  if (sel && !isProUser) sel.value = '5';
+
+  document.querySelectorAll('#questionCountPills .count-pill').forEach((btn) => {
+    const q = btn.dataset.qty;
+    const active = sel && String(sel.value) === q;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    const n = parseInt(q, 10);
+    let disabled = false;
+    if (!isProUser && n !== 5) disabled = true;
+    if (isProUser && fixedHiraganaBeginner) disabled = true;
+    btn.disabled = disabled;
+    btn.classList.toggle('count-pill--disabled', disabled);
+  });
+
   if (hint) {
-    if (row.hidden) {
-      hint.textContent = '';
+    if (fixedHiraganaBeginner) {
+      hint.textContent = '五十音・初級は10問で出題されます。';
     } else if (!isProUser) {
-      hint.textContent = '無料版は5問固定です。有料版で変更できます。';
+      hint.textContent = '無料プランは5問で生成されます。';
     } else {
-      hint.textContent = '5〜25問から選べます。';
+      hint.textContent = '5〜20問から選べます。';
     }
   }
 }
@@ -252,7 +262,7 @@ function updateFreeGenQuotaUI() {
   el.hidden = false;
   const used = getFreeGenerationsUsed();
   const left = Math.max(0, FREE_GENERATION_LIMIT - used);
-  el.textContent = `無料版の生成：残り ${left} 回（1日${FREE_GENERATION_LIMIT}回まで）`;
+  el.textContent = `無料プラン：残り ${left} 回 / 1日${FREE_GENERATION_LIMIT}回まで`;
 }
 
 function refreshKatakanaGenerateNote() {
@@ -273,9 +283,8 @@ function refreshKatakanaToggleRow() {
     cb.checked = false;
     if (hint) hint.textContent = '※有料版のみ利用できます';
   } else if (hint) {
-    hint.textContent = 'オン：ひらがな＋カタカナ／オフ：ひらがなのみ';
+    hint.textContent = 'ONでひらがなとカタカナ、OFFでひらがなのみ';
   }
-  refreshKanaModeControl();
 }
 
 function getAllowKatakana() {
@@ -283,45 +292,24 @@ function getAllowKatakana() {
   return !!document.getElementById('includeKatakana')?.checked;
 }
 
-/** 五十音：セレクトの値をそのまま生成に渡す（有料・五十音選択時）。無料は常にひらがなのみ */
+/** 五十音：カタカナ含むONならミックス、OFFならひらがなのみ（従来セレクト廃止） */
 function getKanaMode() {
   if (!isProUser) return 'hiragana';
   if (selectedContent !== 'hiragana') return 'mix';
-  const sel = document.getElementById('kanaMode');
-  if (!sel || sel.disabled) return selectedKanaMode || 'hiragana';
-  const v = sel.value || 'mix';
-  selectedKanaMode = v;
-  return v;
+  return getAllowKatakana() ? 'mix' : 'hiragana';
 }
 
-function refreshKanaModeControl() {
-  const row = document.getElementById('kanaModeRow');
-  const select = document.getElementById('kanaMode');
-  const hint = document.getElementById('kanaModeHint');
-  const isHiragana = selectedContent === 'hiragana';
-  const show = isHiragana;
-  if (row) row.hidden = !show;
-  if (!select) return;
-  if (!show) {
-    select.disabled = true;
-    if (hint) {
-      hint.textContent = '「五十音」を選ぶと設定できます。';
-    }
-    return;
-  }
-  if (isProUser) {
-    select.disabled = false;
-    selectedKanaMode = select.value || 'mix';
-    if (hint) {
-      hint.textContent =
-        '初級のなぞりに反映されます（あ行〜わ行の10問構成はそのまま）。ミックスは行ごとにひらがな／カタカナ、カタカナのみ・ひらがなのみも選べます。';
-    }
-  } else {
-    select.disabled = true;
-    if (hint) {
-      hint.textContent = '有料版で「五十音」を選ぶと、カタカナの出題モードを選べます。';
-    }
-  }
+function setHiraganaOrder(order) {
+  selectedHiraganaOrder = order === 'sequential' ? 'sequential' : 'random';
+  document.querySelectorAll('#hiraganaOrderPills .pill-duo-btn').forEach((b) => {
+    const on = b.dataset.order === selectedHiraganaOrder;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+
+function refreshHiraganaOrderPills() {
+  setHiraganaOrder(selectedHiraganaOrder);
 }
 
 function openFeatureLockedModal(feature) {
@@ -383,10 +371,13 @@ function updatePlanBadge() {
 }
 
 function refreshAnswerSheetRow() {
-  const row = document.getElementById('answerSheetRow');
   const cb = document.getElementById('includeAnswersSheet');
-  if (row) row.hidden = !isProUser;
-  if (cb && !isProUser) cb.checked = false;
+  const hint = document.getElementById('answerSheetHint');
+  if (cb) {
+    cb.disabled = !isProUser;
+    if (!isProUser) cb.checked = false;
+  }
+  if (hint) hint.hidden = !!isProUser;
 }
 
 function refreshOneClickRow() {
@@ -423,9 +414,7 @@ function refreshCustomWordControl() {
   const show = isCustom;
   if (row) row.hidden = !show;
   const levelCard = document.getElementById('levelStepCard');
-  const customModeCard = document.getElementById('customModeStepCard');
   if (levelCard) levelCard.hidden = isCustom;
-  if (customModeCard) customModeCard.hidden = !isCustom;
   if (!show) {
     if (hint) {
       hint.textContent = isProUser
@@ -605,7 +594,8 @@ function saveSuccessfulGenerationToHistory({
     effectiveLevel: level,
     effectiveCount: count,
     customMode: selectedCustomMode,
-    kanaMode: document.getElementById('kanaMode')?.value || selectedKanaMode,
+    kanaMode: getKanaMode(),
+    hiraganaSetOrder: selectedHiraganaOrder,
     includeKatakana: !!document.getElementById('includeKatakana')?.checked,
     kanjiGrade: kanji.kanjiGrade,
     kanjiMode: kanji.kanjiMode,
@@ -646,10 +636,12 @@ function applySnapshotToUI(entry) {
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
 
-  const kanaEl = document.getElementById('kanaMode');
-  if (kanaEl && entry.kanaMode) {
-    kanaEl.value = entry.kanaMode;
-    selectedKanaMode = entry.kanaMode;
+  if (entry.hiraganaSetOrder === 'random' || entry.hiraganaSetOrder === 'sequential') {
+    setHiraganaOrder(entry.hiraganaSetOrder);
+  } else if (entry.customPayload && entry.customPayload.hiraganaSetOrder) {
+    setHiraganaOrder(entry.customPayload.hiraganaSetOrder);
+  } else if (content === 'hiragana') {
+    setHiraganaOrder('sequential');
   }
 
   const kat = document.getElementById('includeKatakana');
@@ -657,14 +649,14 @@ function applySnapshotToUI(entry) {
 
   const kg = document.getElementById('kanjiGrade');
   if (kg && entry.kanjiGrade != null) kg.value = String(entry.kanjiGrade);
-  selectedKanjiGrade = kg ? parseInt(kg.value, 10) || 1 : entry.kanjiGrade || 1;
+  selectedKanjiGrade = kg
+    ? parseInt(kg.value, 10) || 1
+    : (entry.kanjiGrade != null ? parseInt(entry.kanjiGrade, 10) || 1 : selectedKanjiGrade || 1);
 
   const km = document.getElementById('kanjiMode');
-  if (km) {
-    const wm = entry.kanjiMode === 'writing' ? 'writing' : 'reading';
-    km.value = wm;
-    selectedKanjiMode = wm;
-  }
+  const wm = entry.kanjiMode === 'writing' ? 'writing' : 'reading';
+  if (km) km.value = wm;
+  selectedKanjiMode = wm;
 
   const qc = document.getElementById('questionCountPro');
   if (qc && entry.questionCountPro != null) qc.value = String(entry.questionCountPro);
@@ -677,8 +669,8 @@ function applySnapshotToUI(entry) {
   refreshCustomWordControl();
   refreshKatakanaToggleRow();
   refreshKanjiSettingsRow();
-  refreshQuestionCountRow();
-  refreshKanaModeControl();
+  refreshQuestionCountUI();
+  refreshHiraganaOrderPills();
   refreshAnswerSheetRow();
   applyPlanTierToUI();
 }
@@ -924,9 +916,9 @@ function applyPlanTierToUI() {
   updateTrialNotice(false);
   refreshKatakanaGenerateNote();
   refreshKatakanaToggleRow();
-  refreshKanaModeControl();
   refreshKanjiSettingsRow();
-  refreshQuestionCountRow();
+  refreshQuestionCountUI();
+  refreshHiraganaOrderPills();
   syncModalPanelsForPlan();
   ensureCustomWordInputsReady();
   refreshCustomWordButtons();
@@ -968,7 +960,7 @@ document.querySelectorAll('.content-btn').forEach(btn => {
     refreshCustomWordControl();
     refreshKatakanaToggleRow();
     refreshKanjiSettingsRow();
-    refreshQuestionCountRow();
+    refreshQuestionCountUI();
   });
 });
 
@@ -985,7 +977,7 @@ document.querySelectorAll('.level-btn').forEach(btn => {
     btn.classList.add('active');
     btn.setAttribute('aria-pressed', 'true');
     selectedLevel = btn.dataset.value;
-    refreshQuestionCountRow();
+    refreshQuestionCountUI();
   });
 });
 
@@ -997,17 +989,7 @@ if (includeKatakanaEl) {
       openFeatureLockedModal('katakana');
       return;
     }
-    refreshKanaModeControl();
   });
-}
-
-const kanaModeEl = document.getElementById('kanaMode');
-if (kanaModeEl) {
-  const syncKanaMode = () => {
-    selectedKanaMode = kanaModeEl.value || 'mix';
-  };
-  kanaModeEl.addEventListener('change', syncKanaMode);
-  kanaModeEl.addEventListener('input', syncKanaMode);
 }
 
 const kanjiGradeEl = document.getElementById('kanjiGrade');
@@ -1030,6 +1012,22 @@ document.querySelectorAll('.custom-mode-btn').forEach((btn) => {
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     selectedCustomMode = btn.dataset.value || 'trace';
+  });
+});
+
+document.querySelectorAll('#questionCountPills .count-pill').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (btn.disabled) return;
+    const sel = document.getElementById('questionCountPro');
+    if (!sel) return;
+    sel.value = btn.dataset.qty || '5';
+    refreshQuestionCountUI();
+  });
+});
+
+document.querySelectorAll('#hiraganaOrderPills .pill-duo-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    setHiraganaOrder(btn.dataset.order || 'random');
   });
 });
 
@@ -1149,6 +1147,8 @@ function generatePrint() {
       return;
     }
     customPayload = { words, mode: selectedCustomMode };
+  } else if (content === 'hiragana') {
+    customPayload = { hiraganaSetOrder: selectedHiraganaOrder };
   } else if (content === 'sentence' && premiumTrialStillAvailable) {
     customPayload = { sentenceTrialQuality: true };
   } else if (content === 'kanji') {
@@ -1677,7 +1677,7 @@ function runOneClickGenerate() {
     openPlanModal('ワンクリック自動生成は有料版限定機能です。');
     return;
   }
-  const contents = ['joshi', 'hiragana', 'maze', 'kanji', 'sentence', 'narabikae', 'maze_hiragana'];
+  const contents = ['joshi', 'hiragana', 'maze', 'sentence', 'narabikae', 'maze_hiragana'];
   const levels = ['beginner', 'intermediate', 'advanced'];
   selectedContent = contents[Math.floor(Math.random() * contents.length)];
   selectedLevel = levels[Math.floor(Math.random() * levels.length)];
@@ -1692,11 +1692,12 @@ function runOneClickGenerate() {
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   refreshKatakanaToggleRow();
-  refreshQuestionCountRow();
+  refreshQuestionCountUI();
   const effLevel = getEffectiveLevelForContent(selectedContent, selectedLevel);
   const qc = document.getElementById('questionCountPro');
   if (qc && !(selectedContent === 'hiragana' && effLevel === 'beginner')) {
-    qc.value = String(PRO_QUESTION_COUNT_OPTIONS[Math.floor(Math.random() * PRO_QUESTION_COUNT_OPTIONS.length)]);
+    const opts = [5, 10, 15, 20, 25];
+    qc.value = String(opts[Math.floor(Math.random() * opts.length)]);
   }
   generatePrint();
 }

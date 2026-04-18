@@ -1394,8 +1394,14 @@ function buildJoshiAdvanced(count, _cw) {
    ひらがな
    ==================================================== */
 
-function buildHiraganaBeginner(count, _cw, allowKatakana, kanaMode) {
-  const rawSets = pickHiraganaBeginnerSetsOrdered(APP_DATA.hiragana.beginner_sets, count);
+function buildHiraganaBeginner(count, customPayload, allowKatakana, kanaMode) {
+  const setsPool = APP_DATA.hiragana.beginner_sets;
+  const order =
+    customPayload && customPayload.hiraganaSetOrder === 'random' ? 'random' : 'sequential';
+  const rawSets =
+    order === 'random'
+      ? pickRandom(setsPool, count)
+      : pickHiraganaBeginnerSetsOrdered(setsPool, count);
   /* 出題モードは UI の kanaMode を優先（ひらがなのみ／カタカナのみ／ミックス）。未指定時のみ checkbox 相当でフォールバック */
   const km = kanaMode || 'mix';
   let mode;
