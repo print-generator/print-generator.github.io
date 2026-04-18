@@ -12,6 +12,9 @@ import type {
 /** 無料：1日あたりの生成回数上限（app.js の localStorage と値を一致させる） */
 export const FREE_GENERATION_LIMIT = 5;
 
+/** ひらがな迷路：PDF 負荷軽減のため 1 生成あたりの上限（無料・有料共通） */
+export const MAZE_HIRAGANA_MAX_QUESTIONS = 10;
+
 export const PRO_QUESTION_COUNT_OPTIONS = [5, 10, 15, 20, 25] as const;
 
 export class PlanRuleError extends Error {
@@ -63,7 +66,10 @@ export function validatePlan(options: GenerateOptions): void {
   if (o.questionCount < 1) {
     throw new PlanRuleError('問題数が不正です', 'INVALID_COUNT');
   }
-  const max = o.isPro ? Math.max(...PRO_QUESTION_COUNT_OPTIONS) : 5;
+  let max = o.isPro ? Math.max(...PRO_QUESTION_COUNT_OPTIONS) : 5;
+  if (o.genre === 'maze_hiragana') {
+    max = Math.min(max, MAZE_HIRAGANA_MAX_QUESTIONS);
+  }
   const specialTen = o.genre === 'hiragana' && o.difficulty === 'beginner';
   if (!specialTen && o.questionCount > max) {
     throw new PlanRuleError('問題数が上限を超えています', 'COUNT_CAP');
@@ -74,14 +80,21 @@ export function resolveQuestionCount(input: ResolveQuestionCountInput): number {
   if (input.genre === 'hiragana' && input.difficulty === 'beginner') {
     return 10;
   }
+  let n: number;
   if (input.isPro) {
-    const n = input.selectedProCount;
-    if (typeof n === 'number' && PRO_QUESTION_COUNT_OPTIONS.includes(n as (typeof PRO_QUESTION_COUNT_OPTIONS)[number])) {
-      return n;
+    const sel = input.selectedProCount;
+    if (typeof sel === 'number' && PRO_QUESTION_COUNT_OPTIONS.includes(sel as (typeof PRO_QUESTION_COUNT_OPTIONS)[number])) {
+      n = sel;
+    } else {
+      n = 5;
     }
-    return 5;
+  } else {
+    n = 5;
   }
-  return 5;
+  if (input.genre === 'maze_hiragana') {
+    return Math.min(n, MAZE_HIRAGANA_MAX_QUESTIONS);
+  }
+  return n;
 }
 
 /** 画面側の生成ボタン前チェック（localStorage 由来の値は呼び出し元で渡す） */
@@ -100,17 +113,10 @@ export function validateGenerationGate(input: PlanGateInput): PlanGateResult {
     if (input.genre === 'custom') {
       return { ok: false, kind: 'custom_locked' };
     }
-    if (input.genre === 'maze_hiragana' && input.mazeHiraganaTrialConsumed) {
-      return {
-        ok: false,
-        kind: 'maze_hiragana_locked',
-        message: 'ひらがな迷路の無料体験は終了しました。有料版でいつでもご利用いただけます。',
-      };
-    }
-    if (
-      (input.genre === 'sentence' || input.genre === 'narabikae') &&
-      input.premiumGenreTrialConsumed
-    ) {
+    /** 文章問題・並び替え・ひらがな迷路は同一の「有料ジャンル体験」フラグで判定（app.js と localStorage を同期） */
+    const isPremiumTrialGenre =
+      input.genre === 'sentence' || input.genre === 'narabikae' || input.genre === 'maze_hiragana';
+    if (isPremiumTrialGenre && input.premiumGenreTrialConsumed) {
       return { ok: false, kind: 'premium_trial_exhausted' };
     }
   }

@@ -60,7 +60,10 @@ export interface PlanGateInput {
   difficulty: Difficulty;
   freeGenerationsUsed: number;
   premiumGenreTrialConsumed: boolean;
-  /** ひらがな迷路の無料1回体験を使い切ったか（app.js localStorage と同期） */
+  /**
+   * @deprecated validateGenerationGate では未使用。互換のため残す（常に false でよい）
+   * ひらがな迷路体験済みは premiumGenreTrialConsumed に統合済み。
+   */
   mazeHiraganaTrialConsumed: boolean;
 }
 

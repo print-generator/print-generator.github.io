@@ -61,9 +61,13 @@ const PlanCore = typeof window !== 'undefined' ? window.PlanCore : undefined;
 
 /** 無料版のみカウント（planRules と一致） */
 const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 5;
+/** ひらがな迷路の最大問題数（PDF 負荷軽減・planRules と一致） */
+const MAZE_HIRAGANA_MAX_QUESTIONS = PlanCore?.MAZE_HIRAGANA_MAX_QUESTIONS ?? 10;
+/** 有料ジャンル体験の対象（案内文言の共通化） */
+const PREMIUM_TRIAL_GENRE_LABEL = '文章問題・並び替え・ひらがな迷路';
 const LS_FREE_GEN_TOTAL_KEY = 'homePrint_freeGenTotal_v2';
 const LS_FREE_GEN_DATE_KEY = 'homePrint_freeGenDateJst_v2';
-/** 文章問題・並び替えの「有料ジャンル体験」は通算1回まで（'1' で使用済み） */
+/** 文章問題・並び替え・ひらがな迷路の「有料ジャンル体験」は通算1回まで（'1' で使用済み） */
 const LS_PREMIUM_GENRE_TRIAL_KEY = 'homePrint_premiumGenreTrialConsumed_v1';
 const LS_SENTENCE_TRIAL_COUNT_KEY = 'homePrint_sentenceTrialCount_v1';
 const LS_NARABIKAE_TRIAL_COUNT_KEY = 'homePrint_narabikaeTrialCount_v1';
@@ -73,19 +77,14 @@ const LS_MAZE_HIRAGANA_TRIAL_KEY = 'homePrint_mazeHiraganaTrialConsumed_v1';
 /** 履歴からの再生成時、保存済み customPayload をそのまま使う */
 let __historyGenOverride = null;
 
-function isMazeHiraganaTrialConsumed() {
-  if (isProUser) return false;
-  try {
-    return localStorage.getItem(LS_MAZE_HIRAGANA_TRIAL_KEY) === '1';
-  } catch (_e) {
-    return false;
-  }
-}
-
-function markMazeHiraganaTrialConsumed() {
+/** 旧キー：迷路のみ体験済みのユーザー → 共通フラグへ寄せる */
+function migrateMazeTrialIntoPremiumConsumed() {
   if (isProUser) return;
   try {
-    localStorage.setItem(LS_MAZE_HIRAGANA_TRIAL_KEY, '1');
+    if (localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) === '1') return;
+    if (localStorage.getItem(LS_MAZE_HIRAGANA_TRIAL_KEY) === '1') {
+      localStorage.setItem(LS_PREMIUM_GENRE_TRIAL_KEY, '1');
+    }
   } catch (_e) {
     /* ignore */
   }
@@ -139,6 +138,7 @@ function migratePremiumGenreTrialFromLegacy() {
 function isPremiumGenreTrialConsumed() {
   if (isProUser) return false;
   migratePremiumGenreTrialFromLegacy();
+  migrateMazeTrialIntoPremiumConsumed();
   try {
     return localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) === '1';
   } catch (_e) {
@@ -150,32 +150,48 @@ function markPremiumGenreTrialConsumed() {
   if (isProUser) return;
   try {
     localStorage.setItem(LS_PREMIUM_GENRE_TRIAL_KEY, '1');
+    /* 旧キーと整合（移行済みユーザー向け） */
+    localStorage.setItem(LS_MAZE_HIRAGANA_TRIAL_KEY, '1');
   } catch (_e) {
     /* ignore */
   }
 }
 
+/** 有料ジャンル体験の対象ジャンルか（判定・マークの共通化） */
+function isPremiumTrialGenre(content) {
+  return content === 'sentence' || content === 'narabikae' || content === 'maze_hiragana';
+}
+
 /** 有料版のみ選択可。五十音・初級は教材上10問固定で選択より優先 */
 const PRO_QUESTION_COUNT_OPTIONS = PlanCore?.PRO_QUESTION_COUNT_OPTIONS ?? [5, 10, 15, 20, 25];
+
+function clampMazeHiraganaQuestionCount(content, count) {
+  if (content !== 'maze_hiragana') return count;
+  const c = Number(count);
+  if (!Number.isFinite(c)) return MAZE_HIRAGANA_MAX_QUESTIONS;
+  return Math.min(Math.max(1, c), MAZE_HIRAGANA_MAX_QUESTIONS);
+}
 
 function resolveQuestionCountForPrint(content, level) {
   const sel = document.getElementById('questionCountPro');
   const raw = sel?.value;
   const n = raw != null && raw !== '' ? parseInt(raw, 10) : NaN;
+  let resolved;
   if (PlanCore && typeof PlanCore.resolveQuestionCount === 'function') {
-    return PlanCore.resolveQuestionCount({
+    resolved = PlanCore.resolveQuestionCount({
       genre: content,
       difficulty: level,
       isPro: isProUser,
       selectedProCount: Number.isFinite(n) ? n : undefined,
     });
+  } else if (content === 'hiragana' && level === 'beginner') {
+    resolved = 10;
+  } else if (isProUser) {
+    resolved = PRO_QUESTION_COUNT_OPTIONS.includes(n) ? n : 5;
+  } else {
+    resolved = 5;
   }
-  if (content === 'hiragana' && level === 'beginner') return 10;
-  if (isProUser) {
-    if (PRO_QUESTION_COUNT_OPTIONS.includes(n)) return n;
-    return 5;
-  }
-  return 5;
+  return clampMazeHiraganaQuestionCount(content, resolved);
 }
 
 /** 問題数ピルとヒント（五十音・初級は10問固定でピルは無効化） */
@@ -185,8 +201,13 @@ function refreshQuestionCountUI() {
   const levelRaw = document.querySelector('.level-btn.active')?.dataset.value || selectedLevel;
   const level = getEffectiveLevelForContent(selectedContent, levelRaw);
   const fixedHiraganaBeginner = selectedContent === 'hiragana' && level === 'beginner';
+  const isMazeH = selectedContent === 'maze_hiragana';
 
   if (sel && !isProUser) sel.value = '5';
+  if (sel && isMazeH) {
+    const cur = parseInt(sel.value, 10) || 5;
+    if (cur > MAZE_HIRAGANA_MAX_QUESTIONS) sel.value = String(MAZE_HIRAGANA_MAX_QUESTIONS);
+  }
 
   document.querySelectorAll('#questionCountPills .count-pill').forEach((btn) => {
     const q = btn.dataset.qty;
@@ -197,6 +218,7 @@ function refreshQuestionCountUI() {
     let disabled = false;
     if (!isProUser && n !== 5) disabled = true;
     if (isProUser && fixedHiraganaBeginner) disabled = true;
+    if (isProUser && isMazeH && n > MAZE_HIRAGANA_MAX_QUESTIONS) disabled = true;
     btn.disabled = disabled;
     btn.classList.toggle('count-pill--disabled', disabled);
   });
@@ -204,12 +226,19 @@ function refreshQuestionCountUI() {
   if (hint) {
     if (fixedHiraganaBeginner) {
       hint.textContent = '五十音・初級は10問で出題されます。';
+    } else if (isMazeH && isProUser) {
+      hint.textContent = `ひらがな迷路は最大${MAZE_HIRAGANA_MAX_QUESTIONS}問までです（PDF負荷軽減のため）。`;
     } else if (!isProUser) {
       hint.textContent = '無料プランは5問で生成されます。';
     } else {
       hint.textContent = '5〜20問から選べます。';
     }
   }
+}
+
+/** 有料ジャンル体験終了の共通案内（文章・並び替え・ひらがな迷路で同一） */
+function showPremiumGenreTrialExhaustedNotice() {
+  updateTrialNotice(true, PREMIUM_TRIAL_GENRE_LABEL, 'limit');
 }
 
 function updateTrialNotice(show, featureName = '', mode = 'limit') {
@@ -221,12 +250,12 @@ function updateTrialNotice(show, featureName = '', mode = 'limit') {
   if (show && title && sub) {
     if (mode === 'after-first-use') {
       title.textContent = '有料ジャンルをおためしできました！';
-      sub.textContent = '文章問題・並び替えは有料プランでいつでもご利用いただけます。';
+      sub.textContent = `${PREMIUM_TRIAL_GENRE_LABEL}は有料プランでいつでもご利用いただけます。`;
       if (btn) btn.textContent = '有料プランを見る';
     } else {
       title.textContent = '有料ジャンルの体験は終了しました。';
-      sub.textContent = `${featureName || '文章問題・並び替え'}は有料プランでご利用いただけます。`;
-      if (btn) btn.textContent = '月額300円の有料版を見る';
+      sub.textContent = `${featureName || PREMIUM_TRIAL_GENRE_LABEL}は有料プランでご利用いただけます。`;
+      if (btn) btn.textContent = '有料プランを見る';
     }
   }
   el.hidden = !show;
@@ -913,6 +942,7 @@ function applyPlanTierToUI() {
   refreshOneClickRow();
   updateFreeGenQuotaUI();
   migratePremiumGenreTrialFromLegacy();
+  migrateMazeTrialIntoPremiumConsumed();
   updateTrialNotice(false);
   refreshKatakanaGenerateNote();
   refreshKatakanaToggleRow();
@@ -926,12 +956,6 @@ function applyPlanTierToUI() {
   if (customBtn) {
     customBtn.classList.toggle('content-btn--locked', !isProUser);
     customBtn.setAttribute('aria-disabled', !isProUser ? 'true' : 'false');
-  }
-  const hiraMazeBtn = document.getElementById('contentBtnMazeHiragana');
-  if (hiraMazeBtn) {
-    const mazeLocked = !isProUser && isMazeHiraganaTrialConsumed();
-    hiraMazeBtn.classList.toggle('content-btn--locked', mazeLocked);
-    hiraMazeBtn.setAttribute('aria-disabled', mazeLocked ? 'true' : 'false');
   }
 }
 
@@ -954,12 +978,6 @@ function scrollMobileFlowStepIntoView(stepId) {
 
 document.querySelectorAll('.content-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    if (!isProUser && btn.dataset.value === 'maze_hiragana' && isMazeHiraganaTrialConsumed()) {
-      openPlanModal(
-        'ひらがな迷路の無料体験は終了しました。有料版でいつでもご利用いただけます。'
-      );
-      return;
-    }
     if (!isProUser && btn.dataset.value === 'custom') {
       openFeatureLockedModal('custom');
       return;
@@ -1156,36 +1174,26 @@ function generatePrint() {
       difficulty: level,
       freeGenerationsUsed: getFreeGenerationsUsed(),
       premiumGenreTrialConsumed: isPremiumGenreTrialConsumed(),
-      mazeHiraganaTrialConsumed: isMazeHiraganaTrialConsumed(),
+      /* 旧 bundle の maze_hiragana_locked 判定用（体験済みは premium と同一フラグに統合済み） */
+      mazeHiraganaTrialConsumed: isPremiumGenreTrialConsumed(),
     });
     if (!gate.ok) {
-      /* 旧 plan-core.bundle では迷路を無条件ブロックしていた場合の救済（体験未使用なら続行） */
-      const allowMazeFreeTrialDespiteStaleBundle =
-        gate.kind === 'maze_hiragana_locked' &&
-        !isProUser &&
-        content === 'maze_hiragana' &&
-        !isMazeHiraganaTrialConsumed();
-      if (!allowMazeFreeTrialDespiteStaleBundle) {
-        if (gate.kind === 'quota') {
-          openPlanModal(gate.message || '');
-          return;
-        }
-        if (gate.kind === 'advanced_locked') {
-          openPlanModal(gate.message || '');
-          return;
-        }
-        if (gate.kind === 'custom_locked') {
-          openFeatureLockedModal('custom');
-          return;
-        }
-        if (gate.kind === 'maze_hiragana_locked') {
-          openPlanModal(gate.message || '');
-          return;
-        }
-        if (gate.kind === 'premium_trial_exhausted') {
-          updateTrialNotice(true, '文章問題・並び替え', 'limit');
-          return;
-        }
+      if (gate.kind === 'quota') {
+        openPlanModal(gate.message || '');
+        return;
+      }
+      if (gate.kind === 'advanced_locked') {
+        openPlanModal(gate.message || '');
+        return;
+      }
+      if (gate.kind === 'custom_locked') {
+        openFeatureLockedModal('custom');
+        return;
+      }
+      /* 旧 bundle が maze_hiragana_locked を返す場合も、体験終了と同じ案内に統一 */
+      if (gate.kind === 'premium_trial_exhausted' || gate.kind === 'maze_hiragana_locked') {
+        showPremiumGenreTrialExhaustedNotice();
+        return;
       }
     }
   } else if (!isProUser) {
@@ -1203,14 +1211,8 @@ function generatePrint() {
       openFeatureLockedModal('custom');
       return;
     }
-    if (content === 'maze_hiragana' && isMazeHiraganaTrialConsumed()) {
-      openPlanModal(
-        'ひらがな迷路の無料体験は終了しました。有料版でいつでもご利用いただけます。'
-      );
-      return;
-    }
-    if ((content === 'sentence' || content === 'narabikae') && isPremiumGenreTrialConsumed()) {
-      updateTrialNotice(true, '文章問題・並び替え', 'limit');
+    if (isPremiumTrialGenre(content) && isPremiumGenreTrialConsumed()) {
+      showPremiumGenreTrialExhaustedNotice();
       return;
     }
   }
@@ -1325,16 +1327,9 @@ function generatePrint() {
         wantAnswers,
       });
       incrementFreeGenerationCount();
-      if (
-        !isProUser &&
-        (content === 'sentence' || content === 'narabikae') &&
-        premiumTrialStillAvailable
-      ) {
+      if (!isProUser && premiumTrialStillAvailable && isPremiumTrialGenre(content)) {
         markPremiumGenreTrialConsumed();
         updateTrialNotice(true, '', 'after-first-use');
-      }
-      if (!isProUser && content === 'maze_hiragana') {
-        markMazeHiraganaTrialConsumed();
         applyPlanTierToUI();
       }
       updateFreeGenQuotaUI();
@@ -1742,7 +1737,7 @@ function openPlanModal(contextMessage) {
     pitchList.innerHTML = [
       '<li>月額300円</li>',
       '<li>回数無制限</li>',
-      '<li>1枚あたり5〜25問から選択（五十音・初級のみ10問固定）</li>',
+      '<li>1枚あたり5〜25問から選択（五十音・初級のみ10問固定・ひらがな迷路は最大10問）</li>',
       '<li>上級モードあり</li>',
       '<li>解答付き</li>',
     ].join('');
@@ -1788,7 +1783,8 @@ function runOneClickGenerate() {
   const effLevel = getEffectiveLevelForContent(selectedContent, selectedLevel);
   const qc = document.getElementById('questionCountPro');
   if (qc && !(selectedContent === 'hiragana' && effLevel === 'beginner')) {
-    const opts = [5, 10, 15, 20, 25];
+    const opts =
+      selectedContent === 'maze_hiragana' ? [5, 10] : [5, 10, 15, 20, 25];
     qc.value = String(opts[Math.floor(Math.random() * opts.length)]);
   }
   generatePrint();

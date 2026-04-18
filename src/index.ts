@@ -11,6 +11,7 @@ export {
   resolveQuestionCount,
   normalizeGenerateOptions,
   FREE_GENERATION_LIMIT,
+  MAZE_HIRAGANA_MAX_QUESTIONS,
   PRO_QUESTION_COUNT_OPTIONS,
   PlanRuleError,
 } from './config/planRules';
