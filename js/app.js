@@ -337,6 +337,7 @@ function refreshQuestionCountUI() {
 
 /** 有料ジャンル体験終了の共通案内（文章・並び替え・ひらがな迷路で同一） */
 function showPremiumGenreTrialExhaustedNotice() {
+  if (isProUser) return;
   updateTrialNotice(true, PREMIUM_TRIAL_GENRE_LABEL, 'limit');
 }
 
@@ -346,6 +347,10 @@ function updateTrialNotice(show, featureName = '', mode = 'limit') {
   const sub = document.getElementById('trialNoticeSub');
   const btn = el?.querySelector('.sentence-trial-btn');
   if (!el) return;
+  if (isProUser) {
+    el.hidden = true;
+    return;
+  }
   if (show && title && sub) {
     if (mode === 'after-first-use') {
       title.textContent = '有料ジャンルをおためしできました！';
@@ -490,9 +495,9 @@ function openFeatureLockedModal(feature) {
 function updatePlanBadge() {
   const el = document.getElementById('planBadge');
   if (!el) return;
-  el.textContent = isProUser ? '有料版利用中' : '無料版利用中';
+  el.textContent = isProUser ? '有料版をご利用中です' : '無料版利用中';
   el.title = isProUser
-    ? '有料プランをご利用中です'
+    ? 'すべての機能が利用可能です'
     : '【有料版】月額300円・回数無制限・1枚5問（五十音・初級のみ10問）・上級モード・解答付き';
   el.classList.toggle('plan-badge--pro', isProUser);
   el.classList.toggle('plan-badge--free', !isProUser);
@@ -872,8 +877,9 @@ function renderHistoryPanels() {
 
   const favs = HS.loadFavorites();
   if (!favs.length) {
-    favEl.innerHTML =
-      '<p class="history-empty">お気に入りはありません。<br>履歴の「お気に入り」から追加できます（無料版は1件まで）。</p>';
+    favEl.innerHTML = isProUser
+      ? '<p class="history-empty">お気に入りはありません。<br>履歴の「お気に入り」から追加できます。</p>'
+      : '<p class="history-empty">お気に入りはありません。<br>履歴の「お気に入り」から追加できます（無料版は1件まで）。</p>';
   } else {
     favEl.innerHTML = '';
     favs.forEach((entry) => {
@@ -1017,9 +1023,20 @@ function updatePlanPromoVisibility() {
   const freeNotice = document.getElementById('freePlanNotice');
   const proBanner = document.getElementById('proPlanBanner');
   const upgradeNote = document.getElementById('generateUpgradeNote');
+  const planCta = document.getElementById('plan-cta');
+  const heroFreeNote = document.querySelector('.hero-flow-note');
+  const navPro = document.querySelector('.nav-link--pro');
+  const footerPro = document.querySelector('.footer-link-pro');
+  const planBadge = document.getElementById('planBadge');
   if (freeNotice) freeNotice.hidden = !!isProUser;
   if (proBanner) proBanner.hidden = !isProUser;
   if (upgradeNote) upgradeNote.hidden = !!isProUser;
+  if (planCta) planCta.hidden = !!isProUser;
+  if (heroFreeNote) heroFreeNote.hidden = !!isProUser;
+  if (navPro) navPro.hidden = !!isProUser;
+  if (footerPro) footerPro.hidden = !!isProUser;
+  /* 有料時は #proPlanBanner のみで状態表示（ヘッダーバッジは無料訴求と二重にならないよう非表示） */
+  if (planBadge) planBadge.hidden = !!isProUser;
 }
 
 function applyPlanTierToUI() {
@@ -1824,6 +1841,20 @@ function openLineSignup() {
   window.open(LINE_SIGNUP_URL, '_blank', 'noopener,noreferrer');
 }
 
+function syncPlanModalUpgradeChrome() {
+  const modal = document.getElementById('planModal');
+  if (!modal) return;
+  const hidePaidSignup = !!isProUser;
+  modal.querySelectorAll('.modal-footer .modal-detail-btn, .modal-footer .modal-pro-app-btn').forEach((el) => {
+    el.hidden = hidePaidSignup;
+  });
+  modal.querySelectorAll('.plan-modal-active-pro .plan-modal-pro-line-btn').forEach((el) => {
+    el.hidden = hidePaidSignup;
+  });
+  const proNote = modal.querySelector('.plan-modal-active-pro .plan-modal-pro-note');
+  if (proNote) proNote.hidden = hidePaidSignup;
+}
+
 function syncModalPanelsForPlan() {
   document.querySelectorAll('[data-modal-panel="pitch"]').forEach((el) => {
     el.hidden = isProUser;
@@ -1831,6 +1862,7 @@ function syncModalPanelsForPlan() {
   document.querySelectorAll('[data-modal-panel="pro-active"]').forEach((el) => {
     el.hidden = !isProUser;
   });
+  syncPlanModalUpgradeChrome();
 }
 
 function openPlanModal(contextMessage) {
@@ -1851,7 +1883,10 @@ function openPlanModal(contextMessage) {
   }
   if (line) line.textContent = '有料版のお申し込みはLINEから';
   if (ctx) {
-    if (contextMessage) {
+    if (isProUser) {
+      ctx.textContent = '';
+      ctx.hidden = true;
+    } else if (contextMessage) {
       ctx.textContent = contextMessage;
       ctx.hidden = false;
     } else {
