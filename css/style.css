@@ -4179,6 +4179,12 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
   padding-top: 18px;
   border-top: 1px dashed var(--border);
 }
+.flow-setting-select {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 6px;
+}
 
 .genre-grid {
   display: grid;

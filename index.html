@@ -74,7 +74,7 @@
 <section class="hero-flow no-print" id="top">
   <div class="hero-flow-inner">
     <h1 class="hero-flow-title">家庭学習プリントを1クリックで作成</h1>
-    <p class="hero-flow-sub">助詞・50音・めいろ・文章問題に対応</p>
+    <p class="hero-flow-sub">助詞・50音・めいろ・文章問題・漢字に対応</p>
     <p class="hero-flow-note"><i class="fas fa-gift"></i> 無料で今すぐ使えます</p>
     <a href="#generator" class="hero-flow-cta"><i class="fas fa-magic"></i> さっそくプリントを作る</a>
   </div>
@@ -144,6 +144,12 @@
             <span class="genre-card-desc">自分の単語でなぞり・視写</span>
             <span class="genre-card-badge genre-card-badge--paid">有料</span>
           </button>
+          <button type="button" class="genre-card content-btn" data-value="kanji" aria-pressed="false">
+            <span class="genre-card-icon" aria-hidden="true">字</span>
+            <span class="genre-card-name">漢字</span>
+            <span class="genre-card-desc">1〜3年生（読み・書き）</span>
+            <span class="genre-card-badge genre-card-badge--free">無料</span>
+          </button>
         </div>
       </div>
 
@@ -196,6 +202,22 @@
             <button type="button" class="pill-duo-btn active" data-order="random" id="hiraganaOrderRandom" aria-pressed="true">ランダム</button>
             <button type="button" class="pill-duo-btn" data-order="sequential" id="hiraganaOrderSequential" aria-pressed="false">あ〜わ順</button>
           </div>
+        </div>
+
+        <div class="flow-block flow-block--conditional" id="kanjiSettingsRow" hidden>
+          <p class="flow-field-label">漢字の設定</p>
+          <label class="flow-field-label" for="kanjiGrade">学年</label>
+          <select id="kanjiGrade" class="setting-select flow-setting-select" aria-label="漢字の学年">
+            <option value="1" selected>1年生</option>
+            <option value="2">2年生</option>
+            <option value="3">3年生</option>
+          </select>
+          <label class="flow-field-label flow-field-label--spaced" for="kanjiMode">出題タイプ</label>
+          <select id="kanjiMode" class="setting-select flow-setting-select" aria-label="漢字の出題タイプ">
+            <option value="reading" selected>読み（よみかたを選ぶ）</option>
+            <option value="writing">書き（かんじを書く）</option>
+          </select>
+          <p class="flow-hint" id="kanjiSettingsHint">1〜3年生に対応しています。</p>
         </div>
 
         <div class="flow-block flow-block--conditional" id="customWordRow" hidden>
@@ -365,7 +387,7 @@
           <i class="fas fa-chevron-down faq-arrow"></i>
         </button>
         <div class="faq-a">
-          「助詞」「五十音」「めいろ」など7モードに対応しています。【無料版】1日5回まで・1枚5問（五十音・初級のみ10問）・有料ジャンル体験は1回まで。【有料版】月額300円・回数無制限・上級モードあり・解答付き（ほかにカスタム問題なども利用できます）。
+          「助詞」「五十音」「めいろ」「漢字」など8モードに対応しています。【無料版】1日5回まで・1枚5問（五十音・初級のみ10問）・有料ジャンル体験は1回まで。【有料版】月額300円・回数無制限・上級モードあり・解答付き（ほかにカスタム問題なども利用できます）。
         </div>
       </div>
 

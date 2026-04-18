@@ -26,7 +26,7 @@ let selectedCustomMode = 'trace';
 let selectedKanaMode = 'mix';
 /** 五十音・初級：出題順（ランダム／あ〜わ順） */
 let selectedHiraganaOrder = 'random';
-/** 漢字：学年（履歴互換・UIからは非表示） */
+/** 漢字：学年（#kanjiGrade） */
 let selectedKanjiGrade = 1;
 /** 漢字：読み／書き（#kanjiMode） */
 let selectedKanjiMode = 'reading';
@@ -1677,7 +1677,7 @@ function runOneClickGenerate() {
     openPlanModal('ワンクリック自動生成は有料版限定機能です。');
     return;
   }
-  const contents = ['joshi', 'hiragana', 'maze', 'sentence', 'narabikae', 'maze_hiragana'];
+  const contents = ['joshi', 'hiragana', 'maze', 'sentence', 'narabikae', 'maze_hiragana', 'kanji'];
   const levels = ['beginner', 'intermediate', 'advanced'];
   selectedContent = contents[Math.floor(Math.random() * contents.length)];
   selectedLevel = levels[Math.floor(Math.random() * levels.length)];
