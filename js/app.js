@@ -83,22 +83,31 @@ function getTrialLastYmdStorageKey(genre) {
 /** 履歴からの再生成時、保存済み customPayload をそのまま使う */
 let __historyGenOverride = null;
 
-/** 前日の日付キー（JST・移行用） */
-function getYesterdayJstDateKey() {
+/** JST のカレンダー日を常に YYYY-MM-DD で統一（locale 差・全角数字の混入を避ける） */
+function formatYmdInTokyo(millis) {
   try {
-    const parts = new Intl.DateTimeFormat('ja-JP', {
+    return new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Asia/Tokyo',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
-    }).formatToParts(new Date(Date.now() - 86400000));
-    const y = parts.find((p) => p.type === 'year')?.value || '0000';
-    const m = parts.find((p) => p.type === 'month')?.value || '00';
-    const d = parts.find((p) => p.type === 'day')?.value || '00';
-    return `${y}-${m}-${d}`;
+    }).format(millis);
   } catch (_e) {
-    return new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    return new Date(millis).toISOString().slice(0, 10);
   }
+}
+
+function normalizeTrialYmdKey(raw) {
+  if (raw == null || typeof raw !== 'string') return '';
+  const t = raw.trim();
+  const m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (!m) return '';
+  return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+}
+
+/** 前日の日付キー（JST・移行用） */
+function getYesterdayJstDateKey() {
+  return formatYmdInTokyo(Date.now() - 86400000);
 }
 
 function getTrialLastUseYmd(genre) {
@@ -125,7 +134,7 @@ function migrateLegacyTrialKeysToDailyPerGenre() {
   try {
     if (localStorage.getItem(LS_TRIAL_DAILY_MIGRATED_V2) === '1') return;
 
-    const yYesterday = getYesterdayJstDateKey();
+    const yYesterday = normalizeTrialYmdKey(getYesterdayJstDateKey()) || getYesterdayJstDateKey();
     const legacyPrem = localStorage.getItem(LS_PREMIUM_GENRE_TRIAL_KEY) === '1';
     const legacyMaze = localStorage.getItem(LS_MAZE_HIRAGANA_TRIAL_KEY) === '1';
     let s = 0;
@@ -165,21 +174,8 @@ function migratePremiumGenreTrialFromLegacy() {
 }
 
 function getJstDateKey() {
-  try {
-    const now = new Date();
-    const parts = new Intl.DateTimeFormat('ja-JP', {
-      timeZone: 'Asia/Tokyo',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).formatToParts(now);
-    const y = parts.find((p) => p.type === 'year')?.value || '0000';
-    const m = parts.find((p) => p.type === 'month')?.value || '00';
-    const d = parts.find((p) => p.type === 'day')?.value || '00';
-    return `${y}-${m}-${d}`;
-  } catch (_e) {
-    return new Date().toISOString().slice(0, 10);
-  }
+  const raw = formatYmdInTokyo(Date.now());
+  return normalizeTrialYmdKey(raw) || raw;
 }
 
 function ensureDailyFreeQuotaSynced() {
@@ -207,8 +203,9 @@ function ensurePremiumTrialStorageReady() {
 function isPremiumTrialUsedToday(genre) {
   if (!isPremiumTrialGenre(genre) || isProUser) return false;
   ensurePremiumTrialStorageReady();
-  const last = getTrialLastUseYmd(genre);
-  const today = getJstDateKey();
+  const last = normalizeTrialYmdKey(getTrialLastUseYmd(genre));
+  const today = normalizeTrialYmdKey(getJstDateKey());
+  if (last.length !== 10 || today.length !== 10) return false;
   return last === today;
 }
 
@@ -228,14 +225,20 @@ function isPremiumTrialGenre(content) {
 }
 
 /**
- * 無料体験カードの見た目（本日分消化済み）
+ * 無料体験カードの見た目（本日分消化済みのみ終了表示。未使用時は DOM からラベルを除去して誤表示を防ぐ）
  */
 function refreshPremiumTrialGenreCards() {
   document.querySelectorAll('.content-btn--trial').forEach((btn) => {
     const g = btn.dataset.value;
     if (!g || !isPremiumTrialGenre(g)) return;
-    const exhausted = !isProUser && isPremiumTrialUsedToday(g);
+    const exhausted = !isProUser && isPremiumTrialUsedToday(g) === true;
     btn.classList.toggle('genre-card--trial-exhausted-today', exhausted);
+    const existing = btn.querySelector('.genre-trial-day-badge');
+    if (!exhausted) {
+      existing?.remove();
+      btn.removeAttribute('aria-label');
+      return;
+    }
     let badge = btn.querySelector('.genre-trial-day-badge');
     if (!badge) {
       badge = document.createElement('span');
@@ -244,12 +247,17 @@ function refreshPremiumTrialGenreCards() {
       btn.appendChild(badge);
     }
     badge.textContent = '本日の無料体験は終了';
-    badge.hidden = !exhausted;
-    if (exhausted) {
-      btn.setAttribute('aria-label', `${btn.querySelector('.genre-card-name')?.textContent?.trim() || ''}（本日の無料体験は終了）`);
-    } else {
-      btn.removeAttribute('aria-label');
-    }
+    btn.setAttribute(
+      'aria-label',
+      `${btn.querySelector('.genre-card-name')?.textContent?.trim() || ''}（本日の無料体験は終了）`
+    );
+  });
+}
+
+/** 有料版ではジャンル右上の「無料／有料／体験」バッジを出さない */
+function refreshGenreCardPlanBadgesVisibility() {
+  document.querySelectorAll('#contentOptions .genre-card .genre-card-badge').forEach((el) => {
+    el.hidden = !!isProUser;
   });
 }
 
@@ -1048,6 +1056,7 @@ function applyPlanTierToUI() {
     customBtn.classList.toggle('content-btn--locked', !isProUser);
     customBtn.setAttribute('aria-disabled', !isProUser ? 'true' : 'false');
   }
+  refreshGenreCardPlanBadgesVisibility();
   refreshPremiumTrialGenreCards();
 }
 

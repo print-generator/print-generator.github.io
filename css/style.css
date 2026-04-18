@@ -4256,6 +4256,10 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
   background: #fce4ec;
   color: #c2185b;
 }
+/* 有料版：ジャンル右上の無料／有料／体験バッジを非表示（body.plan-pro は app.js が付与） */
+body.plan-pro #contentOptions .genre-card .genre-card-badge {
+  display: none !important;
+}
 .genre-card.content-btn--locked {
   opacity: 0.55;
 }
