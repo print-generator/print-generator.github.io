@@ -60,7 +60,7 @@ function getLevelLabel(level, content) {
 const PlanCore = typeof window !== 'undefined' ? window.PlanCore : undefined;
 
 /** 無料版のみカウント（planRules と一致） */
-const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 5;
+const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 3;
 /** ひらがな迷路の最大問題数（PDF 負荷軽減・planRules と一致） */
 const MAZE_HIRAGANA_MAX_QUESTIONS = PlanCore?.MAZE_HIRAGANA_MAX_QUESTIONS ?? 10;
 /** 有料ジャンル体験の対象（案内文言の共通化） */
@@ -1002,6 +1002,8 @@ function historyRename(entry, kind) {
 function refreshLevelButtons() {
   const adv = document.querySelector('.level-btn[data-value="advanced"]');
   if (!adv) return;
+  const lock = adv.querySelector('.level-pill-lock');
+  if (lock) lock.hidden = !!isProUser;
   if (!isProUser) {
     adv.classList.add('level-btn--locked');
     adv.setAttribute('aria-disabled', 'true');
