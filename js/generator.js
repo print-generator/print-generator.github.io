@@ -193,13 +193,15 @@ function generatePrintHTML(content, level, count, showName, showDate, customPayl
 const PRINT_CARD_COUNT_PRESETS = {
   joshi: {
     beginner: { first: 7, rest: 8 },
-    intermediate: { first: 7, rest: 8 },
+    /* 中級：PC印刷向けに1ページ +2 問（実測グリーディ＋フォールバック整合） */
+    intermediate: { first: 9, rest: 10 },
     advanced: { first: 10, rest: 10 },
   },
   hiragana: {
     beginner: { first: 4, rest: 5 },
-    intermediate: { first: 6, rest: 7 },
-    advanced: { first: 5, rest: 6 },
+    /* 中級 +4 問／上級 +1 問（ページあたりの目安・フォールバック） */
+    intermediate: { first: 10, rest: 11 },
+    advanced: { first: 6, rest: 7 },
   },
   kanji: {
     reading: {
@@ -532,7 +534,7 @@ function getPackAggressiveTuning(ctx) {
     return {
       safetyPx: 0,
       roomRoundEpsPx: 7.5,
-      overflowAllowPx: 14,
+      overflowAllowPx: 16,
       kindRoomBonusPx: { first: 2, middle: 3.5, last: 1 },
     };
   }
@@ -550,6 +552,16 @@ function getPackAggressiveTuning(ctx) {
       roomRoundEpsPx: 4.5,
       overflowAllowPx: 9,
       kindRoomBonusPx: { first: 1.2, middle: 2.2, last: 0.6 },
+    };
+  }
+  const isHiraganaPack =
+    content === 'hiragana' && (level === 'intermediate' || level === 'advanced');
+  if (isHiraganaPack) {
+    return {
+      safetyPx: 0.35,
+      roomRoundEpsPx: 5,
+      overflowAllowPx: 10,
+      kindRoomBonusPx: { first: 1.2, middle: 2.4, last: 0.75 },
     };
   }
   const isMazePack = content === 'maze' || content === 'maze_hiragana';
