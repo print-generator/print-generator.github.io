@@ -757,7 +757,7 @@ function refreshHistoryEntryActions() {
   const items = getHistoryItemsForEntryAction();
   const count = items.length;
   if (openBtn) {
-    openBtn.innerHTML = `<i class="fas fa-clock-rotate-left"></i> 履歴を見る（${count}件）`;
+    openBtn.innerHTML = `<i class="fas fa-clock-rotate-left"></i> 作成履歴を見る（${count}件）`;
   }
 
   const latest = count > 0 ? items[0] : null;

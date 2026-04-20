@@ -60,9 +60,6 @@
       <a href="#faq" class="nav-link">FAQ</a>
       <a href="pricing.html" class="nav-link nav-link--sub">説明</a>
       <a href="pricing.html" class="nav-link nav-link--pro">有料版</a>
-      <button type="button" class="nav-btn-history" onclick="openHistoryModal()" title="生成した設定の履歴・お気に入り">
-        <i class="fas fa-clock-rotate-left"></i> 履歴
-      </button>
       <button type="button" class="nav-btn-premium" onclick="openPlanModal()">
         <i class="fas fa-crown"></i> 機能
       </button>
@@ -77,6 +74,9 @@
     <p class="hero-flow-sub">助詞・50音・めいろ・文章問題に対応</p>
     <p class="hero-flow-note"><i class="fas fa-gift"></i> 無料で今すぐ使えます</p>
     <a href="#generator" class="hero-flow-cta"><i class="fas fa-magic"></i> さっそくプリントを作る</a>
+    <button type="button" id="openHistoryBtn" class="hero-history-btn" onclick="openHistoryModal()">
+      <i class="fas fa-clock-rotate-left"></i> 作成履歴を見る（0件）
+    </button>
   </div>
 </section>
 
@@ -284,14 +284,6 @@
           </button>
           <button class="action-btn btn-pdf" onclick="savePDF()">
             <i class="fas fa-file-pdf"></i> PDF保存
-          </button>
-          <button type="button" id="openHistoryBtn" class="action-btn action-btn--history" onclick="openHistoryModal()">
-            <i class="fas fa-clock-rotate-left"></i> 履歴を見る（0件）
-          </button>
-        </div>
-        <div class="history-entry-actions">
-          <button type="button" id="openLatestHistoryBtn" class="history-latest-btn" hidden>
-            前回のプリントを開く
           </button>
         </div>
       </div>
