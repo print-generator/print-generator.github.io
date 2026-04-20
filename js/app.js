@@ -717,6 +717,8 @@ function saveSuccessfulGenerationToHistory({
   count,
   customPayload,
   wantAnswers,
+  generatedPrintHtml,
+  generatedIsMazeSheet,
 }) {
   const HS = typeof HistoryStore !== 'undefined' ? HistoryStore : null;
   if (!HS) return;
@@ -736,6 +738,8 @@ function saveSuccessfulGenerationToHistory({
     customWords: getCustomWordsFromUI(),
     includeAnswersSheet: !!wantAnswers,
     customPayload: cloneJson(customPayload),
+    generatedPrintHtml: typeof generatedPrintHtml === 'string' ? generatedPrintHtml : '',
+    generatedIsMazeSheet: !!generatedIsMazeSheet,
     title: '',
   };
   HS.prependHistory(snap, isProUser);
@@ -954,7 +958,7 @@ function buildHistoryCardEl(entry, kind) {
   openBtn.type = 'button';
   openBtn.className = 'history-mini-btn history-mini-btn--primary';
   openBtn.innerHTML = '<i class="fas fa-folder-open"></i> この内容で開く';
-  openBtn.onclick = () => historyEdit(entry);
+  openBtn.onclick = () => historyOpenSavedPrint(entry);
 
   const regenBtn = document.createElement('button');
   regenBtn.type = 'button';
@@ -1008,6 +1012,25 @@ function historyRegenerate(entry) {
     customPayload: entry.customPayload === undefined ? null : cloneJson(entry.customPayload),
   };
   generatePrint();
+}
+
+function historyOpenSavedPrint(entry) {
+  closeHistoryModal();
+  applySnapshotToUI(entry);
+  const section = document.getElementById('previewSection');
+  const sheet = document.getElementById('printSheet');
+  if (!section || !sheet) return;
+
+  const html = typeof entry?.generatedPrintHtml === 'string' ? entry.generatedPrintHtml : '';
+  if (!html.trim()) {
+    historyRegenerate(entry);
+    return;
+  }
+
+  sheet.innerHTML = html;
+  sheet.classList.toggle('a4-sheet--maze', !!entry.generatedIsMazeSheet);
+  section.style.display = 'block';
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function historyEdit(entry) {
@@ -1513,6 +1536,8 @@ function generatePrint() {
         count,
         customPayload,
         wantAnswers,
+        generatedPrintHtml: html,
+        generatedIsMazeSheet: content === 'maze' || content === 'maze_hiragana',
       });
       incrementFreeGenerationCount();
       if (!isProUser && isPremiumTrialGenre(content)) {
