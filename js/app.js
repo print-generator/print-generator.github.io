@@ -925,6 +925,8 @@ function buildHistoryCardEl(entry, kind) {
   const HS = typeof HistoryStore !== 'undefined' ? HistoryStore : null;
   const isHistoryKind = kind === 'history';
   const isFav = isHistoryKind && HS ? HS.isHistoryFavorited(entry.id) : kind === 'favorite';
+  const favCount = HS && typeof HS.loadFavorites === 'function' ? HS.loadFavorites().length : 0;
+  const favoriteLimitReached = !isProUser && favCount >= 1;
 
   const titleEl = document.createElement('p');
   titleEl.className = 'history-card-title';
@@ -969,7 +971,9 @@ function buildHistoryCardEl(entry, kind) {
     fav.className = 'history-mini-btn history-mini-btn--fav';
     fav.innerHTML = isFav
       ? '<i class="fas fa-star"></i> お気に入り済み'
-      : '<i class="far fa-star"></i> お気に入り保存';
+      : favoriteLimitReached
+        ? '<i class="far fa-star"></i> お気に入り保存（有料）'
+        : '<i class="far fa-star"></i> お気に入り保存';
     if (isFav) fav.classList.add('history-mini-btn--fav-on');
     fav.onclick = () => historyToggleFavorite(entry);
     actions.appendChild(fav);
@@ -1016,7 +1020,9 @@ function historyToggleFavorite(entry) {
   const HS = HistoryStore;
   const res = HS.toggleFavoriteFromHistory(entry, isProUser);
   if (!res.ok && res.reason === 'limit') {
-    openPlanModal('お気に入りは無料版では1件までです。有料版なら無制限に保存できます。');
+    openPlanModal(
+      'お気に入りは「よく使う設定を保存して次回すぐ再利用」する機能です。無料版は1件まで、有料版なら無制限に保存できます。'
+    );
     return;
   }
   renderHistoryPanels();
