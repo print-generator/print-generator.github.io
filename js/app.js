@@ -953,11 +953,18 @@ function buildHistoryCardEl(entry, kind) {
 
   const actions = document.createElement('div');
   actions.className = 'history-card-actions';
+  const hasSavedPrintHtml =
+    typeof entry?.generatedPrintHtml === 'string' && entry.generatedPrintHtml.trim().length > 0;
 
   const openBtn = document.createElement('button');
   openBtn.type = 'button';
   openBtn.className = 'history-mini-btn history-mini-btn--primary';
-  openBtn.innerHTML = '<i class="fas fa-folder-open"></i> この内容で開く';
+  openBtn.innerHTML = hasSavedPrintHtml
+    ? '<i class="fas fa-folder-open"></i> この内容で開く'
+    : '<i class="fas fa-folder-open"></i> この内容で開く（再生成）';
+  if (!hasSavedPrintHtml) {
+    openBtn.title = 'この履歴は旧形式のため、設定から再生成で開きます。';
+  }
   openBtn.onclick = () => historyOpenSavedPrint(entry);
 
   const regenBtn = document.createElement('button');
@@ -1017,6 +1024,7 @@ function historyRegenerate(entry) {
 function historyOpenSavedPrint(entry) {
   closeHistoryModal();
   applySnapshotToUI(entry);
+  __historyGenOverride = null;
   const section = document.getElementById('previewSection');
   const sheet = document.getElementById('printSheet');
   if (!section || !sheet) return;
