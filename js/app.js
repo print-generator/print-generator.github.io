@@ -722,6 +722,7 @@ function saveSuccessfulGenerationToHistory({
 }) {
   const HS = typeof HistoryStore !== 'undefined' ? HistoryStore : null;
   if (!HS) return;
+  const beforeHistory = typeof HS.loadHistory === 'function' ? HS.loadHistory() : [];
   const kanji = getKanjiPayloadFromUI();
   const snap = {
     content,
@@ -742,8 +743,37 @@ function saveSuccessfulGenerationToHistory({
     generatedIsMazeSheet: !!generatedIsMazeSheet,
     title: '',
   };
-  HS.prependHistory(snap, isProUser);
+  const nextHistory = HS.prependHistory(snap, isProUser) || [];
+  if (!isProUser) {
+    const nextIds = new Set(nextHistory.map((e) => e && e.id).filter(Boolean));
+    const removed = beforeHistory.filter((e) => e && e.id && !nextIds.has(e.id));
+    if (removed.length > 0) {
+      showHistoryLimitToast(
+        '履歴は5件までのため、古い履歴を1件整理しました。残したいプリントはお気に入り保存がおすすめです。'
+      );
+    }
+  }
   refreshHistoryEntryActions();
+}
+
+function showHistoryLimitToast(message) {
+  const text = String(message || '').trim();
+  if (!text) return;
+  let toast = document.getElementById('historyLimitToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'historyLimitToast';
+    toast.className = 'history-limit-toast no-print';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+  }
+  toast.textContent = text;
+  toast.classList.add('history-limit-toast--show');
+  clearTimeout(showHistoryLimitToast._timer);
+  showHistoryLimitToast._timer = setTimeout(() => {
+    toast.classList.remove('history-limit-toast--show');
+  }, 3200);
 }
 
 function getHistoryItemsForEntryAction() {
@@ -1069,6 +1099,7 @@ function openFavoriteUpgradeModal() {
   const heading = document.getElementById('planPitchHeading');
   const pitchList = modal?.querySelector('[data-modal-panel="pitch"] .plan-pitch-list');
   const line = modal?.querySelector('[data-modal-panel="pitch"] .plan-pitch-line');
+  const detailBtn = modal?.querySelector('.modal-footer .modal-detail-btn');
   if (heading) heading.textContent = 'お気に入りをもっと使うには';
   if (pitchList) {
     pitchList.innerHTML = [
@@ -1079,6 +1110,10 @@ function openFavoriteUpgradeModal() {
     ].join('');
   }
   if (line) line.textContent = '有料版を見る';
+  if (detailBtn) {
+    detailBtn.innerHTML = '<i class="fas fa-file-alt"></i> 有料版を見る';
+    detailBtn.title = '料金・無料版との違い・申し込み導線を見る';
+  }
 }
 
 function historyRemoveFavorite(id) {

@@ -2760,6 +2760,30 @@ body.lp-pricing-page {
   background: rgba(254, 249, 195, 0.6);
   color: #a16207;
 }
+.history-limit-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translate(-50%, 12px);
+  width: min(92vw, 640px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #fdba74;
+  background: rgba(255, 247, 237, 0.97);
+  color: #9a3412;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.45;
+  box-shadow: 0 8px 24px rgba(120, 53, 15, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1400;
+}
+.history-limit-toast--show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
 
 /* ============================================
    レスポンシブ
@@ -2783,6 +2807,11 @@ body.lp-pricing-page {
 }
 
 @media (max-width: 600px) {
+  .history-limit-toast {
+    bottom: 14px;
+    font-size: 0.8rem;
+    padding: 9px 12px;
+  }
   .maze-card {
     padding: 5px 3px 8px;
     border-radius: 9px;
