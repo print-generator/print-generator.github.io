@@ -877,16 +877,14 @@ function openHistoryModal() {
   renderHistoryPanels();
   if (modal) {
     modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
   }
+  syncModalStackState();
 }
 
 function closeHistoryModal() {
   const modal = document.getElementById('historyModal');
   if (modal) modal.classList.remove('open');
-  if (!document.getElementById('planModal')?.classList.contains('open')) {
-    document.body.style.overflow = '';
-  }
+  syncModalStackState();
 }
 
 function closeHistoryModalOutside(event) {
@@ -2019,6 +2017,30 @@ function syncModalPanelsForPlan() {
   syncPlanModalUpgradeChrome();
 }
 
+function syncBodyScrollLock() {
+  const planOpen = document.getElementById('planModal')?.classList.contains('open');
+  const historyOpen = document.getElementById('historyModal')?.classList.contains('open');
+  document.body.style.overflow = planOpen || historyOpen ? 'hidden' : '';
+}
+
+function syncModalStackState() {
+  const planModal = document.getElementById('planModal');
+  const historyModal = document.getElementById('historyModal');
+  const planOpen = !!planModal?.classList.contains('open');
+  const historyOpen = !!historyModal?.classList.contains('open');
+  const stacked = planOpen && historyOpen;
+
+  if (historyModal) {
+    historyModal.classList.toggle('modal-overlay--inactive', stacked);
+    if (stacked) {
+      historyModal.setAttribute('aria-hidden', 'true');
+    } else {
+      historyModal.removeAttribute('aria-hidden');
+    }
+  }
+  syncBodyScrollLock();
+}
+
 function openPlanModal(contextMessage) {
   const modal = document.getElementById('planModal');
   const ctx = document.getElementById('planModalContext');
@@ -2050,7 +2072,7 @@ function openPlanModal(contextMessage) {
   }
   syncModalPanelsForPlan();
   modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  syncModalStackState();
   modal.querySelector('.modal-close').focus();
 }
 
@@ -2089,7 +2111,7 @@ function runOneClickGenerate() {
 function closePlanModal() {
   const modal = document.getElementById('planModal');
   modal.classList.remove('open');
-  document.body.style.overflow = '';
+  syncModalStackState();
 }
 
 // オーバーレイ外クリックで閉じる
@@ -2136,6 +2158,11 @@ function toggleFaq(btn) {
 document.addEventListener('keydown', e => {
   // Escape → 手前のモーダルを閉じる
   if (e.key === 'Escape') {
+    const plan = document.getElementById('planModal');
+    if (plan && plan.classList.contains('open')) {
+      closePlanModal();
+      return;
+    }
     const hist = document.getElementById('historyModal');
     if (hist && hist.classList.contains('open')) {
       closeHistoryModal();

@@ -2095,6 +2095,18 @@ select.setting-select--locked {
   -webkit-overflow-scrolling: touch;
 }
 .modal-overlay.open { display: flex; }
+#historyModal {
+  z-index: 1000;
+}
+#planModal {
+  z-index: 1100;
+}
+.modal-overlay--inactive {
+  pointer-events: none;
+}
+.modal-overlay--inactive .modal-box {
+  pointer-events: none;
+}
 
 .modal-box {
   background: var(--white);
