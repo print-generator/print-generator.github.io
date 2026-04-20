@@ -86,6 +86,12 @@
     return list;
   }
 
+  function removeHistory(historyId) {
+    const next = loadHistory().filter((e) => e && e.id !== historyId);
+    saveArray(LS_HISTORY, next);
+    return next;
+  }
+
   /**
    * 履歴行をお気に入りにコピー（履歴とは別配列）
    */
@@ -138,6 +144,7 @@
     prependHistory,
     updateHistoryTitle,
     updateFavoriteTitle,
+    removeHistory,
     addFavoriteFromHistory,
     removeFavorite,
     isHistoryFavorited,

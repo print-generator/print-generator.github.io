@@ -2676,12 +2676,31 @@ body.lp-pricing-page {
   margin-bottom: 10px;
   background: var(--bg);
 }
+.history-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
 .history-card-title {
   font-weight: 800;
   font-size: 0.95rem;
   color: var(--text);
   margin: 0 0 4px;
   line-height: 1.35;
+}
+.history-card-badge-fav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 179, 8, 0.55);
+  background: rgba(254, 249, 195, 0.55);
+  color: #a16207;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  white-space: nowrap;
 }
 .history-card-meta {
   font-size: 0.78rem;
@@ -2717,6 +2736,16 @@ body.lp-pricing-page {
   border-color: var(--primary);
   background: rgba(249, 115, 22, 0.08);
   color: var(--primary);
+}
+.history-mini-btn--secondary {
+  border-color: rgba(249, 115, 22, 0.35);
+  background: rgba(255, 247, 237, 0.85);
+  color: #9a3412;
+}
+.history-mini-btn--fav {
+  border-color: rgba(234, 179, 8, 0.4);
+  background: rgba(254, 249, 195, 0.45);
+  color: #92400e;
 }
 .history-mini-btn--danger {
   border-color: rgba(220, 38, 38, 0.35);
@@ -4476,6 +4505,13 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+.hero-history-hint {
+  margin-top: 8px;
+  font-size: 0.84rem;
+  color: var(--text-sub);
+  line-height: 1.55;
+  max-width: 520px;
+}
 
 .section-inner--flow {
   max-width: 800px;
@@ -5116,6 +5152,11 @@ body.plan-pro #contentOptions .genre-card .genre-card-badge {
     margin-top: 10px;
     border-radius: 12px;
     font-size: 0.92rem;
+  }
+  .hero-history-hint {
+    width: 100%;
+    font-size: 0.8rem;
+    text-align: left;
   }
 
   /* 生成セクション全体 */

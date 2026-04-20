@@ -77,6 +77,7 @@
     <button type="button" id="openHistoryBtn" class="hero-history-btn" onclick="openHistoryModal()">
       <i class="fas fa-clock-rotate-left"></i> 作成履歴を見る（0件）
     </button>
+    <p class="hero-history-hint" id="heroHistoryHint" hidden></p>
   </div>
 </section>
 
@@ -517,7 +518,7 @@
       </button>
     </div>
     <div class="history-tabs" role="tablist">
-      <button type="button" class="history-tab history-tab--active" id="historyTabBtn" data-history-tab="list" onclick="setHistoryTab('list')" role="tab" aria-selected="true">履歴一覧</button>
+      <button type="button" class="history-tab history-tab--active" id="historyTabBtn" data-history-tab="list" onclick="setHistoryTab('list')" role="tab" aria-selected="true">すべて</button>
       <button type="button" class="history-tab" id="historyFavTabBtn" data-history-tab="fav" onclick="setHistoryTab('fav')" role="tab" aria-selected="false">お気に入り</button>
     </div>
     <div class="modal-body history-modal-body">

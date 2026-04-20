@@ -751,24 +751,23 @@ function getHistoryItemsForEntryAction() {
 
 function refreshHistoryEntryActions() {
   const openBtn = document.getElementById('openHistoryBtn');
-  const latestBtn = document.getElementById('openLatestHistoryBtn');
-  if (!openBtn && !latestBtn) return;
+  const heroHint = document.getElementById('heroHistoryHint');
+  if (!openBtn && !heroHint) return;
 
   const items = getHistoryItemsForEntryAction();
   const count = items.length;
   if (openBtn) {
     openBtn.innerHTML = `<i class="fas fa-clock-rotate-left"></i> 作成履歴を見る（${count}件）`;
   }
-
-  const latest = count > 0 ? items[0] : null;
-  if (latestBtn) {
-    latestBtn.hidden = !latest;
-    latestBtn.onclick = latest
-      ? () => {
-          applySnapshotToUI(latest);
-          document.getElementById('controlPanel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      : null;
+  if (heroHint) {
+    if (count > 0) {
+      heroHint.hidden = false;
+      heroHint.innerHTML =
+        '前に作ったプリントを、履歴からすぐ再利用できます。<br>気に入った設定はお気に入り保存がおすすめです。';
+    } else {
+      heroHint.hidden = true;
+      heroHint.textContent = '';
+    }
   }
 }
 
@@ -885,8 +884,8 @@ function renderHistoryPanels() {
 
   if (hint) {
     hint.textContent = isProUser
-      ? '有料版：履歴・お気に入りは無制限です。'
-      : '無料版：履歴は最大3件（古い順に自動削除）・お気に入りは1件まで。';
+      ? '履歴は新しい順です。「この内容で開く」→「この条件で再生成」で続けて使えます。'
+      : '履歴は新しい順です。無料版は履歴3件まで・お気に入り1件まで保存できます。';
   }
 
   if (!HS) {
@@ -923,6 +922,9 @@ function renderHistoryPanels() {
 function buildHistoryCardEl(entry, kind) {
   const wrap = document.createElement('div');
   wrap.className = 'history-card';
+  const HS = typeof HistoryStore !== 'undefined' ? HistoryStore : null;
+  const isHistoryKind = kind === 'history';
+  const isFav = isHistoryKind && HS ? HS.isHistoryFavorited(entry.id) : kind === 'favorite';
 
   const titleEl = document.createElement('p');
   titleEl.className = 'history-card-title';
@@ -933,52 +935,61 @@ function buildHistoryCardEl(entry, kind) {
   const auto = formatAutoHistoryTitle(entry);
   metaEl.textContent = `${formatHistoryDate(entry.createdAt || entry.favoritedAt)} · ${auto}`;
 
+  const top = document.createElement('div');
+  top.className = 'history-card-top';
+  top.appendChild(titleEl);
+  if (isFav) {
+    const badge = document.createElement('span');
+    badge.className = 'history-card-badge-fav';
+    badge.innerHTML = '<i class="fas fa-star"></i> お気に入り済み';
+    top.appendChild(badge);
+  }
+
   const actions = document.createElement('div');
   actions.className = 'history-card-actions';
 
-  const regen = document.createElement('button');
-  regen.type = 'button';
-  regen.className = 'history-mini-btn history-mini-btn--primary';
-  regen.innerHTML = '<i class="fas fa-bolt"></i> 再生成';
-  regen.onclick = () => historyRegenerate(entry);
+  const openBtn = document.createElement('button');
+  openBtn.type = 'button';
+  openBtn.className = 'history-mini-btn history-mini-btn--primary';
+  openBtn.innerHTML = '<i class="fas fa-folder-open"></i> この内容で開く';
+  openBtn.onclick = () => historyEdit(entry);
 
-  const edit = document.createElement('button');
-  edit.type = 'button';
-  edit.className = 'history-mini-btn';
-  edit.innerHTML = '<i class="fas fa-sliders-h"></i> 編集';
-  edit.onclick = () => historyEdit(entry);
+  const regenBtn = document.createElement('button');
+  regenBtn.type = 'button';
+  regenBtn.className = 'history-mini-btn history-mini-btn--secondary';
+  regenBtn.innerHTML = '<i class="fas fa-rotate-right"></i> この条件で再生成';
+  regenBtn.onclick = () => historyRegenerate(entry);
 
-  const rename = document.createElement('button');
-  rename.type = 'button';
-  rename.className = 'history-mini-btn';
-  rename.innerHTML = '<i class="fas fa-pen"></i> 名前';
-  rename.onclick = () => historyRename(entry, kind);
+  actions.appendChild(openBtn);
+  actions.appendChild(regenBtn);
 
-  actions.appendChild(regen);
-  actions.appendChild(edit);
-  actions.appendChild(rename);
-
-  if (kind === 'history') {
-    const HS = HistoryStore;
+  if (isHistoryKind) {
     const fav = document.createElement('button');
     fav.type = 'button';
-    fav.className = 'history-mini-btn';
-    fav.innerHTML = HS.isHistoryFavorited(entry.id)
-      ? '<i class="fas fa-star"></i> お気に入り解除'
-      : '<i class="far fa-star"></i> お気に入り';
-    if (HS.isHistoryFavorited(entry.id)) fav.classList.add('history-mini-btn--fav-on');
+    fav.className = 'history-mini-btn history-mini-btn--fav';
+    fav.innerHTML = isFav
+      ? '<i class="fas fa-star"></i> お気に入り済み'
+      : '<i class="far fa-star"></i> お気に入り保存';
+    if (isFav) fav.classList.add('history-mini-btn--fav-on');
     fav.onclick = () => historyToggleFavorite(entry);
     actions.appendChild(fav);
-  } else {
+
     const del = document.createElement('button');
     del.type = 'button';
     del.className = 'history-mini-btn history-mini-btn--danger';
     del.innerHTML = '<i class="fas fa-trash"></i> 削除';
-    del.onclick = () => historyRemoveFavorite(entry.id);
+    del.onclick = () => historyDelete(entry.id);
     actions.appendChild(del);
+  } else {
+    const unfav = document.createElement('button');
+    unfav.type = 'button';
+    unfav.className = 'history-mini-btn history-mini-btn--fav history-mini-btn--fav-on';
+    unfav.innerHTML = '<i class="fas fa-star"></i> お気に入り解除';
+    unfav.onclick = () => historyRemoveFavorite(entry.id);
+    actions.appendChild(unfav);
   }
 
-  wrap.appendChild(titleEl);
+  wrap.appendChild(top);
   wrap.appendChild(metaEl);
   wrap.appendChild(actions);
   return wrap;
@@ -1013,6 +1024,15 @@ function historyToggleFavorite(entry) {
 
 function historyRemoveFavorite(id) {
   HistoryStore.removeFavorite(id);
+  renderHistoryPanels();
+  refreshHistoryEntryActions();
+}
+
+function historyDelete(id) {
+  if (!id || typeof HistoryStore === 'undefined') return;
+  if (typeof HistoryStore.removeHistory === 'function') {
+    HistoryStore.removeHistory(id);
+  }
   renderHistoryPanels();
   refreshHistoryEntryActions();
 }
