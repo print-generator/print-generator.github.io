@@ -200,13 +200,13 @@ const PRINT_CARD_COUNT_PRESETS = {
   },
   hiragana: {
     beginner: { first: 4, rest: 5 },
-    intermediate: { first: 6, rest: 7 },
-    advanced: { first: 5, rest: 6 },
+    intermediate: { first: 10, rest: 11 },
+    advanced: { first: 6, rest: 7 },
   },
   kanji: {
     reading: {
       beginner: { first: 12, rest: 12 },
-      intermediate: { first: 8, rest: 9 },
+      intermediate: { first: 10, rest: 11 },
       advanced: { first: 12, rest: 12 },
     },
     writing: {
@@ -216,14 +216,14 @@ const PRINT_CARD_COUNT_PRESETS = {
     },
   },
   sentence: {
-    beginner: { first: 5, rest: 6 },
-    intermediate: { first: 4, rest: 5 },
-    advanced: { first: 7, rest: 7 },
+    beginner: { first: 9, rest: 10 },
+    intermediate: { first: 8, rest: 9 },
+    advanced: { first: 11, rest: 11 },
   },
   narabikae: {
-    beginner: { first: 4, rest: 5 },
-    intermediate: { first: 5, rest: 5 },
-    advanced: { first: 5, rest: 6 },
+    beginner: { first: 6, rest: 7 },
+    intermediate: { first: 7, rest: 7 },
+    advanced: { first: 7, rest: 8 },
   },
   custom: {
     beginner: { first: 6, rest: 7 },
@@ -524,8 +524,14 @@ function computePrintGridRoomPx(H_LIMIT, baseAssembly, g0, epsilonPx) {
 function getPackAggressiveTuning(ctx) {
   const content = (ctx && ctx.content) || '';
   const level = (ctx && ctx.level) || '';
+  const kanjiMode =
+    ctx && ctx.customPayload && ctx.customPayload.kanjiMode === 'writing' ? 'writing' : 'reading';
   const isJoshiIntermediate = content === 'joshi' && level === 'intermediate';
   const isJoshiAdvanced = content === 'joshi' && level === 'advanced';
+  const isHiraganaIntermediate = content === 'hiragana' && level === 'intermediate';
+  const isHiraganaAdvanced = content === 'hiragana' && level === 'advanced';
+  const isKanjiReadingIntermediate =
+    content === 'kanji' && kanjiMode === 'reading' && level === 'intermediate';
   const isSentenceTarget =
     content === 'sentence' && (level === 'beginner' || level === 'intermediate' || level === 'advanced');
   const isNarabikaeTarget =
@@ -549,18 +555,42 @@ function getPackAggressiveTuning(ctx) {
   }
   if (isSentenceTarget) {
     return {
-      safetyPx: 0.1,
-      roomRoundEpsPx: 5.5,
-      overflowAllowPx: 11,
-      kindRoomBonusPx: { first: 1.5, middle: 3, last: 0.8 },
+      safetyPx: 0,
+      roomRoundEpsPx: 7.8,
+      overflowAllowPx: 18,
+      kindRoomBonusPx: { first: 2.4, middle: 4.8, last: 1.2 },
     };
   }
   if (isNarabikaeTarget) {
     return {
-      safetyPx: 0.15,
-      roomRoundEpsPx: 4.5,
-      overflowAllowPx: 9,
-      kindRoomBonusPx: { first: 1.2, middle: 2.2, last: 0.6 },
+      safetyPx: 0,
+      roomRoundEpsPx: 6.8,
+      overflowAllowPx: 14,
+      kindRoomBonusPx: { first: 1.8, middle: 3.8, last: 1 },
+    };
+  }
+  if (isHiraganaIntermediate) {
+    return {
+      safetyPx: 0,
+      roomRoundEpsPx: 6.8,
+      overflowAllowPx: 16,
+      kindRoomBonusPx: { first: 2, middle: 4, last: 1 },
+    };
+  }
+  if (isHiraganaAdvanced) {
+    return {
+      safetyPx: 0,
+      roomRoundEpsPx: 6.2,
+      overflowAllowPx: 12,
+      kindRoomBonusPx: { first: 1.5, middle: 3, last: 0.8 },
+    };
+  }
+  if (isKanjiReadingIntermediate) {
+    return {
+      safetyPx: 0,
+      roomRoundEpsPx: 5.2,
+      overflowAllowPx: 11,
+      kindRoomBonusPx: { first: 1.2, middle: 2.5, last: 0.7 },
     };
   }
   const isMazePack = content === 'maze' || content === 'maze_hiragana';
