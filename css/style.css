@@ -4512,28 +4512,32 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 42px;
+  min-height: 54px;
   width: min(85%, 420px);
-  padding: 9px 18px;
+  padding: 14px 20px;
   border-radius: 999px;
-  border: 1px solid #fdba74;
-  background: rgba(255, 255, 255, 0.96);
-  color: #9a3412;
+  border: 2px solid #ff7a00;
+  background: #ffffff;
+  color: #ff7a00;
   font-family: var(--font);
-  font-size: 0.86rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(154, 52, 18, 0.06);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.1);
   transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
 .hero-history-btn:hover {
-  background: #fffaf5;
-  border-color: #fcd34d;
-  color: #7c2d12;
+  background: #fff7f0;
+  border-color: #ff8f24;
+  color: #e06800;
 }
 .hero-history-btn:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+.hero-history-btn-count {
+  font-size: 0.9em;
+  color: #888888;
 }
 .hero-history-hint {
   margin-top: 0;
@@ -5178,10 +5182,11 @@ body.plan-pro #contentOptions .genre-card .genre-card-badge {
   }
   .hero-history-btn {
     width: 100%;
-    min-height: 48px;
+    min-height: 54px;
+    padding: 14px 18px;
     margin-top: 10px;
-    border-radius: 12px;
-    font-size: 0.92rem;
+    border-radius: 999px;
+    font-size: 1rem;
   }
   .hero-history-hint {
     width: 100%;
