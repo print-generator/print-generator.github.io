@@ -888,6 +888,7 @@ select.setting-select--locked {
 .preview-title { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 .preview-title i { color: var(--primary); }
 .preview-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.preview-actions .action-btn { min-height: 44px; }
 .action-btn {
   display: flex; align-items: center; gap: 7px;
   padding: 10px 20px; border: none; border-radius: 50px;
@@ -895,10 +896,10 @@ select.setting-select--locked {
 }
 .history-entry-actions {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 8px;
   width: 100%;
-  margin-top: 2px;
+  margin-top: 0;
 }
 .action-btn--history {
   border-radius: 14px;
@@ -5383,14 +5384,7 @@ body.plan-pro #contentOptions .genre-card .genre-card-badge {
     justify-content: center;
   }
   .history-entry-actions {
-    flex-direction: column;
     align-items: stretch;
-    gap: 8px;
-  }
-  .history-entry-actions .action-btn--history {
-    width: 100%;
-    min-height: 48px;
-    justify-content: center;
   }
   .history-entry-actions .history-latest-btn {
     width: 100%;
