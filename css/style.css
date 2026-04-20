@@ -2428,7 +2428,7 @@ body.lp-pricing-page {
   font-size: .88rem;
   line-height: 1.75;
   color: var(--text-sub);
-  margin: 0 0 18px;
+  margin: 0;
 }
 .lp-value-list {
   list-style: none;
@@ -2448,6 +2448,54 @@ body.lp-pricing-page {
 .lp-value-list i {
   color: var(--primary);
   margin-top: 3px;
+  flex-shrink: 0;
+}
+.lp-value-footnote {
+  margin: 14px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  line-height: 1.55;
+}
+.lp-history-focus {
+  margin: 20px 0 26px;
+  padding: 18px 16px;
+  border-radius: 12px;
+  border: 1px solid #fdba74;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+  box-shadow: 0 6px 22px rgba(249, 115, 22, 0.12);
+}
+.lp-history-title {
+  margin: 0 0 10px;
+  font-size: 1.02rem;
+  font-weight: 900;
+  color: #9a3412;
+  line-height: 1.45;
+}
+.lp-history-desc {
+  margin: 0 0 12px;
+  font-size: 0.88rem;
+  color: #7c2d12;
+  line-height: 1.7;
+}
+.lp-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lp-history-list li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: #7c2d12;
+}
+.lp-history-list i {
+  color: #f97316;
+  margin-top: 2px;
   flex-shrink: 0;
 }
 .lp-section-title {
