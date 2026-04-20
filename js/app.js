@@ -886,12 +886,6 @@ function renderHistoryPanels() {
   const hint = document.getElementById('historyPlanHint');
   if (!listEl || !favEl) return;
 
-  if (hint) {
-    hint.textContent = isProUser
-      ? '履歴は新しい順です。「この内容で開く」→「この条件で再生成」で続けて使えます。'
-      : '履歴は新しい順です。無料版は履歴3件まで・お気に入り1件まで保存できます。';
-  }
-
   if (!HS) {
     listEl.innerHTML = '<p class="history-empty">履歴機能を読み込めませんでした。</p>';
     favEl.innerHTML = '';
@@ -899,6 +893,18 @@ function renderHistoryPanels() {
   }
 
   const items = HS.loadHistory();
+  const legacyCount = items.filter(
+    (entry) => !(typeof entry?.generatedPrintHtml === 'string' && entry.generatedPrintHtml.trim().length > 0)
+  ).length;
+  if (hint) {
+    const base = isProUser
+      ? '履歴は新しい順です。「この内容で開く」は保存内容を復元、「この条件で再生成」は新しい問題を作成します。'
+      : '履歴は新しい順です。無料版は履歴3件まで・お気に入り1件まで保存できます。「この内容で開く」は保存内容を復元します。';
+    hint.textContent =
+      legacyCount > 0
+        ? `${base}（旧履歴 ${legacyCount} 件は「この内容で開く（再生成）」表示になります）`
+        : base;
+  }
   if (!items.length) {
     listEl.innerHTML =
       '<p class="history-empty">まだ履歴がありません。<br>「プリントを生成する」ときに自動で保存されます。</p>';
