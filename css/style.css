@@ -893,6 +893,43 @@ select.setting-select--locked {
   padding: 10px 20px; border: none; border-radius: 50px;
   font-family: var(--font); font-size: .9rem; font-weight: 700; cursor: pointer; transition: all .2s;
 }
+.history-entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 2px;
+}
+.action-btn--history {
+  border-radius: 14px;
+  border: 1px solid #fdba74;
+  background: #fff7ed;
+  color: #9a3412;
+  box-shadow: 0 2px 8px rgba(154, 52, 18, 0.1);
+}
+.action-btn--history:hover {
+  background: #ffedd5;
+  color: #7c2d12;
+}
+.history-latest-btn {
+  border: none;
+  background: transparent;
+  color: #9a3412;
+  font-family: var(--font);
+  font-size: 0.83rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 6px 2px;
+}
+.history-latest-btn:hover {
+  color: #7c2d12;
+}
+.history-latest-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
 .action-btn:focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
@@ -5344,6 +5381,25 @@ body.plan-pro #contentOptions .genre-card .genre-card-badge {
     width: 100%;
     min-height: 48px;
     justify-content: center;
+  }
+  .history-entry-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .history-entry-actions .action-btn--history {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+  }
+  .history-entry-actions .history-latest-btn {
+    width: 100%;
+    min-height: 44px;
+    text-align: center;
+    border: 1px solid #fed7aa;
+    border-radius: 12px;
+    background: #fffaf5;
+    text-decoration: none;
   }
 }
 

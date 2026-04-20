@@ -739,6 +739,37 @@ function saveSuccessfulGenerationToHistory({
     title: '',
   };
   HS.prependHistory(snap, isProUser);
+  refreshHistoryEntryActions();
+}
+
+function getHistoryItemsForEntryAction() {
+  const HS = typeof HistoryStore !== 'undefined' ? HistoryStore : null;
+  if (!HS || typeof HS.loadHistory !== 'function') return [];
+  const rows = HS.loadHistory();
+  return Array.isArray(rows) ? rows : [];
+}
+
+function refreshHistoryEntryActions() {
+  const openBtn = document.getElementById('openHistoryBtn');
+  const latestBtn = document.getElementById('openLatestHistoryBtn');
+  if (!openBtn && !latestBtn) return;
+
+  const items = getHistoryItemsForEntryAction();
+  const count = items.length;
+  if (openBtn) {
+    openBtn.innerHTML = `<i class="fas fa-clock-rotate-left"></i> 履歴を見る（${count}件）`;
+  }
+
+  const latest = count > 0 ? items[0] : null;
+  if (latestBtn) {
+    latestBtn.hidden = !latest;
+    latestBtn.onclick = latest
+      ? () => {
+          applySnapshotToUI(latest);
+          document.getElementById('controlPanel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      : null;
+  }
 }
 
 /**
@@ -886,6 +917,7 @@ function renderHistoryPanels() {
       favEl.appendChild(buildHistoryCardEl(entry, 'favorite'));
     });
   }
+  refreshHistoryEntryActions();
 }
 
 function buildHistoryCardEl(entry, kind) {
@@ -982,6 +1014,7 @@ function historyToggleFavorite(entry) {
 function historyRemoveFavorite(id) {
   HistoryStore.removeFavorite(id);
   renderHistoryPanels();
+  refreshHistoryEntryActions();
 }
 
 function historyRename(entry, kind) {
@@ -996,6 +1029,7 @@ function historyRename(entry, kind) {
     HS.updateFavoriteTitle(entry.id, trimmed);
   }
   renderHistoryPanels();
+  refreshHistoryEntryActions();
 }
 
 /** 無料時は上級を選べないよう UI を更新 */
@@ -1263,11 +1297,13 @@ function closeAllFaqItems() {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     applyPlanTierToUI();
+    refreshHistoryEntryActions();
     initMobileGenStickyBar();
     if (window.innerWidth <= 768) closeAllFaqItems();
   });
 } else {
   applyPlanTierToUI();
+  refreshHistoryEntryActions();
   initMobileGenStickyBar();
   if (window.innerWidth <= 768) closeAllFaqItems();
 }
