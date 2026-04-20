@@ -37,7 +37,7 @@
   }
 
   function maxHistory(isPro) {
-    return isPro ? Number.POSITIVE_INFINITY : 3;
+    return isPro ? Number.POSITIVE_INFINITY : 5;
   }
 
   function maxFavorites(isPro) {
@@ -63,9 +63,36 @@
     const list = loadHistory().filter((e) => e && e.id !== id);
     const next = [row, ...list];
     const cap = maxHistory(isPro);
-    const trimmed = Number.isFinite(cap) ? next.slice(0, cap) : next;
+    const trimmed = Number.isFinite(cap) ? trimHistoryWithFavoritePriority(next, cap) : next;
     saveArray(LS_HISTORY, trimmed);
     return trimmed;
+  }
+
+  /**
+   * 履歴超過時は「最も古い非お気に入り」から削除。
+   * 非お気に入りが無い場合のみ、最古の履歴を削除。
+   */
+  function trimHistoryWithFavoritePriority(history, cap) {
+    const out = Array.isArray(history) ? history.slice() : [];
+    if (!Number.isFinite(cap) || cap < 1 || out.length <= cap) return out;
+    const favHistoryIds = new Set(
+      loadFavorites()
+        .map((f) => (f && f.favoritedHistoryId ? f.favoritedHistoryId : null))
+        .filter(Boolean)
+    );
+    while (out.length > cap) {
+      let removeIdx = -1;
+      for (let i = out.length - 1; i >= 0; i--) {
+        const hid = out[i] && out[i].id;
+        if (!hid || !favHistoryIds.has(hid)) {
+          removeIdx = i;
+          break;
+        }
+      }
+      if (removeIdx < 0) removeIdx = out.length - 1;
+      out.splice(removeIdx, 1);
+    }
+    return out;
   }
 
   function updateHistoryTitle(historyId, title) {

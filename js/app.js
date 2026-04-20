@@ -899,7 +899,7 @@ function renderHistoryPanels() {
   if (hint) {
     const base = isProUser
       ? '履歴は新しい順です。「この内容で開く」は保存内容を復元、「この条件で再生成」は新しい問題を作成します。'
-      : '履歴は新しい順です。無料版は履歴3件まで・お気に入り1件まで保存できます。「この内容で開く」は保存内容を復元します。';
+      : '履歴は5件まで保存されます。残したいプリントはお気に入り保存がおすすめです。お気に入りは1件まで保存できます。';
     hint.textContent =
       legacyCount > 0
         ? `${base}（旧履歴 ${legacyCount} 件は「この内容で開く（再生成）」表示になります）`
@@ -1057,12 +1057,28 @@ function historyToggleFavorite(entry) {
   const HS = HistoryStore;
   const res = HS.toggleFavoriteFromHistory(entry, isProUser);
   if (!res.ok && res.reason === 'limit') {
-    openPlanModal(
-      'お気に入りは「よく使う設定を保存して次回すぐ再利用」する機能です。無料版は1件まで、有料版なら無制限に保存できます。'
-    );
+    openFavoriteUpgradeModal();
     return;
   }
   renderHistoryPanels();
+}
+
+function openFavoriteUpgradeModal() {
+  openPlanModal('よく使う設定を保存して、次回すぐ再利用できます。');
+  const modal = document.getElementById('planModal');
+  const heading = document.getElementById('planPitchHeading');
+  const pitchList = modal?.querySelector('[data-modal-panel="pitch"] .plan-pitch-list');
+  const line = modal?.querySelector('[data-modal-panel="pitch"] .plan-pitch-line');
+  if (heading) heading.textContent = 'お気に入りをもっと使うには';
+  if (pitchList) {
+    pitchList.innerHTML = [
+      '<li>よく使う設定を保存して、次回すぐ再利用</li>',
+      '<li>お気に入り一覧から直接開ける</li>',
+      '<li>お気に入りからすぐ再生成できる</li>',
+      '<li>有料版ならお気に入りを複数保存できます</li>',
+    ].join('');
+  }
+  if (line) line.textContent = '有料版を見る';
 }
 
 function historyRemoveFavorite(id) {
