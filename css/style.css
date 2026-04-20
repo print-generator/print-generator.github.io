@@ -2101,6 +2101,14 @@ select.setting-select--locked {
 #planModal {
   z-index: 1100;
 }
+#historyModal .modal-box {
+  position: relative;
+  z-index: 1001;
+}
+#planModal .modal-box {
+  position: relative;
+  z-index: 1101;
+}
 .modal-overlay--inactive {
   pointer-events: none;
 }

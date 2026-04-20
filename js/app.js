@@ -447,6 +447,7 @@ function refreshHiraganaOrderPills() {
 
 function openFeatureLockedModal(feature) {
   const modal = document.getElementById('planModal');
+  ensureModalAtBodyEnd(modal);
   const heading = document.getElementById('planPitchHeading');
   const ctx = document.getElementById('planModalContext');
   const pitchList = modal?.querySelector('[data-modal-panel="pitch"] .plan-pitch-list');
@@ -487,7 +488,7 @@ function openFeatureLockedModal(feature) {
   }
   syncModalPanelsForPlan();
   modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  syncModalStackState();
   modal.querySelector('.modal-close')?.focus();
 }
 
@@ -2017,6 +2018,13 @@ function syncModalPanelsForPlan() {
   syncPlanModalUpgradeChrome();
 }
 
+function ensureModalAtBodyEnd(modal) {
+  if (!modal || !document.body) return;
+  if (modal.parentElement !== document.body || modal !== document.body.lastElementChild) {
+    document.body.appendChild(modal);
+  }
+}
+
 function syncBodyScrollLock() {
   const planOpen = document.getElementById('planModal')?.classList.contains('open');
   const historyOpen = document.getElementById('historyModal')?.classList.contains('open');
@@ -2043,6 +2051,7 @@ function syncModalStackState() {
 
 function openPlanModal(contextMessage) {
   const modal = document.getElementById('planModal');
+  ensureModalAtBodyEnd(modal);
   const ctx = document.getElementById('planModalContext');
   const heading = document.getElementById('planPitchHeading');
   const pitchList = modal?.querySelector('[data-modal-panel="pitch"] .plan-pitch-list');
