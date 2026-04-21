@@ -201,8 +201,8 @@ const PRINT_CARD_COUNT_PRESETS = {
   hiragana: {
     beginner: { first: 4, rest: 5 },
     intermediate: { first: 10, rest: 11 },
-    /* 上級：印刷/PDF は 1ページ目5問・以降6問（専用レイアウト。自動実測パックは使わない） */
-    advanced: { first: 5, rest: 6 },
+    /* 上級：印刷/PDF は 1ページ目6問・以降7問（専用レイアウト。自動実測パックは使わない） */
+    advanced: { first: 6, rest: 7 },
   },
   kanji: {
     reading: {
@@ -626,7 +626,7 @@ function getKindRoomBonusPx(kindRoomBonusPx, isFirstPage, isLastPage) {
 function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, footerHtml, ctx) {
   const n = cardHtmls.length;
   if (!n) return [];
-  /* 50音上級：ページ枚数はプリセット固定（first:5 / rest:6）。実測貪欲パックは使わない */
+  /* 50音上級：ページ枚数はプリセット固定（first:6 / rest:7）。実測貪欲パックは使わない */
   if (ctx && ctx.content === 'hiragana' && ctx.level === 'advanced') {
     return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload || {});
   }
