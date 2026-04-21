@@ -1758,7 +1758,7 @@ function pickStartGoalLongBorderPath(cells, w, h) {
   if (!pts.length) return randomStartGoal(w, h);
   let bestPair = null;
   let bestSteps = -1;
-  const trials = Math.min(18, Math.max(8, Math.floor((w + h) / 2)));
+  const trials = Math.min(12, Math.max(6, Math.floor((w + h) / 3)));
   for (let t = 0; t < trials; t++) {
     const startPt = pickOne(pts);
     const distMap = shortestStepDistances(cells, startPt.x, startPt.y, w, h);
@@ -1776,13 +1776,235 @@ function pickStartGoalLongBorderPath(cells, w, h) {
   return randomStartGoal(w, h);
 }
 
+function getMazeDifficultyProfile(level) {
+  const lv = level || 'beginner';
+  const map = {
+    beginner: {
+      minPathLen: 16,
+      minBranchOnPath: 2,
+      maxBranchOnPath: 14,
+      maxDeadEnds: 28,
+      minTurnCount: 6,
+      minMisleadCount: 3,
+      maxPathRatio: 0.62,
+      extraOpenRange: [5, 10],
+    },
+    intermediate: {
+      minPathLen: 24,
+      minBranchOnPath: 5,
+      maxBranchOnPath: 22,
+      minDeadEnds: 8,
+      minTurnCount: 10,
+      minMisleadCount: 6,
+      maxPathRatio: 0.5,
+      extraOpenRange: [8, 16],
+    },
+    advanced: {
+      minPathLen: 34,
+      minBranchOnPath: 9,
+      minDeadEnds: 14,
+      minTurnCount: 14,
+      minMisleadCount: 10,
+      maxPathRatio: 0.42,
+      extraOpenRange: [12, 22],
+    },
+  };
+  return map[lv] || map.beginner;
+}
+
+function mazeCellDegree(cells, x, y) {
+  const h = cells.length;
+  const w = cells[0].length;
+  return mazeNeighbors(x, y, w, h).filter(([nx, ny]) => isConnected(cells, x, y, nx, ny)).length;
+}
+
+function countReachableCells(cells, start) {
+  const h = cells.length;
+  const w = cells[0].length;
+  const seen = Array.from({ length: h }, () => Array(w).fill(false));
+  const q = [[start[0], start[1]]];
+  seen[start[1]][start[0]] = true;
+  for (let i = 0; i < q.length; i++) {
+    const [x, y] = q[i];
+    mazeNeighbors(x, y, w, h).forEach(([nx, ny]) => {
+      if (seen[ny][nx]) return;
+      if (!isConnected(cells, x, y, nx, ny)) return;
+      seen[ny][nx] = true;
+      q.push([nx, ny]);
+    });
+  }
+  return q.length;
+}
+
+function countPathTurns(path) {
+  if (!path || path.length < 3) return 0;
+  let turns = 0;
+  let prevDx = path[1][0] - path[0][0];
+  let prevDy = path[1][1] - path[0][1];
+  for (let i = 2; i < path.length; i++) {
+    const dx = path[i][0] - path[i - 1][0];
+    const dy = path[i][1] - path[i - 1][1];
+    if (dx !== prevDx || dy !== prevDy) turns += 1;
+    prevDx = dx;
+    prevDy = dy;
+  }
+  return turns;
+}
+
+function getMazeMetrics(cells, path, start, goal) {
+  const pathSet = new Set(path.map(([x, y]) => `${x},${y}`));
+  const reachableCount = countReachableCells(cells, [start.x, start.y]);
+  let branchOnPath = 0;
+  let deadEnds = 0;
+  let misleadCount = 0;
+  for (let y = 0; y < cells.length; y++) {
+    for (let x = 0; x < cells[0].length; x++) {
+      const d = mazeCellDegree(cells, x, y);
+      const key = `${x},${y}`;
+      const onPath = pathSet.has(key);
+      if (onPath && d >= 3) branchOnPath += 1;
+      if (d === 1) {
+        deadEnds += 1;
+        if (!onPath && !(x === start.x && y === start.y) && !(x === goal.x && y === goal.y)) {
+          misleadCount += 1;
+        }
+      }
+    }
+  }
+  return {
+    routeLength: path.length,
+    branchCount: branchOnPath,
+    deadEndCount: deadEnds,
+    turnCount: countPathTurns(path),
+    misleadCount,
+    routeRatio: reachableCount > 0 ? path.length / reachableCount : 1,
+  };
+}
+
+function passesMazeDifficulty(profile, metrics, relaxStage) {
+  const relax = Math.max(0, relaxStage | 0);
+  const minPathLen = Math.max(10, profile.minPathLen - relax * 3);
+  const minBranch = Math.max(0, (profile.minBranchOnPath || 0) - relax * 2);
+  const minDeadEnds = Math.max(0, (profile.minDeadEnds || 0) - relax * 2);
+  const minTurns = Math.max(2, (profile.minTurnCount || 2) - relax * 2);
+  const minMislead = Math.max(0, (profile.minMisleadCount || 0) - relax * 2);
+  const maxBranch = profile.maxBranchOnPath == null ? Infinity : profile.maxBranchOnPath + relax * 4;
+  const maxDeadEnds = profile.maxDeadEnds == null ? Infinity : profile.maxDeadEnds + relax * 5;
+  const maxRatio = profile.maxPathRatio == null ? 1 : profile.maxPathRatio + relax * 0.08;
+  if (metrics.routeLength < minPathLen) return false;
+  if (metrics.branchCount < minBranch) return false;
+  if (metrics.branchCount > maxBranch) return false;
+  if (metrics.deadEndCount < minDeadEnds) return false;
+  if (metrics.deadEndCount > maxDeadEnds) return false;
+  if (metrics.turnCount < minTurns) return false;
+  if (metrics.misleadCount < minMislead) return false;
+  if (metrics.routeRatio > maxRatio) return false;
+  return true;
+}
+
+function isGoalReachableSkippingPoint(cells, start, goal, blocked) {
+  const h = cells.length;
+  const w = cells[0].length;
+  const [bx, by] = blocked;
+  if ((start[0] === bx && start[1] === by) || (goal[0] === bx && goal[1] === by)) return false;
+  const seen = Array.from({ length: h }, () => Array(w).fill(false));
+  const q = [[start[0], start[1]]];
+  seen[start[1]][start[0]] = true;
+  for (let i = 0; i < q.length; i++) {
+    const [x, y] = q[i];
+    if (x === goal[0] && y === goal[1]) return true;
+    mazeNeighbors(x, y, w, h).forEach(([nx, ny]) => {
+      if (seen[ny][nx]) return;
+      if (nx === bx && ny === by) return;
+      if (!isConnected(cells, x, y, nx, ny)) return;
+      seen[ny][nx] = true;
+      q.push([nx, ny]);
+    });
+  }
+  return false;
+}
+
+function pickEvenlySpacedPoints(points, count) {
+  if (!Array.isArray(points) || points.length < count || count <= 0) return null;
+  if (count === 1) return [points[Math.floor(points.length / 2)]];
+  const out = [];
+  let prev = -1;
+  for (let i = 0; i < count; i++) {
+    const raw = Math.floor((i * (points.length - 1)) / (count - 1));
+    const idx = Math.max(prev + 1, Math.min(raw, points.length - (count - i)));
+    out.push(points[idx]);
+    prev = idx;
+  }
+  return out;
+}
+
+function buildRequiredPointPlacements(model, word) {
+  const chars = [...word];
+  if (!chars.length || !model || !Array.isArray(model.path)) return null;
+  const path = model.path;
+  if (path.length < chars.length + 3) return null;
+  const start = [model.start.x, model.start.y];
+  const goal = [model.goal.x, model.goal.y];
+  const mandatoryPathPoints = [];
+  for (let i = 2; i <= path.length - 3; i++) {
+    const p = path[i];
+    if (!isGoalReachableSkippingPoint(model.cells, start, goal, p)) {
+      mandatoryPathPoints.push(p);
+    }
+  }
+  const selected = pickEvenlySpacedPoints(mandatoryPathPoints, chars.length);
+  if (!selected) return null;
+  const placements = selected.map((p, idx) => ({ x: p[0], y: p[1], char: chars[idx] }));
+  return { placements, requiredPoints: selected };
+}
+
+function getGoalReachIndexStates(cells, start, goal, requiredPoints) {
+  const h = cells.length;
+  const w = cells[0].length;
+  const req = requiredPoints || [];
+  const k = req.length;
+  const reqIndexMap = new Map(req.map((p, i) => [`${p[0]},${p[1]}`, i]));
+  const seen = Array.from({ length: h }, () => Array.from({ length: w }, () => Array(k + 1).fill(false)));
+  const q = [[start[0], start[1], 0]];
+  seen[start[1]][start[0]][0] = true;
+  const goalStates = new Set();
+  for (let i = 0; i < q.length; i++) {
+    const [x, y, idx] = q[i];
+    if (x === goal[0] && y === goal[1]) goalStates.add(idx);
+    mazeNeighbors(x, y, w, h).forEach(([nx, ny]) => {
+      if (!isConnected(cells, x, y, nx, ny)) return;
+      let nextIdx = idx;
+      const reqPos = reqIndexMap.get(`${nx},${ny}`);
+      if (reqPos === idx) nextIdx = idx + 1;
+      if (seen[ny][nx][nextIdx]) return;
+      seen[ny][nx][nextIdx] = true;
+      q.push([nx, ny, nextIdx]);
+    });
+  }
+  return goalStates;
+}
+
+function validateHiraganaRouteConstraints(model, requiredPoints) {
+  if (!model || !model.cells || !model.start || !model.goal) return false;
+  const goalStates = getGoalReachIndexStates(
+    model.cells,
+    [model.start.x, model.start.y],
+    [model.goal.x, model.goal.y],
+    requiredPoints || []
+  );
+  const reqLen = (requiredPoints || []).length;
+  return goalStates.size === 1 && goalStates.has(reqLen);
+}
+
 function buildMazeModel(level, mazeType, requireMinPathLen) {
   const confByLevel = {
     beginner: { w: 12, h: 9, cell: 30, width: [4.1, 6.0] },
     intermediate: { w: 14, h: 10, cell: 28, width: [3.7, 5.4] },
     advanced: { w: 16, h: 12, cell: 26, width: [3.3, 4.9] },
   };
-  const typeExtra = { normal: 8, soft: 12, curve: 12, distort: 10, single: 4, branchy: 16, trap: 24 };
+  const profile = getMazeDifficultyProfile(level);
+  const [extraMin, extraMax] = profile.extraOpenRange || [8, 14];
+  const typeExtra = { normal: 2, soft: 4, curve: 4, distort: 3, single: -2, branchy: 7, trap: 11 };
   const base = { ...(confByLevel[level] || confByLevel.beginner) };
   if (mazeType === 'single') {
     base.w = Math.max(10, base.w - 2);
@@ -1792,18 +2014,20 @@ function buildMazeModel(level, mazeType, requireMinPathLen) {
     base.w += 1;
     base.h += 1;
   }
-  for (let attempt = 0; attempt < 34; attempt++) {
+  for (let attempt = 0; attempt < 18; attempt++) {
     const cells = buildPerfectMaze(base.w, base.h);
-    openExtraWalls(cells, typeExtra[mazeType] || 0);
+    const relaxStage = attempt < 8 ? 0 : attempt < 13 ? 1 : 2;
+    const extra = randInt(
+      Math.max(0, extraMin + (typeExtra[mazeType] || 0)),
+      Math.max(0, extraMax + (typeExtra[mazeType] || 0))
+    );
+    openExtraWalls(cells, extra);
     const { start, goal } = pickStartGoalLongBorderPath(cells, base.w, base.h);
     const path = solveMazePath(cells, [start.x, start.y], [goal.x, goal.y]);
     if (!path) continue;
     if (requireMinPathLen && path.length < requireMinPathLen) continue;
-    const degree = (x, y) =>
-      mazeNeighbors(x, y, base.w, base.h).filter(([nx, ny]) => isConnected(cells, x, y, nx, ny)).length;
-    const deadEnds = path.reduce((n, [x, y]) => n + (degree(x, y) === 1 ? 1 : 0), 0);
-    if (level === 'beginner' && deadEnds > Math.max(2, Math.floor(path.length * 0.14))) continue;
-    if (level === 'advanced' && deadEnds < Math.max(2, Math.floor(path.length * 0.08))) continue;
+    const metrics = getMazeMetrics(cells, path, start, goal);
+    if (!passesMazeDifficulty(profile, metrics, relaxStage)) continue;
     return {
       w: base.w,
       h: base.h,
@@ -1814,6 +2038,7 @@ function buildMazeModel(level, mazeType, requireMinPathLen) {
       start,
       goal,
       path,
+      metrics,
     };
   }
   return null;
@@ -1986,6 +2211,7 @@ function buildMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelArg, force
 
   while (cards.length < totalTarget && attempts < maxAttempts) {
     attempts += 1;
+    const startedAt = Date.now();
     const progress = cards.length / Math.max(1, totalTarget);
     const depth = attempts < maxAttempts * 0.45 ? 0 : attempts < maxAttempts * 0.78 ? 1 : 2;
     const fallbackLevel = depth >= 2 && progress < 0.7 ? 'beginner' : level;
@@ -2003,6 +2229,15 @@ function buildMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelArg, force
     const svg = buildMazeSvgWithLetters(model);
     cards.push(questionCard(idx, `<div class="maze-card maze-card--normal">${svg}</div>`));
     answers.push(`めいろ${idx}：経路長 ${model.path.length}`);
+    console.info('[maze-gen]', {
+      difficulty: level,
+      routeLength: model.metrics?.routeLength || model.path.length,
+      branchCount: model.metrics?.branchCount || 0,
+      deadEndCount: model.metrics?.deadEndCount || 0,
+      generationTimeMs: Date.now() - startedAt,
+      hiraganaRequiredPointsCount: 0,
+      hiraganaValidationPassed: true,
+    });
   }
 
   if (cards.length < totalTarget) {
@@ -2024,6 +2259,15 @@ function buildMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelArg, force
     const svg = buildMazeSvgWithLetters(model);
     cards.push(questionCard(idx, `<div class="maze-card maze-card--normal">${svg}</div>`));
     answers.push(`めいろ${idx}：経路長 ${model.path.length}`);
+    console.info('[maze-gen]', {
+      difficulty: level,
+      routeLength: model.path.length,
+      branchCount: model.metrics?.branchCount || 0,
+      deadEndCount: model.metrics?.deadEndCount || 0,
+      generationTimeMs: 0,
+      hiraganaRequiredPointsCount: 0,
+      hiraganaValidationPassed: true,
+    });
   }
   return { cardHtmls: cards, answers };
 }
@@ -2119,6 +2363,7 @@ function buildHiraganaMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelAr
 
   while (cards.length < totalTarget && attempts < maxAttempts) {
     attempts += 1;
+    const startedAt = Date.now();
     const progress = cards.length / Math.max(1, totalTarget);
     const depth = attempts < maxAttempts * 0.4 ? 0 : attempts < maxAttempts * 0.75 ? 1 : 2;
     const picked = pickHiraganaMazeWord(categoryArg);
@@ -2133,20 +2378,31 @@ function buildHiraganaMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelAr
     const model = buildMazeModel(fallbackLevel, pickOne(['normal', 'soft']), Math.max(8, minPath));
     if (!model || !model.path) continue;
 
-    const maxWordLen = Math.max(1, model.path.length - 2);
+    const maxWordLen = Math.max(1, model.path.length - 3);
     const word =
       [...baseWord].length <= maxWordLen ? baseWord : pickWordFitPath(picked.category, maxWordLen);
-    const letters = buildPathLetterPlacements(model.path, word);
-    if (!letters) continue;
+    const placement = buildRequiredPointPlacements(model, word);
+    if (!placement) continue;
+    const validationPassed = validateHiraganaRouteConstraints(model, placement.requiredPoints);
+    if (!validationPassed) continue;
 
     const idx = cards.length + 1;
-    const svg = buildMazeSvgWithLetters(model, letters);
+    const svg = buildMazeSvgWithLetters(model, placement.placements);
     const boxes = [...word]
       .map(() => '<div class="maze-answer-box"></div>')
       .join('');
     cards.push(questionCard(idx, `<div class="maze-card maze-card--hiragana">${svg}<div class="maze-answer-row">${boxes}</div></div>`));
     const catJa = HIRAGANA_CATEGORY_LABEL_JA[picked.category] || picked.category;
     answers.push(`${word}（${catJa}）`);
+    console.info('[maze-gen]', {
+      difficulty: level,
+      routeLength: model.metrics?.routeLength || model.path.length,
+      branchCount: model.metrics?.branchCount || 0,
+      deadEndCount: model.metrics?.deadEndCount || 0,
+      generationTimeMs: Date.now() - startedAt,
+      hiraganaRequiredPointsCount: placement.requiredPoints.length,
+      hiraganaValidationPassed: validationPassed,
+    });
   }
 
   if (cards.length < totalTarget) {
@@ -2165,18 +2421,29 @@ function buildHiraganaMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelAr
       console.error('[maze_hiragana] emergency fallback failed');
       break;
     }
-    const maxWordLen = Math.max(1, model.path.length - 2);
+    const maxWordLen = Math.max(1, model.path.length - 3);
     const word = pickWordFitPath(picked.category, maxWordLen);
-    const letters = buildPathLetterPlacements(model.path, word);
-    if (!letters) break;
+    const placement = buildRequiredPointPlacements(model, word);
+    if (!placement) break;
+    const validationPassed = validateHiraganaRouteConstraints(model, placement.requiredPoints);
+    if (!validationPassed) break;
     const idx = cards.length + 1;
-    const svg = buildMazeSvgWithLetters(model, letters);
+    const svg = buildMazeSvgWithLetters(model, placement.placements);
     const boxes = [...word]
       .map(() => '<div class="maze-answer-box"></div>')
       .join('');
     cards.push(questionCard(idx, `<div class="maze-card maze-card--hiragana">${svg}<div class="maze-answer-row">${boxes}</div></div>`));
     const catJa = HIRAGANA_CATEGORY_LABEL_JA[picked.category] || picked.category;
     answers.push(`${word}（${catJa}）`);
+    console.info('[maze-gen]', {
+      difficulty: level,
+      routeLength: model.path.length,
+      branchCount: model.metrics?.branchCount || 0,
+      deadEndCount: model.metrics?.deadEndCount || 0,
+      generationTimeMs: 0,
+      hiraganaRequiredPointsCount: placement.requiredPoints.length,
+      hiraganaValidationPassed: validationPassed,
+    });
   }
   return { cardHtmls: cards, answers };
 }
