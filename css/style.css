@@ -3616,14 +3616,14 @@ body.lp-pricing-page {
     line-height: 1.15 !important;
   }
 
-  /* 助詞・中級（PC @media print）：本文約1.5倍＋詰め（+1問の実測と整合） */
+  /* 助詞・中級（PC @media print）：PDFモバイル出力と同等（約1.7倍） */
   .question-card.question.joshi:has(.choice-sentence) {
     padding: 0.45pt 1.6pt !important;
     align-items: start !important;
   }
   .question-card.question.joshi:has(.choice-sentence) .choice-sentence {
-    font-size: 14.25pt !important;
-    line-height: 1.13 !important;
+    font-size: 16.2pt !important;
+    line-height: 1.22 !important;
     margin-bottom: 0 !important;
   }
   .question-card.question.joshi:has(.choice-sentence) .choices-row {
@@ -3631,8 +3631,8 @@ body.lp-pricing-page {
     margin-top: 0 !important;
   }
   .question-card.question.joshi:has(.choice-sentence) .choice-item {
-    font-size: 8.2pt !important;
-    padding: 0.55pt 4.2pt !important;
+    font-size: 13.6pt !important;
+    padding: 1.6pt 9.8pt !important;
     line-height: 1.12 !important;
   }
   .question-card.question.joshi:has(.choice-sentence) .choice-label {
@@ -3662,7 +3662,7 @@ body.lp-pricing-page {
     margin-bottom: 0.12mm !important;
   }
 
-  /* 50音：中級 +4 / 上級 +1 */
+  /* 50音：PDFモバイル出力と同等（中級/上級を拡大） */
   .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) {
     padding: 0.45pt 1.7pt !important;
   }
@@ -3670,7 +3670,7 @@ body.lp-pricing-page {
     gap: 3.2pt !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .emoji-large {
-    font-size: 16.8pt !important;
+    font-size: 34.5pt !important;
     line-height: 1 !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .emoji-question-prompt {
@@ -3679,8 +3679,9 @@ body.lp-pricing-page {
     margin-bottom: 0 !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .choice-item {
-    font-size: 8.1pt !important;
-    padding: 0.5pt 4pt !important;
+    font-size: 18pt !important;
+    padding: 1.8pt 10pt !important;
+    min-width: 86px !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row--tight) {
     padding: 0.48pt 1.8pt !important;
@@ -3692,18 +3693,21 @@ body.lp-pricing-page {
     font-size: 17.2pt !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-question-prompt {
-    font-size: 7.1pt !important;
-    line-height: 1.14 !important;
-    margin-bottom: 0 !important;
+    display: none !important;
+  }
+  .question-card.question.hiragana:has(.emoji-question-row--tight) .seikatsu-trace {
+    font-size: 48pt !important;
+    line-height: 1 !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row--tight) .hira-write {
-    width: 10.6mm !important;
-    height: 10.6mm !important;
-    min-width: 10.6mm !important;
-    min-height: 10.6mm !important;
+    width: 27mm !important;
+    height: 27mm !important;
+    min-width: 27mm !important;
+    min-height: 27mm !important;
+    border-width: 2pt !important;
   }
 
-  /* 並び替え：全レベル +2 */
+  /* 並び替え：PDFモバイル出力と同等 */
   .question-card.question.narabikae {
     padding: 0.45pt 1.6pt !important;
   }
@@ -3711,9 +3715,9 @@ body.lp-pricing-page {
     gap: 0.35mm !important;
   }
   .question-card.question.narabikae .emoji-question-prompt {
-    font-size: 7pt !important;
-    line-height: 1.14 !important;
-    margin-bottom: 0 !important;
+    font-size: 14.25pt !important;
+    line-height: 1.24 !important;
+    margin-bottom: 1.2pt !important;
   }
   .question-card.question.narabikae .choices-row {
     gap: 0.45pt !important;
@@ -3724,8 +3728,7 @@ body.lp-pricing-page {
     line-height: 1.1 !important;
   }
   .question-card.question.narabikae .adv-prompt-sub {
-    margin-bottom: 1pt !important;
-    line-height: 1.12 !important;
+    display: none !important;
   }
   .question-card.question.narabikae .answer-line {
     height: 16px !important;
