@@ -4291,6 +4291,24 @@ body.pdf-mobile-capture .maze-card--hiragana .maze-answer-box {
   max-width: 12.5mm !important;
   flex: 0 0 12.5mm !important;
 }
+body.pdf-mobile-capture .print-header-fields {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  width: 100% !important;
+}
+body.pdf-mobile-capture .print-header-field--name {
+  flex: 0 1 50% !important;
+  max-width: 50% !important;
+  min-width: 0 !important;
+}
+body.pdf-mobile-capture .print-field-line--name {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+body.pdf-mobile-capture .print-header-field--date {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  justify-self: end !important;
+}
 body.pdf-mobile-capture .write-box,
 body.pdf-mobile-capture .write-box-tight,
 body.pdf-mobile-capture .hira-write {
