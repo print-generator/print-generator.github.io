@@ -1876,12 +1876,16 @@ select.setting-select--locked {
 .maze-label--start { fill: #15803d; }
 .maze-label--goal { fill: #b91c1c; }
 .maze-char-on-path {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   fill: #c2410c;
   paint-order: stroke;
   stroke: #ffffff;
   stroke-width: 2px;
+}
+.maze-card--hiragana .maze-char-on-path {
+  font-size: 14px;
+  font-weight: 900;
 }
 .maze-word-hint { margin-top: 6px; font-size: 0.85rem; }
 .maze-char {
@@ -1893,6 +1897,7 @@ select.setting-select--locked {
   margin-right: 4px;
 }
 .maze-word-question { margin-top: 2px; font-size: 0.82rem; color: var(--text-sub); }
+.maze-card--hiragana .maze-word-question { display: none !important; }
 .maze-answer-row {
   margin-top: 6px;
   display: flex;
@@ -3385,6 +3390,10 @@ body.lp-pricing-page {
   .maze-label {
     font-size: 8.6pt !important;
     stroke-width: 2.8pt !important;
+  }
+  .maze-card--hiragana .maze-char-on-path {
+    font-size: 11pt !important;
+    stroke-width: 1.6pt !important;
   }
   .maze-start {
     r: 2.4mm;

@@ -1775,9 +1775,9 @@ function pickStartGoalLongBorderPath(cells, w, h) {
 
 function buildMazeModel(level, mazeType, requireMinPathLen) {
   const confByLevel = {
-    beginner: { w: 12, h: 9, cell: 30, width: [3.2, 4.4] },
-    intermediate: { w: 14, h: 10, cell: 28, width: [2.9, 4.0] },
-    advanced: { w: 16, h: 12, cell: 26, width: [2.6, 3.6] },
+    beginner: { w: 12, h: 9, cell: 30, width: [4.1, 6.0] },
+    intermediate: { w: 14, h: 10, cell: 28, width: [3.7, 5.4] },
+    advanced: { w: 16, h: 12, cell: 26, width: [3.3, 4.9] },
   };
   const typeExtra = { normal: 8, soft: 12, curve: 12, distort: 10, single: 4, branchy: 16, trap: 24 };
   const base = { ...(confByLevel[level] || confByLevel.beginner) };
@@ -1818,9 +1818,9 @@ function buildMazeModel(level, mazeType, requireMinPathLen) {
 
 function buildMazeEmergencyModel(level) {
   const confByLevel = {
-    beginner: { w: 12, h: 9, cell: 30, width: [3.2, 4.4] },
-    intermediate: { w: 14, h: 10, cell: 28, width: [2.9, 4.0] },
-    advanced: { w: 16, h: 12, cell: 26, width: [2.6, 3.6] },
+    beginner: { w: 12, h: 9, cell: 30, width: [4.1, 6.0] },
+    intermediate: { w: 14, h: 10, cell: 28, width: [3.7, 5.4] },
+    advanced: { w: 16, h: 12, cell: 26, width: [3.3, 4.9] },
   };
   const base = { ...(confByLevel[level] || confByLevel.beginner) };
   const cells = buildPerfectMaze(base.w, base.h);
@@ -1893,8 +1893,8 @@ function getMazeLabelProfile() {
 }
 
 function buildMazeSvgWithLetters(model, lettersOnPath) {
-  const pad = 4;
-  const labelPad = Math.max(12, Math.floor(model.cell * 0.62));
+  const pad = 2;
+  const labelPad = Math.max(10, Math.floor(model.cell * 0.55));
   const mazeWidth = model.w * model.cell + pad * 2;
   const mazeHeight = model.h * model.cell + pad * 2;
   const width = mazeWidth + labelPad * 2;
