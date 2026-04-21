@@ -4203,6 +4203,42 @@ body.lp-pricing-page {
   line-height: 1.25 !important;
   margin-bottom: 0 !important;
 }
+.pdf-capturing .question-card.question.joshi:has(.choice-sentence) .choice-sentence {
+  font-size: 14.25pt !important; /* 助詞中級: 約1.5倍 */
+  line-height: 1.2 !important;
+}
+.pdf-capturing .question-card.question.joshi:has(.choice-sentence) .choice-item {
+  font-size: 12pt !important;
+  padding: 1.2pt 8.5pt !important;
+}
+.pdf-capturing .question-card.question.joshi:has(.advanced-compact--joshi) .desc-sentence {
+  font-size: 19pt !important; /* 助詞上級: 約2倍 */
+  line-height: 1.24 !important;
+}
+.pdf-capturing .question-card.question.joshi:has(.advanced-compact--joshi) .joshi-inline-blank {
+  min-width: 8.4em !important;
+  letter-spacing: 0.1em !important;
+}
+.pdf-capturing .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .choice-item {
+  font-size: 12pt !important; /* 50音中級: 約1.5倍 */
+  padding: 1.2pt 8pt !important;
+  min-width: 62px !important;
+}
+.pdf-capturing .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .emoji-large {
+  font-size: 23pt !important;
+}
+.pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-question-prompt {
+  display: none !important; /* 50音上級: PDF時のみ「なぞってかこう」を非表示 */
+}
+.pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .seikatsu-trace {
+  font-size: 32pt !important; /* 50音上級: 問題文字を約2倍 */
+  line-height: 1 !important;
+}
+.pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .hira-write {
+  width: 18mm !important; /* 50音上級: 記入欄を約2倍 */
+  height: 18mm !important;
+  border-width: 2pt !important;
+}
 .pdf-capturing .question.sentence .advanced-compact--sentence .answer-line,
 .pdf-capturing .question.narabikae .advanced-compact--narabikae .answer-line {
   height: 18px !important;
