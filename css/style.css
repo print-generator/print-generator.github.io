@@ -937,27 +937,23 @@ select.setting-select--locked {
  */
 @media (min-width: 601px) {
   .a4-sheet--maze .maze-card {
-    padding: 4px 4px 6px;
+    padding: 1.5px 1.5px 3px;
   }
   .a4-sheet--maze .maze-svg {
-    min-height: 58mm;
-    max-height: 72mm;
+    min-height: 69mm;
+    max-height: 84mm;
   }
   .a4-sheet--maze .maze-card--normal .maze-svg {
-    min-height: 58mm;
-    max-height: 74mm;
+    min-height: 69mm;
+    max-height: 86mm;
   }
   .a4-sheet--maze .maze-card--hiragana .maze-svg {
-    min-height: 52mm;
-    max-height: 66mm;
-  }
-  .a4-sheet--maze .maze-word-question {
-    margin-top: 2px;
-    font-size: 0.8rem;
+    min-height: 65mm;
+    max-height: 80mm;
   }
   .a4-sheet--maze .maze-answer-row {
-    margin-top: 6px;
-    gap: 5px;
+    margin-top: 5px;
+    gap: 7px;
   }
 }
 
@@ -1855,12 +1851,12 @@ select.setting-select--locked {
   border: 1px solid var(--primary-soft);
   background: linear-gradient(180deg, #ffffff 0%, var(--primary-light) 100%);
   border-radius: 10px;
-  padding: 4px 4px 8px;
+  padding: 2px 2px 4px;
 }
 .maze-svg {
   width: 100%;
-  min-height: 98mm;
-  max-height: 120mm;
+  min-height: 112mm;
+  max-height: 132mm;
   display: block;
   background: #fff;
   border-radius: 8px;
@@ -1898,16 +1894,16 @@ select.setting-select--locked {
 }
 .maze-word-question { margin-top: 2px; font-size: 0.82rem; color: var(--text-sub); }
 .maze-answer-row {
-  margin-top: 8px;
+  margin-top: 6px;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 10px;
   justify-content: center;
 }
 .maze-answer-box {
-  width: 34px;
-  height: 34px;
-  border: 2px solid #94a3b8;
+  width: 68px;
+  height: 68px;
+  border: 2.5px solid #64748b;
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
@@ -2937,8 +2933,8 @@ body.lp-pricing-page {
   .features-grid { grid-template-columns: repeat(2,1fr); }
   .plan-cta-inner { flex-direction: column; text-align: center; }
   .plan-cta-desc { margin: 0 auto; }
-  .maze-card { padding: 4px 3px 8px; }
-  .maze-svg { min-height: 84mm; max-height: 98mm; }
+  .maze-card { padding: 3px 2px 6px; }
+  .maze-svg { min-height: 92mm; max-height: 106mm; }
   .maze-label { font-size: 10.5px; stroke-width: 3.2px; }
 }
 
@@ -2949,30 +2945,25 @@ body.lp-pricing-page {
     padding: 9px 12px;
   }
   .maze-card {
-    padding: 5px 3px 8px;
+    padding: 3px 2px 6px;
     border-radius: 9px;
   }
   .maze-svg {
-    min-height: 72mm;
-    max-height: 86mm;
+    min-height: 82mm;
+    max-height: 98mm;
     border-radius: 7px;
   }
   .maze-label {
     font-size: 10px;
     stroke-width: 3px;
   }
-  .maze-word-question {
-    margin-top: 6px;
-    font-size: 0.8rem;
-    text-align: center;
-  }
   .maze-answer-row {
-    margin-top: 6px;
-    gap: 5px;
+    margin-top: 5px;
+    gap: 8px;
   }
   .maze-answer-box {
-    width: 30px;
-    height: 30px;
+    width: 60px;
+    height: 60px;
   }
   .header-nav .nav-link { display: none; }
   .option-grid { grid-template-columns: repeat(2,1fr); gap: 8px; padding: 14px 12px; }
@@ -3362,39 +3353,33 @@ body.lp-pricing-page {
     gap: 0.55mm !important;
   }
   .maze-svg {
-    min-height: 64mm !important;
-    max-height: 76mm !important;
+    min-height: 72mm !important;
+    max-height: 86mm !important;
   }
   .maze-card {
-    padding: 2.2mm 2.2mm 2.6mm !important;
+    padding: 1.2mm 1.2mm 1.8mm !important;
     border-radius: 6px !important;
     border: 1pt solid #fed7aa !important;
     background: #ffffff !important;
   }
   .maze-card--normal .maze-svg {
-    min-height: 64mm !important;
-    max-height: 78mm !important;
+    min-height: 72mm !important;
+    max-height: 88mm !important;
   }
   .maze-card--hiragana .maze-svg {
-    min-height: 56mm !important;
-    max-height: 68mm !important;
-  }
-  .maze-word-question {
-    margin-top: 2mm !important;
-    font-size: 8.3pt !important;
-    text-align: center !important;
-    line-height: 1.3 !important;
+    min-height: 66mm !important;
+    max-height: 82mm !important;
   }
   .maze-answer-row {
-    margin-top: 1.5mm !important;
-    gap: 1.4mm !important;
+    margin-top: 1.1mm !important;
+    gap: 1.8mm !important;
     justify-content: center !important;
   }
   .maze-answer-box {
-    width: 9mm;
-    height: 9mm;
-    border-width: 1.5pt;
-    border-color: #7f8ea5 !important;
+    width: 18mm;
+    height: 18mm;
+    border-width: 2pt;
+    border-color: #475569 !important;
     border-radius: 1.2mm !important;
   }
   .maze-label {
@@ -4044,16 +4029,16 @@ body.lp-pricing-page {
     padding: 1.6pt 3.8pt !important;
   }
   .print-page--maze .maze-svg {
-    min-height: 64mm !important;
-    max-height: 74mm !important;
+    min-height: 72mm !important;
+    max-height: 84mm !important;
   }
   .print-page--maze .maze-card--normal .maze-svg {
-    min-height: 64mm !important;
-    max-height: 76mm !important;
+    min-height: 72mm !important;
+    max-height: 86mm !important;
   }
   .print-page--maze .maze-card--hiragana .maze-svg {
-    min-height: 56mm !important;
-    max-height: 66mm !important;
+    min-height: 66mm !important;
+    max-height: 80mm !important;
   }
 
   /* ── ⑯ 絵付き単語カードを印刷向けに ── */

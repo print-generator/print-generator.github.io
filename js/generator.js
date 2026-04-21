@@ -1775,9 +1775,9 @@ function pickStartGoalLongBorderPath(cells, w, h) {
 
 function buildMazeModel(level, mazeType, requireMinPathLen) {
   const confByLevel = {
-    beginner: { w: 12, h: 9, cell: 30, width: [2.4, 3.4] },
-    intermediate: { w: 14, h: 10, cell: 28, width: [2.1, 3.0] },
-    advanced: { w: 16, h: 12, cell: 26, width: [1.9, 2.8] },
+    beginner: { w: 12, h: 9, cell: 30, width: [3.2, 4.4] },
+    intermediate: { w: 14, h: 10, cell: 28, width: [2.9, 4.0] },
+    advanced: { w: 16, h: 12, cell: 26, width: [2.6, 3.6] },
   };
   const typeExtra = { normal: 8, soft: 12, curve: 12, distort: 10, single: 4, branchy: 16, trap: 24 };
   const base = { ...(confByLevel[level] || confByLevel.beginner) };
@@ -1818,9 +1818,9 @@ function buildMazeModel(level, mazeType, requireMinPathLen) {
 
 function buildMazeEmergencyModel(level) {
   const confByLevel = {
-    beginner: { w: 12, h: 9, cell: 30, width: [2.4, 3.4] },
-    intermediate: { w: 14, h: 10, cell: 28, width: [2.1, 3.0] },
-    advanced: { w: 16, h: 12, cell: 26, width: [1.9, 2.8] },
+    beginner: { w: 12, h: 9, cell: 30, width: [3.2, 4.4] },
+    intermediate: { w: 14, h: 10, cell: 28, width: [2.9, 4.0] },
+    advanced: { w: 16, h: 12, cell: 26, width: [2.6, 3.6] },
   };
   const base = { ...(confByLevel[level] || confByLevel.beginner) };
   const cells = buildPerfectMaze(base.w, base.h);
@@ -1893,8 +1893,8 @@ function getMazeLabelProfile() {
 }
 
 function buildMazeSvgWithLetters(model, lettersOnPath) {
-  const pad = 8;
-  const labelPad = Math.max(18, Math.floor(model.cell * 0.95));
+  const pad = 4;
+  const labelPad = Math.max(12, Math.floor(model.cell * 0.62));
   const mazeWidth = model.w * model.cell + pad * 2;
   const mazeHeight = model.h * model.cell + pad * 2;
   const width = mazeWidth + labelPad * 2;
@@ -2141,7 +2141,7 @@ function buildHiraganaMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelAr
     const boxes = [...word]
       .map(() => '<div class="maze-answer-box"></div>')
       .join('');
-    cards.push(questionCard(idx, `<div class="maze-card maze-card--hiragana">${svg}<div class="maze-word-question">ルートの もじを よんで、ならべると なに？</div><div class="maze-answer-row">${boxes}</div></div>`));
+    cards.push(questionCard(idx, `<div class="maze-card maze-card--hiragana">${svg}<div class="maze-answer-row">${boxes}</div></div>`));
     const catJa = HIRAGANA_CATEGORY_LABEL_JA[picked.category] || picked.category;
     answers.push(`${word}（${catJa}）`);
   }
@@ -2171,7 +2171,7 @@ function buildHiraganaMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelAr
     const boxes = [...word]
       .map(() => '<div class="maze-answer-box"></div>')
       .join('');
-    cards.push(questionCard(idx, `<div class="maze-card maze-card--hiragana">${svg}<div class="maze-word-question">ルートの もじを よんで、ならべると なに？</div><div class="maze-answer-row">${boxes}</div></div>`));
+    cards.push(questionCard(idx, `<div class="maze-card maze-card--hiragana">${svg}<div class="maze-answer-row">${boxes}</div></div>`));
     const catJa = HIRAGANA_CATEGORY_LABEL_JA[picked.category] || picked.category;
     answers.push(`${word}（${catJa}）`);
   }
