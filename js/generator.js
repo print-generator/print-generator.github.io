@@ -541,7 +541,7 @@ function getPackAggressiveTuning(ctx) {
     return {
       safetyPx: 0,
       roomRoundEpsPx: 8,
-      overflowAllowPx: 18,
+      overflowAllowPx: 20,
       kindRoomBonusPx: { first: 2.5, middle: 4, last: 1.2 },
     };
   }
@@ -549,7 +549,7 @@ function getPackAggressiveTuning(ctx) {
     return {
       safetyPx: 0,
       roomRoundEpsPx: 8.5,
-      overflowAllowPx: 22,
+      overflowAllowPx: 24,
       kindRoomBonusPx: { first: 2.8, middle: 5, last: 1.6 },
     };
   }
@@ -557,7 +557,7 @@ function getPackAggressiveTuning(ctx) {
     return {
       safetyPx: 0,
       roomRoundEpsPx: 7.8,
-      overflowAllowPx: 18,
+      overflowAllowPx: 20,
       kindRoomBonusPx: { first: 2.4, middle: 4.8, last: 1.2 },
     };
   }
@@ -565,7 +565,7 @@ function getPackAggressiveTuning(ctx) {
     return {
       safetyPx: 0,
       roomRoundEpsPx: 6.8,
-      overflowAllowPx: 14,
+      overflowAllowPx: 16,
       kindRoomBonusPx: { first: 1.8, middle: 3.8, last: 1 },
     };
   }
@@ -573,40 +573,40 @@ function getPackAggressiveTuning(ctx) {
     return {
       safetyPx: 0,
       roomRoundEpsPx: 6.8,
-      overflowAllowPx: 16,
+      overflowAllowPx: 18,
       kindRoomBonusPx: { first: 2, middle: 4, last: 1 },
     };
   }
   if (isHiraganaAdvanced) {
     return {
       safetyPx: 0,
-      roomRoundEpsPx: 6.2,
-      overflowAllowPx: 12,
-      kindRoomBonusPx: { first: 1.5, middle: 3, last: 0.8 },
+      roomRoundEpsPx: 5.8,
+      overflowAllowPx: 14,
+      kindRoomBonusPx: { first: 1.8, middle: 3.4, last: 1.1 },
     };
   }
   if (isKanjiReadingIntermediate) {
     return {
       safetyPx: 0,
       roomRoundEpsPx: 5.2,
-      overflowAllowPx: 11,
+      overflowAllowPx: 13,
       kindRoomBonusPx: { first: 1.2, middle: 2.5, last: 0.7 },
     };
   }
   const isMazePack = content === 'maze' || content === 'maze_hiragana';
   if (isMazePack) {
     return {
-      safetyPx: 0.35,
-      roomRoundEpsPx: 2,
-      overflowAllowPx: 5,
-      kindRoomBonusPx: { first: 1, middle: 1.5, last: 0.6 },
+      safetyPx: 0.25,
+      roomRoundEpsPx: 2.3,
+      overflowAllowPx: 6,
+      kindRoomBonusPx: { first: 1.2, middle: 1.8, last: 0.8 },
     };
   }
   return {
-    safetyPx: 1.5,
-    roomRoundEpsPx: 0.5,
-    overflowAllowPx: 0,
-    kindRoomBonusPx: { first: 0, middle: 0, last: 0 },
+    safetyPx: 1.2,
+    roomRoundEpsPx: 0.8,
+    overflowAllowPx: 2,
+    kindRoomBonusPx: { first: 0.6, middle: 1, last: 0.4 },
   };
 }
 

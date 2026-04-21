@@ -53,6 +53,11 @@
   --print-cards-5-padding-x: 2.1pt;
   --print-cards-5-separator-gap: 0.18mm;
   --print-cards-5-inner-gap: 0.55mm;
+  --print-pdf-card-padding-y: 0.72pt;
+  --print-pdf-card-inner-gap: 0.6mm;
+  --print-pdf-gap-main-to-write: 1.8px;
+  --print-hiragana-advanced-prompt-line-height: 1.25;
+  --print-hiragana-advanced-write-margin-top: 0.65mm;
 }
 
 html { scroll-behavior: smooth; }
@@ -4212,13 +4217,15 @@ body.lp-pricing-page {
   print-color-adjust: exact !important;
 }
 .pdf-capturing .question-card {
-  padding: var(--print-card-padding-y) var(--print-card-padding-x) !important;
+  padding: var(--print-pdf-card-padding-y) var(--print-card-padding-x) !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
 }
 .pdf-capturing .questions-grid .question-card:not(:last-child) {
   margin-bottom: var(--print-card-separator-gap) !important;
 }
 .pdf-capturing .question-card-content {
-  gap: var(--print-card-inner-gap) !important;
+  gap: var(--print-pdf-card-inner-gap) !important;
 }
 .pdf-capturing .question-card .choice-label,
 .pdf-capturing .question-card .emoji-question-prompt,
@@ -4239,7 +4246,7 @@ body.lp-pricing-page {
 }
 .pdf-capturing .question-card .answer-line {
   height: var(--print-answer-line-height) !important;
-  margin-top: var(--print-gap-main-to-write) !important;
+  margin-top: var(--print-pdf-gap-main-to-write) !important;
 }
 .pdf-capturing .question-card .choice-sentence,
 .pdf-capturing .question-card .desc-sentence {
@@ -4318,6 +4325,7 @@ body.lp-pricing-page {
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-question-prompt {
   display: none !important; /* 50音上級: PDF時のみ「なぞってかこう」を非表示 */
+  line-height: var(--print-hiragana-advanced-prompt-line-height) !important;
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .seikatsu-trace {
   font-size: 48pt !important; /* 50音上級: 前回設定からさらに約1.5倍 */
@@ -4328,6 +4336,7 @@ body.lp-pricing-page {
   height: 27mm !important;
   border-width: 2pt !important;
   border-color: #7b8794 !important;
+  margin-top: var(--print-hiragana-advanced-write-margin-top) !important;
 }
 .pdf-capturing .question-card.question.narabikae .adv-prompt-sub {
   display: none !important; /* 並べ替え: PDF時のみ「こたえをしたにかこう」を非表示 */

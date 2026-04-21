@@ -1881,10 +1881,18 @@ function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc,
   g.style.flexDirection = 'column';
   g.style.flex = 'none';
   g.style.gap = gridCs ? gridCs.gap : '8px';
+  g.style.breakInside = 'avoid';
+  g.style.pageBreakInside = 'avoid';
   if (isMazeContent) {
     g.style.minHeight = '100%';
   }
-  cardSlice.forEach((c) => g.appendChild(c.cloneNode(true)));
+  cardSlice.forEach((c) => {
+    const clone = c.cloneNode(true);
+    clone.style.breakInside = 'avoid';
+    clone.style.pageBreakInside = 'avoid';
+    clone.style.webkitColumnBreakInside = 'avoid';
+    g.appendChild(clone);
+  });
   wrap.appendChild(g);
   if (isLastPageOfDoc && footer) wrap.appendChild(footer.cloneNode(true));
   return wrap;
