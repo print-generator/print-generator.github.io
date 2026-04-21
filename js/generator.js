@@ -233,7 +233,7 @@ const PRINT_CARD_COUNT_PRESETS = {
   maze: {
     beginner: { first: 2, rest: 2 },
     intermediate: { first: 2, rest: 2 },
-    advanced: { first: 1, rest: 2 },
+    advanced: { first: 2, rest: 2 },
   },
   maze_hiragana: {
     beginner: { first: 2, rest: 2 },
@@ -625,6 +625,9 @@ function getKindRoomBonusPx(kindRoomBonusPx, isFirstPage, isLastPage) {
 function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, footerHtml, ctx) {
   const n = cardHtmls.length;
   if (!n) return [];
+  if (ctx && (ctx.content === 'maze' || ctx.content === 'maze_hiragana')) {
+    return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload);
+  }
   if (typeof document === 'undefined') {
     return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload);
   }

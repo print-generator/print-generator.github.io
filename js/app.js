@@ -1730,7 +1730,7 @@ async function savePdfViaHtml2Canvas() {
     const scale = Math.min(3, Math.max(2.5, dpr * 1.1));
 
     /* 改ページは generator.js の実測パック結果を .print-page 単位でそのまま踏襲（枚数推定とズレない） */
-    const pageSlices = getQuestionCardSlicesFromPrintSheet(sheet);
+    const pageSlices = getPdfPageSlicesForContent(sheet, contentSel, levelSel);
     if (!pageSlices.length) {
       alert('PDFのページ分割に失敗しました。プリントを再生成してからお試しください。');
       return;
@@ -1764,7 +1764,8 @@ async function savePdfViaHtml2Canvas() {
           sheet,
           pageSlices[p],
           p === 0,
-          p === pageSlices.length - 1
+          p === pageSlices.length - 1,
+          contentSel
         );
         host.appendChild(frag);
         void frag.offsetHeight;
@@ -1840,7 +1841,7 @@ function addCanvasPageToPdf(pdf, canvas, sideMarginMm, contentWidthMm, addPageBe
  * スマホPDF用：既存プリントから question-card を複製し、186mm 幅の 1 ページ相当 DOM を組み立てる。
  * 分割枚数は .print-page ごと（generatePrintHTML の実測ベース改ページと一致）。
  */
-function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc) {
+function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc, contentSel) {
   const header = sheet.querySelector('.print-header');
   const instr = sheet.querySelector('.print-instruction');
   const continuationStrip = sheet.querySelector('.print-continuation-strip');
@@ -1863,6 +1864,10 @@ function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc)
     'flex-direction:column',
     'visibility:visible',
   ].join(';');
+  const isMazeContent = contentSel === 'maze' || contentSel === 'maze_hiragana';
+  if (isMazeContent) {
+    wrap.style.minHeight = '273mm';
+  }
 
   if (isFirst) {
     if (header) wrap.appendChild(header.cloneNode(true));
@@ -1876,6 +1881,9 @@ function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc)
   g.style.flexDirection = 'column';
   g.style.flex = 'none';
   g.style.gap = gridCs ? gridCs.gap : '8px';
+  if (isMazeContent) {
+    g.style.minHeight = '100%';
+  }
   cardSlice.forEach((c) => g.appendChild(c.cloneNode(true)));
   wrap.appendChild(g);
   if (isLastPageOfDoc && footer) wrap.appendChild(footer.cloneNode(true));
@@ -1904,9 +1912,44 @@ function getQuestionCardSlicesFromPrintSheet(sheet) {
   return flat.length ? [flat] : [];
 }
 
+function getPdfPageSlicesForContent(sheet, contentSel, levelSel) {
+  const isMazeContent = contentSel === 'maze' || contentSel === 'maze_hiragana';
+  if (!isMazeContent) {
+    return getQuestionCardSlicesFromPrintSheet(sheet);
+  }
+  const allCards = Array.from(sheet.querySelectorAll('.question-card'));
+  if (!allCards.length) return [];
+  let chunkSizes = [];
+  if (typeof getPrintPageChunkSizes === 'function') {
+    const raw = getPrintPageChunkSizes(allCards.length, contentSel, levelSel, buildPrintChunkPayloadForContent(contentSel));
+    if (Array.isArray(raw) && raw.length) chunkSizes = raw;
+  }
+  if (!chunkSizes.length) {
+    const pages = Math.ceil(allCards.length / 2);
+    chunkSizes = Array.from({ length: pages }, (_v, i) =>
+      i === pages - 1 ? allCards.length - i * 2 : 2
+    );
+  }
+  const out = [];
+  let idx = 0;
+  for (const sizeRaw of chunkSizes) {
+    const size = Math.max(1, Number(sizeRaw) || 0);
+    const slice = allCards.slice(idx, idx + size);
+    if (slice.length) out.push(slice);
+    idx += size;
+    if (idx >= allCards.length) break;
+  }
+  if (idx < allCards.length) {
+    for (; idx < allCards.length; idx += 2) {
+      out.push(allCards.slice(idx, idx + 2));
+    }
+  }
+  return out;
+}
+
 /** 万一 .print-page キャプチャが失敗したとき用（非表示DOM・同じ分割ルール） */
 async function savePdfViaHtml2CanvasFallbackSlices(sheet, contentSel, levelSel) {
-  const pageSlices = getQuestionCardSlicesFromPrintSheet(sheet);
+  const pageSlices = getPdfPageSlicesForContent(sheet, contentSel, levelSel);
 
   const host = document.createElement('div');
   host.setAttribute('aria-hidden', 'true');
@@ -1930,7 +1973,7 @@ async function savePdfViaHtml2CanvasFallbackSlices(sheet, contentSel, levelSel) 
     for (let p = 0; p < pageSlices.length; p++) {
       const isFirst = p === 0;
       const isLastPageOfDoc = p === pageSlices.length - 1;
-      const frag = buildMobilePdfSheetFragment(sheet, pageSlices[p], isFirst, isLastPageOfDoc);
+      const frag = buildMobilePdfSheetFragment(sheet, pageSlices[p], isFirst, isLastPageOfDoc, contentSel);
       host.appendChild(frag);
       void frag.offsetHeight;
       await waitForPaintPdf();
