@@ -4204,12 +4204,12 @@ body.lp-pricing-page {
   margin-bottom: 0 !important;
 }
 .pdf-capturing .question-card.question.joshi:has(.choice-sentence) .choice-sentence {
-  font-size: 14.25pt !important; /* 助詞中級: 約1.5倍 */
-  line-height: 1.2 !important;
+  font-size: 16.2pt !important; /* 助詞中級: 約1.7倍 */
+  line-height: 1.22 !important;
 }
 .pdf-capturing .question-card.question.joshi:has(.choice-sentence) .choice-item {
-  font-size: 12pt !important;
-  padding: 1.2pt 8.5pt !important;
+  font-size: 13.6pt !important;
+  padding: 1.6pt 9.8pt !important;
 }
 .pdf-capturing .question-card.question.joshi:has(.advanced-compact--joshi) .desc-sentence {
   font-size: 19pt !important; /* 助詞上級: 約2倍 */
@@ -4220,24 +4220,32 @@ body.lp-pricing-page {
   letter-spacing: 0.1em !important;
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .choice-item {
-  font-size: 12pt !important; /* 50音中級: 約1.5倍 */
-  padding: 1.2pt 8pt !important;
-  min-width: 62px !important;
+  font-size: 18pt !important; /* 50音中級: 前回設定からさらに約1.5倍 */
+  padding: 1.8pt 10pt !important;
+  min-width: 86px !important;
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .emoji-large {
-  font-size: 23pt !important;
+  font-size: 34.5pt !important; /* 50音中級: 前回設定からさらに約1.5倍 */
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-question-prompt {
   display: none !important; /* 50音上級: PDF時のみ「なぞってかこう」を非表示 */
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .seikatsu-trace {
-  font-size: 32pt !important; /* 50音上級: 問題文字を約2倍 */
+  font-size: 48pt !important; /* 50音上級: 前回設定からさらに約1.5倍 */
   line-height: 1 !important;
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .hira-write {
-  width: 18mm !important; /* 50音上級: 記入欄を約2倍 */
-  height: 18mm !important;
+  width: 27mm !important; /* 50音上級: 前回設定からさらに約1.5倍 */
+  height: 27mm !important;
   border-width: 2pt !important;
+}
+.pdf-capturing .question-card.question.narabikae .adv-prompt-sub {
+  display: none !important; /* 並べ替え: PDF時のみ「こたえをしたにかこう」を非表示 */
+}
+.pdf-capturing .question-card.question.narabikae .emoji-question-prompt {
+  font-size: 14.25pt !important; /* 並べ替え全難易度: 問題文を約1.5倍 */
+  line-height: 1.24 !important;
+  margin-bottom: 1.2pt !important;
 }
 .pdf-capturing .question.sentence .advanced-compact--sentence .answer-line,
 .pdf-capturing .question.narabikae .advanced-compact--narabikae .answer-line {
