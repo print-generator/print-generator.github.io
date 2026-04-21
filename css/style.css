@@ -53,11 +53,10 @@
   --print-cards-5-padding-x: 2.1pt;
   --print-cards-5-separator-gap: 0.18mm;
   --print-cards-5-inner-gap: 0.55mm;
-  --print-pdf-card-padding-y: 0.72pt;
-  --print-pdf-card-inner-gap: 0.6mm;
-  --print-pdf-gap-main-to-write: 1.8px;
   --print-hiragana-advanced-prompt-line-height: 1.25;
   --print-hiragana-advanced-write-margin-top: 0.65mm;
+  --print-hiragana-advanced-card-padding-y: 0.65pt;
+  --print-hiragana-advanced-card-inner-gap: 0.52mm;
 }
 
 html { scroll-behavior: smooth; }
@@ -4201,6 +4200,10 @@ body.lp-pricing-page {
   /* 背景色を確実に描画 */
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
+  /* スマホPDF時は既存の印刷トークン値を少し詰める */
+  --print-card-padding-y: 0.72pt;
+  --print-card-inner-gap: 0.6mm;
+  --print-gap-main-to-write: 1.8px;
 }
 .pdf-capturing .trace-target,
 .pdf-capturing .hira-trace,
@@ -4217,7 +4220,7 @@ body.lp-pricing-page {
   print-color-adjust: exact !important;
 }
 .pdf-capturing .question-card {
-  padding: var(--print-pdf-card-padding-y) var(--print-card-padding-x) !important;
+  padding: var(--print-card-padding-y) var(--print-card-padding-x) !important;
   break-inside: avoid !important;
   page-break-inside: avoid !important;
 }
@@ -4225,7 +4228,7 @@ body.lp-pricing-page {
   margin-bottom: var(--print-card-separator-gap) !important;
 }
 .pdf-capturing .question-card-content {
-  gap: var(--print-pdf-card-inner-gap) !important;
+  gap: var(--print-card-inner-gap) !important;
 }
 .pdf-capturing .question-card .choice-label,
 .pdf-capturing .question-card .emoji-question-prompt,
@@ -4246,7 +4249,7 @@ body.lp-pricing-page {
 }
 .pdf-capturing .question-card .answer-line {
   height: var(--print-answer-line-height) !important;
-  margin-top: var(--print-pdf-gap-main-to-write) !important;
+  margin-top: var(--print-gap-main-to-write) !important;
 }
 .pdf-capturing .question-card .choice-sentence,
 .pdf-capturing .question-card .desc-sentence {
@@ -4326,6 +4329,12 @@ body.lp-pricing-page {
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-question-prompt {
   display: none !important; /* 50音上級: PDF時のみ「なぞってかこう」を非表示 */
   line-height: var(--print-hiragana-advanced-prompt-line-height) !important;
+}
+.pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) {
+  padding: var(--print-hiragana-advanced-card-padding-y) var(--print-card-padding-x) !important;
+}
+.pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .question-card-content {
+  gap: var(--print-hiragana-advanced-card-inner-gap) !important;
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .seikatsu-trace {
   font-size: 48pt !important; /* 50音上級: 前回設定からさらに約1.5倍 */
