@@ -1568,7 +1568,6 @@ function buildCustomTrace(count, words) {
       <div class="emoji-question-row emoji-question-row--tight">
         <span class="emoji-large">✏️</span>
         <div class="emoji-question-body">
-          <div class="emoji-question-prompt">なぞり書き（${escapeHtmlPrint(w)}）</div>
           <div>${charsHtml}</div>
         </div>
       </div>`;

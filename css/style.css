@@ -1821,6 +1821,18 @@ select.setting-select--locked {
   font-weight: 900;
   line-height: 1;
 }
+.question.custom .seikatsu-trace {
+  font-size: 3.2rem;
+  line-height: 1;
+}
+.question.custom .seikatsu-char-col .hira-write {
+  width: 64px;
+  height: 64px;
+}
+.question.custom .seikatsu-char-gap {
+  width: 64px;
+  height: 64px;
+}
 
 .maze-card {
   width: 100%;
@@ -3502,6 +3514,22 @@ body.lp-pricing-page {
   .question-card .emoji-question-prompt {
     margin-bottom: 1pt !important;
     line-height: 1.16 !important;
+  }
+  .question-card.question.custom .emoji-question-body {
+    margin-top: 0 !important;
+  }
+  .question-card.question.custom .seikatsu-trace {
+    font-size: 30pt !important;
+    line-height: 1 !important;
+  }
+  .question-card.question.custom .seikatsu-char-col .hira-write {
+    width: 18mm !important;
+    height: 18mm !important;
+  }
+  .question-card.question.custom .seikatsu-char-gap {
+    width: 18mm !important;
+    height: 18mm !important;
+    margin: 0 1mm !important;
   }
 
   .question-card .adv-prompt {
