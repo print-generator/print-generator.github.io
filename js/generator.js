@@ -201,7 +201,8 @@ const PRINT_CARD_COUNT_PRESETS = {
   hiragana: {
     beginner: { first: 4, rest: 5 },
     intermediate: { first: 10, rest: 11 },
-    advanced: { first: 6, rest: 7 },
+    /* 上級：印刷/PDF は 1ページ目5問・以降6問（専用レイアウト。自動実測パックは使わない） */
+    advanced: { first: 5, rest: 6 },
   },
   kanji: {
     reading: {
@@ -625,6 +626,10 @@ function getKindRoomBonusPx(kindRoomBonusPx, isFirstPage, isLastPage) {
 function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, footerHtml, ctx) {
   const n = cardHtmls.length;
   if (!n) return [];
+  /* 50音上級：ページ枚数はプリセット固定（first:5 / rest:6）。実測貪欲パックは使わない */
+  if (ctx && ctx.content === 'hiragana' && ctx.level === 'advanced') {
+    return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload || {});
+  }
   if (ctx && (ctx.content === 'maze' || ctx.content === 'maze_hiragana')) {
     return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload);
   }
@@ -1526,7 +1531,7 @@ function buildHiraganaAdvanced(count, _cw, allowKatakana) {
         <span class="emoji-large">${q.emoji}</span>
         <div class="emoji-question-body">
           <div class="emoji-question-prompt">なぞってかこう</div>
-          <div>${boxes}</div>
+          <div class="hiragana-advanced-trace-row">${boxes}</div>
         </div>
       </div>`;
     return questionCard(i + 1, inner);

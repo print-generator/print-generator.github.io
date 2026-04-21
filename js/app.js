@@ -1927,10 +1927,6 @@ function getQuestionCardSlicesFromPrintSheet(sheet) {
 }
 
 function getPdfPageSlicesForContent(sheet, contentSel, levelSel) {
-  if (isHiraganaAdvancedMobilePdf(contentSel, levelSel)) {
-    const allCards = Array.from(sheet.querySelectorAll('.print-page:not(.print-page--answer) .question-card'));
-    return allCards.map((card) => [card]);
-  }
   const isMazeContent = contentSel === 'maze' || contentSel === 'maze_hiragana';
   if (!isMazeContent) {
     return getQuestionCardSlicesFromPrintSheet(sheet);
