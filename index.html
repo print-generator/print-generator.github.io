@@ -142,7 +142,7 @@
           <button type="button" class="genre-card content-btn content-btn--custom" data-value="custom" aria-pressed="false" id="contentBtnCustom">
             <span class="genre-card-icon" aria-hidden="true">✏️</span>
             <span class="genre-card-name">好きな単語</span>
-            <span class="genre-card-desc">自分の単語でなぞり・視写</span>
+            <span class="genre-card-desc">自分の単語でなぞり練習</span>
             <span class="genre-card-badge genre-card-badge--paid">有料</span>
           </button>
           <button type="button" class="genre-card content-btn" data-value="kanji" aria-pressed="false">
@@ -223,9 +223,8 @@
 
         <div class="flow-block flow-block--conditional" id="customWordRow" hidden>
           <p class="flow-field-label">問題形式</p>
-          <div class="pill-duo" id="customModeOptions">
+          <div class="pill-duo" id="customModeOptions" hidden aria-hidden="true">
             <button type="button" class="pill-duo-btn custom-mode-btn active" data-value="trace" aria-pressed="true">なぞり</button>
-            <button type="button" class="pill-duo-btn custom-mode-btn" data-value="copy" aria-pressed="false">視写</button>
           </div>
           <label class="flow-field-label flow-field-label--spaced" for="customWord1">単語（最大8個）</label>
           <div id="customWordsList" class="custom-words-list"></div>

@@ -45,12 +45,12 @@ const CUSTOM_WORD_PLACEHOLDERS = [
 
 function getEffectiveLevelForContent(content, levelFromUi) {
   if (content !== 'custom') return levelFromUi;
-  return selectedCustomMode === 'trace' ? 'beginner' : 'advanced';
+  return 'beginner';
 }
 
 function getLevelLabel(level, content) {
   if (content === 'custom') {
-    return level === 'advanced' ? '視写' : 'なぞり書き';
+    return 'なぞり書き';
   }
   const levelLabels = { beginner: '初級', intermediate: '中級', advanced: '上級' };
   return levelLabels[level] || level;
@@ -474,7 +474,7 @@ function openFeatureLockedModal(feature) {
           bullets: [
             '自分専用の単語でプリント作成',
             '最大8単語まで入力可能',
-            'なぞり書き・視写に対応',
+            'なぞり書きに対応',
             '月額300円でご利用できます',
           ],
         };
@@ -827,7 +827,7 @@ function applySnapshotToUI(entry) {
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
 
-  selectedCustomMode = entry.customMode === 'copy' ? 'copy' : 'trace';
+  selectedCustomMode = 'trace';
   document.querySelectorAll('.custom-mode-btn').forEach((b) => {
     const on = b.dataset.value === selectedCustomMode;
     b.classList.toggle('active', on);
@@ -1515,7 +1515,7 @@ function generatePrint() {
       alert('各単語は15文字までです。');
       return;
     }
-    customPayload = { words, mode: selectedCustomMode };
+    customPayload = { words, mode: 'trace' };
   } else if (content === 'hiragana') {
     customPayload = { hiraganaSetOrder: selectedHiraganaOrder };
   } else if (content === 'sentence' && isPremiumTrialAvailableToday('sentence')) {

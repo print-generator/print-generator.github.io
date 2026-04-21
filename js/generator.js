@@ -945,7 +945,7 @@ function buildMeta(content, level) {
   const contentInfo = {
     joshi:    { label: '助詞',   emoji: '📝' },
     hiragana: { label: '50音', emoji: '🔤' },
-    custom:   { label: '好きな単語（なぞり、視写）', emoji: '✏️' },
+    custom:   { label: '好きな単語（なぞり）', emoji: '✏️' },
     maze:     { label: 'めいろ', emoji: '🧩' },
     maze_hiragana: { label: 'ひらがな迷路', emoji: '🧩' },
     sentence: { label: '文章問題', emoji: '📚' },
@@ -1031,7 +1031,7 @@ function getInstructionText(meta) {
     custom: {
       beginner:     'じぶんで いれた ことばを なぞって かきましょう。',
       intermediate: 'じぶんで いれた ことばを なぞって かきましょう。',
-      advanced:     'ことばを みて、したの ますに 視写しましょう。',
+      advanced:     'じぶんで いれた ことばを なぞって かきましょう。',
     },
     maze: {
       beginner:     'スタートから ゴールまで すすみましょう。',
@@ -1324,13 +1324,10 @@ function buildQuestionBodyStructured(content, level, count, customPayload, allow
           .map((w) => String(w || '').trim().slice(0, 15))
           .filter(Boolean)
       : [];
-    const mode = customPayload?.mode === 'copy' ? 'copy' : 'trace';
     if (!words.length) {
       return { cardHtmls: [], answers: [] };
     }
-    const built = mode === 'copy'
-      ? buildCustomCopy(count, words)
-      : buildCustomTrace(count, words);
+    const built = buildCustomTrace(count, words);
     return withGenreClass(built, content);
   }
   if (content === 'maze_hiragana') {

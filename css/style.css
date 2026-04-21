@@ -1143,7 +1143,7 @@ select.setting-select--locked {
   justify-content: flex-end;
   gap: 10px 18px;
   flex: 0 1 auto;
-  max-width: min(100%, 58%);
+  max-width: min(100%, 74%);
   margin-left: auto;
 }
 .print-header-field {
@@ -1174,13 +1174,13 @@ select.setting-select--locked {
   border-bottom: 1.5px solid #999;
   display: inline-block;
   vertical-align: bottom;
-  min-height: 22px;
-  height: 22px;
+  min-height: 40px;
+  height: 40px;
   box-sizing: border-box;
 }
 .print-field-line--name {
   flex: 1 1 auto;
-  min-width: 9.5rem;
+  min-width: 18rem;
 }
 .print-date-slot {
   display: inline-flex;
@@ -1192,16 +1192,16 @@ select.setting-select--locked {
   border-bottom: 1.5px solid #999;
   display: inline-block;
   vertical-align: bottom;
-  height: 22px;
+  height: 40px;
   box-sizing: border-box;
 }
 .print-date-blank--month {
-  width: 2.1rem;
-  min-width: 1.75rem;
+  width: 3.8rem;
+  min-width: 3.2rem;
 }
 .print-date-blank--day {
-  width: 2.1rem;
-  min-width: 1.75rem;
+  width: 3.8rem;
+  min-width: 3.2rem;
 }
 .print-date-suffix {
   font-weight: 600;
@@ -3013,10 +3013,10 @@ body.lp-pricing-page {
   }
   .print-header-fields {
     flex: 0 0 auto;
-    max-width: min(52%, 11.5rem);
+    max-width: min(70%, 16.5rem);
     min-width: 0;
     margin-left: auto;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: flex-end;
     align-items: flex-end;
     gap: 6px 8px;
@@ -3034,10 +3034,10 @@ body.lp-pricing-page {
     min-width: 5.8rem;
   }
   .print-field-line--name {
-    min-width: 3rem;
-    max-width: 4.2rem;
-    min-height: 18px;
-    height: 18px;
+    min-width: 6rem;
+    max-width: 8.2rem;
+    min-height: 30px;
+    height: 30px;
   }
   .print-header-field--date {
     flex: 0 0 auto;
@@ -3045,9 +3045,9 @@ body.lp-pricing-page {
   }
   .print-date-blank--month,
   .print-date-blank--day {
-    width: 1.3rem;
-    min-width: 1.15rem;
-    height: 18px;
+    width: 2.4rem;
+    min-width: 2rem;
+    height: 30px;
   }
   .print-date-suffix {
     font-size: 0.58rem;
@@ -3866,7 +3866,7 @@ body.lp-pricing-page {
   }
   .print-header-fields {
     gap: 8pt 12pt !important;
-    max-width: 56% !important;
+    max-width: 72% !important;
   }
   .print-header-field {
     font-size: 7.5pt !important;
@@ -3875,21 +3875,21 @@ body.lp-pricing-page {
     min-width: 20mm !important;
   }
   .print-field-line--name {
-    min-height: 6.5mm !important;
-    height: 6.5mm !important;
-    min-width: 30mm !important;
-    max-width: 38mm !important;
+    min-height: 12mm !important;
+    height: 12mm !important;
+    min-width: 60mm !important;
+    max-width: 76mm !important;
     border-bottom: 1.5pt solid #999 !important;
   }
   .print-date-blank {
-    min-height: 6.5mm !important;
-    height: 6.5mm !important;
+    min-height: 12mm !important;
+    height: 12mm !important;
     border-bottom: 1.5pt solid #999 !important;
   }
   .print-date-blank--month,
   .print-date-blank--day {
-    width: 7mm !important;
-    min-width: 6mm !important;
+    width: 13mm !important;
+    min-width: 11mm !important;
   }
   .print-date-suffix {
     font-size: 7.5pt !important;
