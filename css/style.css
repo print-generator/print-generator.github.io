@@ -1109,8 +1109,8 @@ select.setting-select--locked {
 }
 .print-header-left {
   min-width: 0;
-  flex: 1 1 42%;
-  max-width: calc(100% - 11rem);
+  flex: 0 1 38%;
+  max-width: 42%;
 }
 .print-title-row {
   display: flex;
@@ -1137,13 +1137,14 @@ select.setting-select--locked {
   margin-bottom: 1px;
 }
 .print-header-fields {
-  display: flex;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: minmax(18rem, 1fr) auto;
   align-items: flex-end;
-  justify-content: flex-end;
-  gap: 10px 18px;
-  flex: 0 1 auto;
-  max-width: min(100%, 74%);
+  justify-content: stretch;
+  gap: 10px 14px;
+  flex: 1 1 62%;
+  max-width: 78%;
+  width: 100%;
   margin-left: auto;
 }
 .print-header-field {
@@ -1155,13 +1156,14 @@ select.setting-select--locked {
 }
 .print-header-field--name {
   min-width: 0;
-  flex: 1 1 10rem;
-  max-width: 18rem;
+  flex: 1 1 auto;
+  max-width: none;
 }
 .print-header-field--date {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   gap: 4px;
-  min-width: 7rem;
+  min-width: 12rem;
+  justify-self: end;
 }
 .print-field-label {
   color: var(--text-sub);
@@ -1179,8 +1181,9 @@ select.setting-select--locked {
   box-sizing: border-box;
 }
 .print-field-line--name {
-  flex: 1 1 auto;
-  min-width: 18rem;
+  flex: 1 1 100%;
+  width: 100%;
+  min-width: 0;
 }
 .print-date-slot {
   display: inline-flex;
@@ -2994,8 +2997,8 @@ body.lp-pricing-page {
     flex-wrap: nowrap;
   }
   .print-header .print-header-left {
-    flex: 1 1 min(0, 56%);
-    max-width: calc(100% - 10.5rem);
+    flex: 0 1 36%;
+    max-width: 40%;
     min-width: 0;
   }
   .print-header .print-logo--header {
@@ -3012,12 +3015,13 @@ body.lp-pricing-page {
     margin-bottom: 2px;
   }
   .print-header-fields {
-    flex: 0 0 auto;
-    max-width: min(70%, 16.5rem);
+    flex: 1 1 64%;
+    max-width: none;
+    width: 100%;
     min-width: 0;
     margin-left: auto;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    grid-template-columns: minmax(8.5rem, 1fr) auto;
+    justify-content: stretch;
     align-items: flex-end;
     gap: 6px 8px;
   }
@@ -3026,16 +3030,17 @@ body.lp-pricing-page {
     gap: 3px;
   }
   .print-header-field--name {
-    flex: 1 1 auto;
+    flex: 1 1 100%;
     min-width: 0;
-    max-width: 5.5rem;
+    max-width: none;
   }
   .print-header-field--date {
-    min-width: 5.8rem;
+    min-width: 6.8rem;
+    justify-self: end;
   }
   .print-field-line--name {
-    min-width: 6rem;
-    max-width: 8.2rem;
+    min-width: 0;
+    max-width: none;
     min-height: 30px;
     height: 30px;
   }
@@ -3866,19 +3871,23 @@ body.lp-pricing-page {
   }
   .print-header-fields {
     gap: 8pt 12pt !important;
-    max-width: 72% !important;
+    max-width: 80% !important;
+    grid-template-columns: minmax(70mm, 1fr) auto !important;
+    width: 100% !important;
   }
   .print-header-field {
     font-size: 7.5pt !important;
   }
   .print-header-field--date {
-    min-width: 20mm !important;
+    min-width: 32mm !important;
+    justify-self: end !important;
   }
   .print-field-line--name {
     min-height: 12mm !important;
     height: 12mm !important;
-    min-width: 60mm !important;
-    max-width: 76mm !important;
+    min-width: 70mm !important;
+    max-width: none !important;
+    width: 100% !important;
     border-bottom: 1.5pt solid #999 !important;
   }
   .print-date-blank {
