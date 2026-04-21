@@ -1225,6 +1225,10 @@ select.setting-select--locked {
   line-height: 1.15;
 }
 .print-title-block .print-title { font-size: 1.6rem; font-weight: 900; color: var(--text); letter-spacing: .04em; }
+.print-title-main,
+.print-title-suffix {
+  display: inline;
+}
 .print-info-block { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
 .print-info-row { display: flex; align-items: center; gap: 8px; font-size: .85rem; }
 .info-label { color: var(--text-sub); font-weight: 500; }
@@ -1241,6 +1245,15 @@ select.setting-select--locked {
   background: var(--primary-light); border-left: 4px solid var(--primary);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   padding: 7px 11px; font-size: .85rem; color: var(--primary-dark); font-weight: 600; margin-bottom: 12px;
+}
+@media screen {
+  /* サイト内プレビューは上部補助情報を簡略化して崩れを防ぐ */
+  .print-title-block .print-category {
+    display: none;
+  }
+  .print-title-block .print-title-suffix {
+    display: none;
+  }
 }
 .questions-grid { display: flex; flex-direction: column; gap: 8px; flex: 1; }
 /* 問題カードの新しい土台クラス（既存見た目は維持） */
