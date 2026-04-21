@@ -32,6 +32,27 @@
   --radius:        12px;
   --radius-sm:     8px;
   --font:          'Noto Sans JP', sans-serif;
+  /* 印刷（PC）/ スマホPDF 共通の版面調整トークン */
+  --print-side-font-size: 6.7pt;
+  --print-side-line-height: 1.28;
+  --print-gap-side-to-main: 1.4pt;
+  --print-gap-main-to-write: 2px;
+  --print-gap-row-tight: 0.8pt;
+  --print-gap-sub-to-main: 1.2pt;
+  --print-gap-hira-write-top: 0.8mm;
+  --print-card-padding-y: 0.8pt;
+  --print-card-padding-x: 2.4pt;
+  --print-card-inner-gap: 0.7mm;
+  --print-card-separator-gap: 0.2mm;
+  --print-answer-line-height: 22px;
+  --print-answer-line-height-compact: 18px;
+  --print-answer-line-gap-compact: 1px;
+  --print-first-header-gap: 1.8mm;
+  --print-first-instruction-gap: 2.1mm;
+  --print-cards-5-padding-y: 0.7pt;
+  --print-cards-5-padding-x: 2.1pt;
+  --print-cards-5-separator-gap: 0.18mm;
+  --print-cards-5-inner-gap: 0.55mm;
 }
 
 html { scroll-behavior: smooth; }
@@ -3153,20 +3174,6 @@ body.lp-pricing-page {
    印刷用スタイル
    ============================================ */
 @media print {
-  :root {
-    --print-side-font-size: 6.7pt;
-    --print-side-line-height: 1.28;
-    --print-gap-side-to-main: 1.4pt;
-    --print-gap-main-to-write: 2px;
-    --print-gap-row-tight: 0.8pt;
-    --print-card-padding-y: 0.8pt;
-    --print-card-padding-x: 2.4pt;
-    --print-card-inner-gap: 0.7mm;
-    --print-card-separator-gap: 0.2mm;
-    --print-first-header-gap: 1.8mm;
-    --print-first-instruction-gap: 2.1mm;
-  }
-
   /*
    * 用紙余白は @page のみで固定（10〜15mm）。コンテンツ幅は印刷領域いっぱいに合わせ、
    * 画面用の 794px / max-width:210mm との二重指定でズレないようにする。
@@ -3390,26 +3397,26 @@ body.lp-pricing-page {
     margin-bottom: var(--print-gap-side-to-main) !important;
   }
   .question-card .adv-prompt-sub {
-    margin-bottom: 1.2pt !important;
+    margin-bottom: var(--print-gap-sub-to-main) !important;
   }
   .question-card .choices-row {
     margin-top: var(--print-gap-row-tight) !important;
   }
   .question-card .answer-line {
-    height: 22px !important;
+    height: var(--print-answer-line-height) !important;
     margin-top: var(--print-gap-main-to-write) !important;
   }
   .question-card .hira-write {
-    margin-top: 0.8mm !important;
+    margin-top: var(--print-gap-hira-write-top) !important;
   }
   .questions-grid .question-card:not(:last-child) {
     margin-bottom: var(--print-card-separator-gap) !important;
   }
   .print-page--cards-5 .question-card {
-    padding: 0.7pt 2.1pt !important;
+    padding: var(--print-cards-5-padding-y) var(--print-cards-5-padding-x) !important;
   }
   .print-page--cards-5 .question-card:not(:last-child) {
-    margin-bottom: 0.18mm !important;
+    margin-bottom: var(--print-cards-5-separator-gap) !important;
   }
   .question-card-content {
     display: flex !important;
@@ -3418,7 +3425,7 @@ body.lp-pricing-page {
     min-width: 0 !important;
   }
   .print-page--cards-5 .question-card-content {
-    gap: 0.55mm !important;
+    gap: var(--print-cards-5-inner-gap) !important;
   }
   .maze-svg {
     min-height: 72mm !important;
@@ -3769,7 +3776,7 @@ body.lp-pricing-page {
   .question-card.question.narabikae .emoji-question-prompt {
     font-size: 14.25pt !important;
     line-height: 1.24 !important;
-    margin-bottom: 1.2pt !important;
+    margin-bottom: var(--print-gap-sub-to-main) !important;
   }
   .question-card.question.narabikae .choices-row {
     gap: 1pt !important;
@@ -3784,8 +3791,8 @@ body.lp-pricing-page {
     display: none !important;
   }
   .question-card.question.narabikae .answer-line {
-    height: 22px !important;
-    margin-top: 2px !important;
+    height: var(--print-answer-line-height) !important;
+    margin-top: var(--print-gap-main-to-write) !important;
   }
 
   /* 文章問題：全レベル +4 */
@@ -4189,15 +4196,6 @@ body.lp-pricing-page {
   /* 背景色を確実に描画 */
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
-  --print-side-font-size: 6.7pt;
-  --print-side-line-height: 1.28;
-  --print-gap-side-to-main: 1.4pt;
-  --print-gap-main-to-write: 2px;
-  --print-gap-row-tight: 0.8pt;
-  --print-card-padding-y: 0.8pt;
-  --print-card-padding-x: 2.4pt;
-  --print-card-inner-gap: 0.7mm;
-  --print-card-separator-gap: 0.2mm;
 }
 .pdf-capturing .trace-target,
 .pdf-capturing .hira-trace,
@@ -4234,13 +4232,13 @@ body.lp-pricing-page {
   margin-bottom: var(--print-gap-side-to-main) !important;
 }
 .pdf-capturing .question-card .adv-prompt-sub {
-  margin-bottom: 1.2pt !important;
+  margin-bottom: var(--print-gap-sub-to-main) !important;
 }
 .pdf-capturing .question-card .choices-row {
   margin-top: var(--print-gap-row-tight) !important;
 }
 .pdf-capturing .question-card .answer-line {
-  height: 22px !important;
+  height: var(--print-answer-line-height) !important;
   margin-top: var(--print-gap-main-to-write) !important;
 }
 .pdf-capturing .question-card .choice-sentence,
@@ -4316,7 +4314,7 @@ body.lp-pricing-page {
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .emoji-question-prompt {
   font-size: 6.6pt !important;
   line-height: 1.28 !important;
-  margin-bottom: 1.4pt !important;
+  margin-bottom: var(--print-gap-side-to-main) !important;
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-question-prompt {
   display: none !important; /* 50音上級: PDF時のみ「なぞってかこう」を非表示 */
@@ -4337,7 +4335,7 @@ body.lp-pricing-page {
 .pdf-capturing .question-card.question.narabikae .emoji-question-prompt {
   font-size: 14.25pt !important; /* 並べ替え全難易度: 問題文を約1.5倍 */
   line-height: 1.24 !important;
-  margin-bottom: 1.2pt !important;
+  margin-bottom: var(--print-gap-sub-to-main) !important;
 }
 .pdf-capturing .question-card.question.narabikae .question-card-content {
   gap: 0.8mm !important;
@@ -4348,8 +4346,8 @@ body.lp-pricing-page {
 }
 .pdf-capturing .question.sentence .advanced-compact--sentence .answer-line,
 .pdf-capturing .question.narabikae .advanced-compact--narabikae .answer-line {
-  height: 18px !important;
-  margin-top: 1px !important;
+  height: var(--print-answer-line-height-compact) !important;
+  margin-top: var(--print-answer-line-gap-compact) !important;
 }
 .pdf-capturing .question.kanji .kanji-stack--reading-adv .kanji-stack__bottom--kanji {
   font-size: 1.08em !important;
