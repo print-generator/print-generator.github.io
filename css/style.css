@@ -3364,6 +3364,31 @@ body.lp-pricing-page {
     padding: 0.8pt 2.4pt !important;
     overflow: visible !important;
   }
+  /* 主役（問題文・記入欄）を活かすため、周辺要素のみ整える */
+  .question-card .choice-label,
+  .question-card .emoji-question-prompt,
+  .question-card .adv-prompt-sub {
+    font-size: 6.7pt !important;
+    line-height: 1.28 !important;
+    letter-spacing: 0.01em !important;
+    color: #5f6368 !important;
+  }
+  .question-card .emoji-question-prompt {
+    margin-bottom: 1.4pt !important;
+  }
+  .question-card .adv-prompt-sub {
+    margin-bottom: 1.2pt !important;
+  }
+  .question-card .choices-row {
+    margin-top: 0.6pt !important;
+  }
+  .question-card .answer-line {
+    height: 22px !important;
+    margin-top: 2px !important;
+  }
+  .question-card .hira-write {
+    margin-top: 0.8mm !important;
+  }
   .questions-grid .question-card:not(:last-child) {
     margin-bottom: 0.2mm !important;
   }
@@ -3463,6 +3488,19 @@ body.lp-pricing-page {
     font-size: 7pt !important;
     margin: 0 !important;
     align-self: start !important;
+  }
+  .print-page--first .print-header {
+    margin-bottom: 1.8mm !important;
+    padding-bottom: 1.4mm !important;
+  }
+  .print-page--first .print-instruction {
+    font-size: 7.4pt !important;
+    line-height: 1.3 !important;
+    margin-bottom: 2.1mm !important;
+    padding: 4.5pt 6.5pt !important;
+  }
+  .print-page--first .question-card {
+    margin-top: 0.2mm !important;
   }
 
   .question-card .choice-sentence,
@@ -3627,8 +3665,8 @@ body.lp-pricing-page {
     margin-bottom: 0 !important;
   }
   .question-card.question.joshi:has(.choice-sentence) .choices-row {
-    gap: 0.45pt !important;
-    margin-top: 0 !important;
+    gap: 0.8pt !important;
+    margin-top: 0.8pt !important;
   }
   .question-card.question.joshi:has(.choice-sentence) .choice-item {
     font-size: 13.6pt !important;
@@ -3674,9 +3712,9 @@ body.lp-pricing-page {
     line-height: 1 !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .emoji-question-prompt {
-    font-size: 7pt !important;
-    line-height: 1.14 !important;
-    margin-bottom: 0 !important;
+    font-size: 6.6pt !important;
+    line-height: 1.28 !important;
+    margin-bottom: 1.4pt !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .choice-item {
     font-size: 18pt !important;
@@ -3687,7 +3725,7 @@ body.lp-pricing-page {
     padding: 0.48pt 1.8pt !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-question-row--tight {
-    gap: 2.8pt !important;
+    gap: 3.6pt !important;
   }
   .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-large {
     font-size: 17.2pt !important;
@@ -3705,6 +3743,7 @@ body.lp-pricing-page {
     min-width: 27mm !important;
     min-height: 27mm !important;
     border-width: 2pt !important;
+    border-color: #7b8794 !important;
   }
 
   /* 並び替え：PDFモバイル出力と同等 */
@@ -3712,7 +3751,7 @@ body.lp-pricing-page {
     padding: 0.45pt 1.6pt !important;
   }
   .question-card.question.narabikae .question-card-content {
-    gap: 0.35mm !important;
+    gap: 0.8mm !important;
   }
   .question-card.question.narabikae .emoji-question-prompt {
     font-size: 14.25pt !important;
@@ -3720,7 +3759,8 @@ body.lp-pricing-page {
     margin-bottom: 1.2pt !important;
   }
   .question-card.question.narabikae .choices-row {
-    gap: 0.45pt !important;
+    gap: 1pt !important;
+    margin-top: 0.8pt !important;
   }
   .question-card.question.narabikae .choice-item {
     font-size: 8.1pt !important;
@@ -3731,8 +3771,8 @@ body.lp-pricing-page {
     display: none !important;
   }
   .question-card.question.narabikae .answer-line {
-    height: 16px !important;
-    margin-top: 0 !important;
+    height: 22px !important;
+    margin-top: 2px !important;
   }
 
   /* 文章問題：全レベル +4 */
@@ -4160,6 +4200,27 @@ body.lp-pricing-page {
 .pdf-capturing .question-card-content {
   gap: 0.7mm !important;
 }
+.pdf-capturing .question-card .choice-label,
+.pdf-capturing .question-card .emoji-question-prompt,
+.pdf-capturing .question-card .adv-prompt-sub {
+  font-size: 6.7pt !important;
+  line-height: 1.28 !important;
+  letter-spacing: 0.01em !important;
+  color: #5f6368 !important;
+}
+.pdf-capturing .question-card .emoji-question-prompt {
+  margin-bottom: 1.4pt !important;
+}
+.pdf-capturing .question-card .adv-prompt-sub {
+  margin-bottom: 1.2pt !important;
+}
+.pdf-capturing .question-card .choices-row {
+  margin-top: 0.6pt !important;
+}
+.pdf-capturing .question-card .answer-line {
+  height: 22px !important;
+  margin-top: 2px !important;
+}
 .pdf-capturing .question-card .choice-sentence,
 .pdf-capturing .question-card .desc-sentence {
   font-size: 9.5pt !important;
@@ -4230,6 +4291,11 @@ body.lp-pricing-page {
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .emoji-large {
   font-size: 34.5pt !important; /* 50音中級: 前回設定からさらに約1.5倍 */
 }
+.pdf-capturing .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .emoji-question-prompt {
+  font-size: 6.6pt !important;
+  line-height: 1.28 !important;
+  margin-bottom: 1.4pt !important;
+}
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-question-prompt {
   display: none !important; /* 50音上級: PDF時のみ「なぞってかこう」を非表示 */
 }
@@ -4241,6 +4307,7 @@ body.lp-pricing-page {
   width: 27mm !important; /* 50音上級: 前回設定からさらに約1.5倍 */
   height: 27mm !important;
   border-width: 2pt !important;
+  border-color: #7b8794 !important;
 }
 .pdf-capturing .question-card.question.narabikae .adv-prompt-sub {
   display: none !important; /* 並べ替え: PDF時のみ「こたえをしたにかこう」を非表示 */
@@ -4249,6 +4316,13 @@ body.lp-pricing-page {
   font-size: 14.25pt !important; /* 並べ替え全難易度: 問題文を約1.5倍 */
   line-height: 1.24 !important;
   margin-bottom: 1.2pt !important;
+}
+.pdf-capturing .question-card.question.narabikae .question-card-content {
+  gap: 0.8mm !important;
+}
+.pdf-capturing .question-card.question.narabikae .choices-row {
+  gap: 1pt !important;
+  margin-top: 0.8pt !important;
 }
 .pdf-capturing .question.sentence .advanced-compact--sentence .answer-line,
 .pdf-capturing .question.narabikae .advanced-compact--narabikae .answer-line {
