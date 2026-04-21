@@ -1816,6 +1816,31 @@ function buildMazeModel(level, mazeType, requireMinPathLen) {
   return null;
 }
 
+function buildMazeEmergencyModel(level) {
+  const confByLevel = {
+    beginner: { w: 12, h: 9, cell: 30, width: [2.4, 3.4] },
+    intermediate: { w: 14, h: 10, cell: 28, width: [2.1, 3.0] },
+    advanced: { w: 16, h: 12, cell: 26, width: [1.9, 2.8] },
+  };
+  const base = { ...(confByLevel[level] || confByLevel.beginner) };
+  const cells = buildPerfectMaze(base.w, base.h);
+  openExtraWalls(cells, 6);
+  const { start, goal } = pickStartGoalLongBorderPath(cells, base.w, base.h);
+  const path = solveMazePath(cells, [start.x, start.y], [goal.x, goal.y]);
+  if (!path) return null;
+  return {
+    w: base.w,
+    h: base.h,
+    cell: base.cell,
+    strokeWidth: randInt(Math.round(base.width[0] * 10), Math.round(base.width[1] * 10)) / 10,
+    type: 'normal',
+    cells,
+    start,
+    goal,
+    path,
+  };
+}
+
 function getNodeOffsetMap(w, h, cell, intensity) {
   const map = [];
   for (let y = 0; y <= h; y++) {
@@ -1951,15 +1976,51 @@ function buildMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelArg, force
   };
   const cards = [];
   const answers = [];
-  for (let i = 0; i < count; i++) {
-    const mazeType = forcedType || pickOne(typePoolByLevel[level] || typePoolByLevel.beginner);
-    const minLenByLevel =
-      level === 'beginner' ? 17 : level === 'intermediate' ? 22 : 28;
-    const model = buildMazeModel(level, mazeType, minLenByLevel);
+  const minLenByLevel = level === 'beginner' ? 17 : level === 'intermediate' ? 22 : 28;
+  const totalTarget = Math.max(0, Number(count) || 0);
+  const maxAttempts = Math.max(totalTarget * 60, 160);
+  let attempts = 0;
+
+  while (cards.length < totalTarget && attempts < maxAttempts) {
+    attempts += 1;
+    const progress = cards.length / Math.max(1, totalTarget);
+    const depth = attempts < maxAttempts * 0.45 ? 0 : attempts < maxAttempts * 0.78 ? 1 : 2;
+    const fallbackLevel = depth >= 2 && progress < 0.7 ? 'beginner' : level;
+    const typePool = typePoolByLevel[fallbackLevel] || typePoolByLevel.beginner;
+    const mazeType = forcedType || pickOne(typePool);
+    const minLen =
+      depth === 0
+        ? minLenByLevel
+        : depth === 1
+          ? Math.max(12, minLenByLevel - 4)
+          : Math.max(9, minLenByLevel - 8);
+    const model = buildMazeModel(fallbackLevel, mazeType, minLen);
     if (!model) continue;
+    const idx = cards.length + 1;
     const svg = buildMazeSvgWithLetters(model);
-    cards.push(questionCard(i + 1, `<div class="maze-card maze-card--normal">${svg}</div>`));
-    answers.push(`めいろ${i + 1}：経路長 ${model.path.length}`);
+    cards.push(questionCard(idx, `<div class="maze-card maze-card--normal">${svg}</div>`));
+    answers.push(`めいろ${idx}：経路長 ${model.path.length}`);
+  }
+
+  if (cards.length < totalTarget) {
+    console.warn(
+      `[maze] generation shortage ${cards.length}/${totalTarget}; filling with emergency fallback`
+    );
+  }
+  while (cards.length < totalTarget) {
+    const idx = cards.length + 1;
+    const model =
+      buildMazeModel('beginner', 'normal', 0) ||
+      buildMazeModel(level, 'normal', 0) ||
+      buildMazeModel('beginner', 'soft', 0) ||
+      buildMazeEmergencyModel(level);
+    if (!model) {
+      console.error('[maze] emergency fallback failed');
+      break;
+    }
+    const svg = buildMazeSvgWithLetters(model);
+    cards.push(questionCard(idx, `<div class="maze-card maze-card--normal">${svg}</div>`));
+    answers.push(`めいろ${idx}：経路長 ${model.path.length}`);
   }
   return { cardHtmls: cards, answers };
 }
@@ -2033,27 +2094,86 @@ function buildPathLetterPlacements(path, word) {
   return placements;
 }
 
+function pickWordFitPath(category, maxLen) {
+  const base =
+    category && HIRAGANA_MAZE_WORDS[category]
+      ? HIRAGANA_MAZE_WORDS[category]
+      : Object.values(HIRAGANA_MAZE_WORDS).flat();
+  const allowed = base.filter((w) => [...String(w || '')].length <= maxLen);
+  if (allowed.length) return pickOne(allowed);
+  const shortest = [...base].sort((a, b) => [...a].length - [...b].length)[0] || 'ことば';
+  const chars = [...shortest];
+  return chars.slice(0, Math.max(1, maxLen)).join('');
+}
+
 function buildHiraganaMazeByLevel(count, _cw, _allowKatakana, _kanaMode, levelArg, categoryArg) {
   const level = levelArg || 'beginner';
   const cards = [];
   const answers = [];
-  for (let i = 0; i < count; i++) {
-    let done = false;
-    for (let attempt = 0; attempt < 40 && !done; attempt++) {
-      const picked = pickHiraganaMazeWord(categoryArg);
-      const model = buildMazeModel(level, pickOne(['normal', 'soft']), [...picked.word].length + 10);
-      if (!model || !model.path) continue;
-      const letters = buildPathLetterPlacements(model.path, picked.word);
-      if (!letters) continue;
-      const svg = buildMazeSvgWithLetters(model, letters);
-      const boxes = [...picked.word]
-        .map(() => '<div class="maze-answer-box"></div>')
-        .join('');
-      cards.push(questionCard(i + 1, `<div class="maze-card maze-card--hiragana">${svg}<div class="maze-word-question">ルートの もじを よんで、ならべると なに？</div><div class="maze-answer-row">${boxes}</div></div>`));
-      const catJa = HIRAGANA_CATEGORY_LABEL_JA[picked.category] || picked.category;
-      answers.push(`${picked.word}（${catJa}）`);
-      done = true;
+  const totalTarget = Math.max(0, Number(count) || 0);
+  const maxAttempts = Math.max(totalTarget * 70, 220);
+  let attempts = 0;
+
+  while (cards.length < totalTarget && attempts < maxAttempts) {
+    attempts += 1;
+    const progress = cards.length / Math.max(1, totalTarget);
+    const depth = attempts < maxAttempts * 0.4 ? 0 : attempts < maxAttempts * 0.75 ? 1 : 2;
+    const picked = pickHiraganaMazeWord(categoryArg);
+    const baseWord = picked.word;
+    const minPath =
+      depth === 0
+        ? [...baseWord].length + 10
+        : depth === 1
+          ? [...baseWord].length + 6
+          : [...baseWord].length + 3;
+    const fallbackLevel = depth >= 2 && progress < 0.65 ? 'beginner' : level;
+    const model = buildMazeModel(fallbackLevel, pickOne(['normal', 'soft']), Math.max(8, minPath));
+    if (!model || !model.path) continue;
+
+    const maxWordLen = Math.max(1, model.path.length - 2);
+    const word =
+      [...baseWord].length <= maxWordLen ? baseWord : pickWordFitPath(picked.category, maxWordLen);
+    const letters = buildPathLetterPlacements(model.path, word);
+    if (!letters) continue;
+
+    const idx = cards.length + 1;
+    const svg = buildMazeSvgWithLetters(model, letters);
+    const boxes = [...word]
+      .map(() => '<div class="maze-answer-box"></div>')
+      .join('');
+    cards.push(questionCard(idx, `<div class="maze-card maze-card--hiragana">${svg}<div class="maze-word-question">ルートの もじを よんで、ならべると なに？</div><div class="maze-answer-row">${boxes}</div></div>`));
+    const catJa = HIRAGANA_CATEGORY_LABEL_JA[picked.category] || picked.category;
+    answers.push(`${word}（${catJa}）`);
+  }
+
+  if (cards.length < totalTarget) {
+    console.warn(
+      `[maze_hiragana] generation shortage ${cards.length}/${totalTarget}; filling with emergency fallback`
+    );
+  }
+  while (cards.length < totalTarget) {
+    const picked = pickHiraganaMazeWord(categoryArg);
+    const model =
+      buildMazeModel('beginner', 'normal', 0) ||
+      buildMazeModel(level, 'normal', 0) ||
+      buildMazeModel('beginner', 'soft', 0) ||
+      buildMazeEmergencyModel(level);
+    if (!model || !model.path) {
+      console.error('[maze_hiragana] emergency fallback failed');
+      break;
     }
+    const maxWordLen = Math.max(1, model.path.length - 2);
+    const word = pickWordFitPath(picked.category, maxWordLen);
+    const letters = buildPathLetterPlacements(model.path, word);
+    if (!letters) break;
+    const idx = cards.length + 1;
+    const svg = buildMazeSvgWithLetters(model, letters);
+    const boxes = [...word]
+      .map(() => '<div class="maze-answer-box"></div>')
+      .join('');
+    cards.push(questionCard(idx, `<div class="maze-card maze-card--hiragana">${svg}<div class="maze-word-question">ルートの もじを よんで、ならべると なに？</div><div class="maze-answer-row">${boxes}</div></div>`));
+    const catJa = HIRAGANA_CATEGORY_LABEL_JA[picked.category] || picked.category;
+    answers.push(`${word}（${catJa}）`);
   }
   return { cardHtmls: cards, answers };
 }
