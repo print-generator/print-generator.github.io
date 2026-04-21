@@ -2970,6 +2970,24 @@ body.lp-pricing-page {
     width: 60px;
     height: 60px;
   }
+  .maze-card--hiragana .maze-svg {
+    min-height: 76mm;
+    max-height: 90mm;
+  }
+  .maze-card--hiragana .maze-answer-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: center;
+    align-items: center;
+    gap: 8px 14px;
+    width: min(100%, 210px);
+    margin: 6px auto 0;
+  }
+  .maze-card--hiragana .maze-answer-box {
+    width: 52px;
+    height: 52px;
+    max-width: 100%;
+  }
   .header-nav .nav-link { display: none; }
   .option-grid { grid-template-columns: repeat(2,1fr); gap: 8px; padding: 14px 12px; }
   .option-grid.option-grid--four { grid-template-columns: repeat(2, 1fr); }
@@ -3000,14 +3018,14 @@ body.lp-pricing-page {
   /* プリントヘッダー：タイトル左・名前・日付を同一行・右寄せ（PCレイアウトは @media (max-width: 860px) 以前のまま） */
   .print-header-main-row {
     flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
+    align-items: stretch;
+    justify-content: flex-start;
     gap: 6px 8px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
   }
   .print-header .print-header-left {
-    flex: 0 1 36%;
-    max-width: 40%;
+    flex: 1 1 100%;
+    max-width: 100%;
     min-width: 0;
   }
   .print-header .print-logo--header {
@@ -3024,15 +3042,15 @@ body.lp-pricing-page {
     margin-bottom: 2px;
   }
   .print-header-fields {
-    flex: 1 1 64%;
-    max-width: none;
+    flex: 1 1 100%;
+    max-width: 100%;
     width: 100%;
     min-width: 0;
     margin-left: auto;
-    grid-template-columns: minmax(8.5rem, 1fr) auto;
+    grid-template-columns: 1fr;
     justify-content: stretch;
     align-items: flex-end;
-    gap: 6px 8px;
+    gap: 4px 0;
   }
   .print-header-field {
     font-size: 0.62rem;
@@ -3044,8 +3062,10 @@ body.lp-pricing-page {
     max-width: none;
   }
   .print-header-field--date {
-    min-width: 6.8rem;
-    justify-self: end;
+    min-width: 0;
+    width: 100%;
+    justify-self: stretch;
+    justify-content: flex-end;
   }
   .print-field-line--name {
     min-width: 0;
@@ -3054,13 +3074,13 @@ body.lp-pricing-page {
     height: 30px;
   }
   .print-header-field--date {
-    flex: 0 0 auto;
-    gap: 2px;
+    flex: 1 1 auto;
+    gap: 4px;
   }
   .print-date-blank--month,
   .print-date-blank--day {
-    width: 2.4rem;
-    min-width: 2rem;
+    width: 1.9rem;
+    min-width: 1.6rem;
     height: 30px;
   }
   .print-date-suffix {
