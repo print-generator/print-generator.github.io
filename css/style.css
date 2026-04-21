@@ -57,6 +57,10 @@
   --print-hiragana-advanced-write-margin-top: 0.65mm;
   --print-hiragana-advanced-card-padding-y: 0.65pt;
   --print-hiragana-advanced-card-inner-gap: 0.52mm;
+  --print-hiragana-advanced-prompt-gap: 1pt;
+  --print-hiragana-advanced-trace-line-height: 0.98;
+  --print-hiragana-advanced-write-margin-top-tight: 0.5mm;
+  --print-hiragana-advanced-write-margin-bottom-tight: 0.15mm;
 }
 
 html { scroll-behavior: smooth; }
@@ -4336,16 +4340,24 @@ body.lp-pricing-page {
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .question-card-content {
   gap: var(--print-hiragana-advanced-card-inner-gap) !important;
 }
+.pdf-capturing--hiragana-advanced .questions-grid {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+.pdf-capturing--hiragana-advanced .question-card.question.hiragana:has(.emoji-question-row--tight) .emoji-question-prompt {
+  margin-bottom: var(--print-hiragana-advanced-prompt-gap) !important;
+}
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .seikatsu-trace {
   font-size: 48pt !important; /* 50音上級: 前回設定からさらに約1.5倍 */
-  line-height: 1 !important;
+  line-height: var(--print-hiragana-advanced-trace-line-height) !important;
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row--tight) .hira-write {
   width: 27mm !important; /* 50音上級: 前回設定からさらに約1.5倍 */
   height: 27mm !important;
   border-width: 2pt !important;
   border-color: #7b8794 !important;
-  margin-top: var(--print-hiragana-advanced-write-margin-top) !important;
+  margin-top: var(--print-hiragana-advanced-write-margin-top-tight) !important;
+  margin-bottom: var(--print-hiragana-advanced-write-margin-bottom-tight) !important;
 }
 .pdf-capturing .question-card.question.narabikae .adv-prompt-sub {
   display: none !important; /* 並べ替え: PDF時のみ「こたえをしたにかこう」を非表示 */

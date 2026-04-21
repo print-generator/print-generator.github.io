@@ -1693,6 +1693,10 @@ async function waitForPaintPdf() {
 const MOBILE_PDF_CONTENT_WIDTH_MM = 186;
 const MOBILE_PDF_SIDE_MARGIN_MM = 12;
 
+function isHiraganaAdvancedMobilePdf(contentSel, levelSel) {
+  return contentSel === 'hiragana' && levelSel === 'advanced';
+}
+
 /**
  * スマホ向け：.print-page を cloneNode し、body 直下の可視一時コンテナ内で html2canvas。
  * 一時コンテナは 186mm 固定（スマホ viewport に引っ張られない）。
@@ -1765,7 +1769,8 @@ async function savePdfViaHtml2Canvas() {
           pageSlices[p],
           p === 0,
           p === pageSlices.length - 1,
-          contentSel
+          contentSel,
+          levelSel
         );
         host.appendChild(frag);
         void frag.offsetHeight;
@@ -1841,7 +1846,7 @@ function addCanvasPageToPdf(pdf, canvas, sideMarginMm, contentWidthMm, addPageBe
  * スマホPDF用：既存プリントから question-card を複製し、186mm 幅の 1 ページ相当 DOM を組み立てる。
  * 分割枚数は .print-page ごと（generatePrintHTML の実測ベース改ページと一致）。
  */
-function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc, contentSel) {
+function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc, contentSel, levelSel) {
   const header = sheet.querySelector('.print-header');
   const instr = sheet.querySelector('.print-instruction');
   const continuationStrip = sheet.querySelector('.print-continuation-strip');
@@ -1851,7 +1856,8 @@ function buildMobilePdfSheetFragment(sheet, cardSlice, isFirst, isLastPageOfDoc,
   const gridCs = grid ? getComputedStyle(grid) : null;
 
   const wrap = document.createElement('div');
-  wrap.className = `${sheet.className} pdf-export-surface pdf-capturing`.trim();
+  const isHiraganaAdvanced = isHiraganaAdvancedMobilePdf(contentSel, levelSel);
+  wrap.className = `${sheet.className} pdf-export-surface pdf-capturing ${isHiraganaAdvanced ? 'pdf-capturing--hiragana-advanced' : ''}`.trim();
   wrap.style.cssText = [
     'width:186mm',
     'min-width:186mm',
@@ -1921,6 +1927,10 @@ function getQuestionCardSlicesFromPrintSheet(sheet) {
 }
 
 function getPdfPageSlicesForContent(sheet, contentSel, levelSel) {
+  if (isHiraganaAdvancedMobilePdf(contentSel, levelSel)) {
+    const allCards = Array.from(sheet.querySelectorAll('.print-page:not(.print-page--answer) .question-card'));
+    return allCards.map((card) => [card]);
+  }
   const isMazeContent = contentSel === 'maze' || contentSel === 'maze_hiragana';
   if (!isMazeContent) {
     return getQuestionCardSlicesFromPrintSheet(sheet);
@@ -1981,7 +1991,14 @@ async function savePdfViaHtml2CanvasFallbackSlices(sheet, contentSel, levelSel) 
     for (let p = 0; p < pageSlices.length; p++) {
       const isFirst = p === 0;
       const isLastPageOfDoc = p === pageSlices.length - 1;
-      const frag = buildMobilePdfSheetFragment(sheet, pageSlices[p], isFirst, isLastPageOfDoc, contentSel);
+      const frag = buildMobilePdfSheetFragment(
+        sheet,
+        pageSlices[p],
+        isFirst,
+        isLastPageOfDoc,
+        contentSel,
+        levelSel
+      );
       host.appendChild(frag);
       void frag.offsetHeight;
       await waitForPaintPdf();
