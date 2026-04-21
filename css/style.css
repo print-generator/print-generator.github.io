@@ -3153,6 +3153,19 @@ body.lp-pricing-page {
    印刷用スタイル
    ============================================ */
 @media print {
+  :root {
+    --print-side-font-size: 6.7pt;
+    --print-side-line-height: 1.28;
+    --print-gap-side-to-main: 1.4pt;
+    --print-gap-main-to-write: 2px;
+    --print-gap-row-tight: 0.8pt;
+    --print-card-padding-y: 0.8pt;
+    --print-card-padding-x: 2.4pt;
+    --print-card-inner-gap: 0.7mm;
+    --print-card-separator-gap: 0.2mm;
+    --print-first-header-gap: 1.8mm;
+    --print-first-instruction-gap: 2.1mm;
+  }
 
   /*
    * 用紙余白は @page のみで固定（10〜15mm）。コンテンツ幅は印刷領域いっぱいに合わせ、
@@ -3361,36 +3374,36 @@ body.lp-pricing-page {
     page-break-inside: avoid !important;
     -webkit-column-break-inside: avoid !important;
     border: 1.5pt solid #dadce0 !important;
-    padding: 0.8pt 2.4pt !important;
+    padding: var(--print-card-padding-y) var(--print-card-padding-x) !important;
     overflow: visible !important;
   }
   /* 主役（問題文・記入欄）を活かすため、周辺要素のみ整える */
   .question-card .choice-label,
   .question-card .emoji-question-prompt,
   .question-card .adv-prompt-sub {
-    font-size: 6.7pt !important;
-    line-height: 1.28 !important;
+    font-size: var(--print-side-font-size) !important;
+    line-height: var(--print-side-line-height) !important;
     letter-spacing: 0.01em !important;
     color: #5f6368 !important;
   }
   .question-card .emoji-question-prompt {
-    margin-bottom: 1.4pt !important;
+    margin-bottom: var(--print-gap-side-to-main) !important;
   }
   .question-card .adv-prompt-sub {
     margin-bottom: 1.2pt !important;
   }
   .question-card .choices-row {
-    margin-top: 0.6pt !important;
+    margin-top: var(--print-gap-row-tight) !important;
   }
   .question-card .answer-line {
     height: 22px !important;
-    margin-top: 2px !important;
+    margin-top: var(--print-gap-main-to-write) !important;
   }
   .question-card .hira-write {
     margin-top: 0.8mm !important;
   }
   .questions-grid .question-card:not(:last-child) {
-    margin-bottom: 0.2mm !important;
+    margin-bottom: var(--print-card-separator-gap) !important;
   }
   .print-page--cards-5 .question-card {
     padding: 0.7pt 2.1pt !important;
@@ -3401,7 +3414,7 @@ body.lp-pricing-page {
   .question-card-content {
     display: flex !important;
     flex-direction: column !important;
-    gap: 0.7mm !important;
+    gap: var(--print-card-inner-gap) !important;
     min-width: 0 !important;
   }
   .print-page--cards-5 .question-card-content {
@@ -3490,13 +3503,13 @@ body.lp-pricing-page {
     align-self: start !important;
   }
   .print-page--first .print-header {
-    margin-bottom: 1.8mm !important;
+    margin-bottom: var(--print-first-header-gap) !important;
     padding-bottom: 1.4mm !important;
   }
   .print-page--first .print-instruction {
     font-size: 7.4pt !important;
     line-height: 1.3 !important;
-    margin-bottom: 2.1mm !important;
+    margin-bottom: var(--print-first-instruction-gap) !important;
     padding: 4.5pt 6.5pt !important;
   }
   .print-page--first .question-card {
@@ -4176,6 +4189,15 @@ body.lp-pricing-page {
   /* 背景色を確実に描画 */
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
+  --print-side-font-size: 6.7pt;
+  --print-side-line-height: 1.28;
+  --print-gap-side-to-main: 1.4pt;
+  --print-gap-main-to-write: 2px;
+  --print-gap-row-tight: 0.8pt;
+  --print-card-padding-y: 0.8pt;
+  --print-card-padding-x: 2.4pt;
+  --print-card-inner-gap: 0.7mm;
+  --print-card-separator-gap: 0.2mm;
 }
 .pdf-capturing .trace-target,
 .pdf-capturing .hira-trace,
@@ -4192,34 +4214,34 @@ body.lp-pricing-page {
   print-color-adjust: exact !important;
 }
 .pdf-capturing .question-card {
-  padding: 0.8pt 2.4pt !important;
+  padding: var(--print-card-padding-y) var(--print-card-padding-x) !important;
 }
 .pdf-capturing .questions-grid .question-card:not(:last-child) {
-  margin-bottom: 0.2mm !important;
+  margin-bottom: var(--print-card-separator-gap) !important;
 }
 .pdf-capturing .question-card-content {
-  gap: 0.7mm !important;
+  gap: var(--print-card-inner-gap) !important;
 }
 .pdf-capturing .question-card .choice-label,
 .pdf-capturing .question-card .emoji-question-prompt,
 .pdf-capturing .question-card .adv-prompt-sub {
-  font-size: 6.7pt !important;
-  line-height: 1.28 !important;
+  font-size: var(--print-side-font-size) !important;
+  line-height: var(--print-side-line-height) !important;
   letter-spacing: 0.01em !important;
   color: #5f6368 !important;
 }
 .pdf-capturing .question-card .emoji-question-prompt {
-  margin-bottom: 1.4pt !important;
+  margin-bottom: var(--print-gap-side-to-main) !important;
 }
 .pdf-capturing .question-card .adv-prompt-sub {
   margin-bottom: 1.2pt !important;
 }
 .pdf-capturing .question-card .choices-row {
-  margin-top: 0.6pt !important;
+  margin-top: var(--print-gap-row-tight) !important;
 }
 .pdf-capturing .question-card .answer-line {
   height: 22px !important;
-  margin-top: 2px !important;
+  margin-top: var(--print-gap-main-to-write) !important;
 }
 .pdf-capturing .question-card .choice-sentence,
 .pdf-capturing .question-card .desc-sentence {
