@@ -969,7 +969,16 @@ function buildMeta(content, level) {
     intermediate: { label: '中級',  desc: '選択問題',    badge: '🌼' },
     advanced:     { label: '上級',  desc: '記述問題',    badge: '🌟' },
   };
-  const base = { ...contentInfo[content], ...levelInfo[level] };
+  const genreMeta = contentInfo[content] || { label: content, emoji: '' };
+  const levelMeta = levelInfo[level] || { label: level, desc: '', badge: '' };
+  const base = {
+    ...genreMeta,
+    ...levelMeta,
+    label: genreMeta.label,
+    genreLabel: genreMeta.label,
+    levelLabel: levelMeta.label,
+    titleLabel: `${genreMeta.label} ${levelMeta.label}`,
+  };
   /* 50音・上級は絵つき単語のなぞり書きのため、ヘッダー説明を記述問題にしない */
   if (content === 'hiragana' && level === 'advanced') {
     base.desc = '絵つき・なぞり書き（単語）';
@@ -1016,8 +1025,8 @@ function buildPrintHeader(meta, showName, showDate) {
       <div class="print-header-left">
         <div class="print-title-row">
           <div class="print-title-block">
-            <div class="print-category">${meta.emoji} ${meta.label} ／ ${meta.badge} ${meta.label}（${meta.desc}）</div>
-            <h1 class="print-title"><span class="print-title-main">${meta.label}</span><span class="print-title-suffix">の れんしゅう</span></h1>
+            <div class="print-category">${meta.emoji} ${meta.titleLabel} ／ ${meta.badge} ${meta.desc}</div>
+            <h1 class="print-title"><span class="print-title-main">${meta.genreLabel}</span><span class="print-title-suffix"> ${meta.levelLabel} の れんしゅう</span></h1>
           </div>
           <img src="images/logo.png" class="print-logo print-logo--header" alt="" width="48" height="48" />
         </div>
@@ -1088,7 +1097,7 @@ function buildInstruction(meta) {
 function buildPrintContinuationStrip(meta) {
   const text = escapeHtmlPrint(getInstructionText(meta));
   return `<div class="print-continuation-strip">
-    <div class="print-continuation-kicker">${meta.emoji} ${escapeHtmlPrint(meta.label)} ／ ${meta.badge} ${escapeHtmlPrint(meta.label)}（${escapeHtmlPrint(meta.desc)}）</div>
+    <div class="print-continuation-kicker">${meta.emoji} ${escapeHtmlPrint(meta.titleLabel)} ／ ${meta.badge} ${escapeHtmlPrint(meta.desc)}</div>
     <div class="print-continuation-title">つづき</div>
     <p class="print-continuation-hint">${text}</p>
   </div>`;

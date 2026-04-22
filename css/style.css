@@ -1168,7 +1168,7 @@ select.setting-select--locked {
   flex-direction: row;
   align-items: flex-end;
   justify-content: flex-start;
-  gap: 6px 10px;
+  gap: 8px 12px;
   min-width: 0;
   width: 100%;
 }
@@ -1178,8 +1178,8 @@ select.setting-select--locked {
 }
 .print-logo--header {
   flex: 0 0 auto;
-  width: 11mm;
-  max-width: 18%;
+  width: 13.5mm;
+  max-width: 22%;
   height: auto;
   object-fit: contain;
   opacity: 0.88;
@@ -1271,9 +1271,8 @@ select.setting-select--locked {
   font-weight: 700;
   letter-spacing: 0.03em;
   margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
   line-height: 1.15;
 }
 .print-title-block .print-title { font-size: 1.6rem; font-weight: 900; color: var(--text); letter-spacing: .04em; }
@@ -3127,8 +3126,8 @@ body.lp-pricing-page {
     min-width: 0;
   }
   .print-header .print-logo--header {
-    width: 9mm;
-    max-width: 16%;
+    width: 11.2mm;
+    max-width: 20%;
   }
   .print-header .print-title-block .print-title {
     font-size: clamp(0.92rem, 4vw, 1.2rem);
@@ -3138,6 +3137,7 @@ body.lp-pricing-page {
   .print-header .print-title-block .print-category {
     font-size: clamp(0.55rem, 2.6vw, 0.65rem);
     margin-bottom: 2px;
+    line-height: 1.2;
   }
   .print-header-fields {
     flex: 1 1 100%;
@@ -3989,8 +3989,8 @@ body.lp-pricing-page {
     max-width: 100% !important;
   }
   .print-logo--header {
-    width: 9mm !important;
-    max-width: 16% !important;
+    width: 11.2mm !important;
+    max-width: 20% !important;
     height: auto !important;
     opacity: 0.88 !important;
     flex-shrink: 0 !important;
@@ -3999,9 +3999,8 @@ body.lp-pricing-page {
     font-size: 7.5pt !important;
     letter-spacing: 0.02em !important;
     line-height: 1.15 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
     max-width: 100% !important;
   }
   .print-instruction {
@@ -4292,8 +4291,8 @@ body.lp-pricing-page {
     display: block !important;
     visibility: visible !important;
     position: static !important;
-    width: 9mm !important;
-    max-width: 16% !important;
+    width: 11.2mm !important;
+    max-width: 20% !important;
     height: auto !important;
     opacity: 0.88 !important;
     pointer-events: none !important;
