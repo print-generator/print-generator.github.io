@@ -70,22 +70,22 @@
   --print-hiragana-adv-trace-letter-spacing: -0.05em;
   --print-hiragana-adv-col-margin-x: 0.5px;
   /* 並び替え専用（通常表示） */
-  --narabikae-screen-layout-gap: 6px;
+  --narabikae-screen-layout-gap: 7px;
   --narabikae-screen-choice-gap: 8px;
   --narabikae-screen-choice-font-size: 1.15rem;
   --narabikae-screen-choice-pad-y: 6px;
   --narabikae-screen-choice-pad-x: 14px;
-  --narabikae-screen-answer-height: 44px;
-  --narabikae-screen-answer-margin-top: 8px;
+  --narabikae-screen-answer-height: 47px;
+  --narabikae-screen-answer-margin-top: 9px;
   --narabikae-screen-answer-border-width: 3px;
   /* 並び替え専用（印刷/PDF） */
-  --print-narabikae-layout-gap: 0.95mm;
+  --print-narabikae-layout-gap: 1.05mm;
   --print-narabikae-choice-gap: 1.6pt;
   --print-narabikae-choice-font-size: 13.1pt;
   --print-narabikae-choice-pad-y: 1.1pt;
   --print-narabikae-choice-pad-x: 6.2pt;
-  --print-narabikae-answer-height: 30px;
-  --print-narabikae-answer-margin-top: 2.8px;
+  --print-narabikae-answer-height: 33px;
+  --print-narabikae-answer-margin-top: 3.2px;
   --print-narabikae-answer-border-width: 2.2pt;
 }
 
@@ -1506,8 +1506,8 @@ select.setting-select--locked {
     min-width: 0;
   }
   .question.narabikae .narabikae-answer-line {
-    height: 40px;
-    margin-top: 6px;
+    height: 43px;
+    margin-top: 7px;
   }
   .question.kanji {
     padding: 6px 10px;
