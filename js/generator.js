@@ -1025,7 +1025,6 @@ function buildPrintHeader(meta, showName, showDate) {
       <div class="print-header-left">
         <div class="print-title-row">
           <div class="print-title-block">
-            <div class="print-category">${meta.emoji} ${meta.titleLabel} ／ ${meta.badge} ${meta.desc}</div>
             <h1 class="print-title"><span class="print-title-main">${meta.genreLabel}</span><span class="print-title-suffix"> ${meta.levelLabel}</span></h1>
           </div>
           <img src="images/logo.png" class="print-logo print-logo--header" alt="" width="48" height="48" />
@@ -1097,7 +1096,6 @@ function buildInstruction(meta) {
 function buildPrintContinuationStrip(meta) {
   const text = escapeHtmlPrint(getInstructionText(meta));
   return `<div class="print-continuation-strip">
-    <div class="print-continuation-kicker">${meta.emoji} ${escapeHtmlPrint(meta.titleLabel)} ／ ${meta.badge} ${escapeHtmlPrint(meta.desc)}</div>
     <div class="print-continuation-title">つづき</div>
     <p class="print-continuation-hint">${text}</p>
   </div>`;
