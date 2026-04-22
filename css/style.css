@@ -4390,6 +4390,20 @@ body.lp-pricing-page {
   }
 }
 
+/* PC印刷のみ：ページ先頭のタイトル上余白を詰める（通常表示/スマホPDFには影響させない） */
+@media print and (min-width: 769px) {
+  .a4-sheet {
+    padding-top: 1.2mm !important;
+  }
+  .print-page--first .print-header {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+  .print-page--continuation .print-continuation-strip {
+    margin-top: 0 !important;
+  }
+}
+
 /* ============================================
    PDF キャプチャ中の一時スタイル
    （html2canvas が正しく描画できるよう補助）
