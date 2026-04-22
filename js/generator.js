@@ -2662,10 +2662,11 @@ function buildNarabikaeCard(num, level) {
   const made = buildNarabikaeSentence(level);
   const chips = made.questionParts.map((p) => `<span class="choice-item">${escapeHtmlPrint(p)}</span>`).join('');
   const compactCls = level === 'advanced' ? 'advanced-compact advanced-compact--narabikae' : '';
-  const inner = `<div class="${compactCls}"><div class="emoji-question-prompt">ことばを ならべかえて、ただしい ぶんを つくろう</div>
-    <div class="choices-row">${chips}</div>
+  const layoutCls = ['narabikae-layout', compactCls].filter(Boolean).join(' ');
+  const inner = `<div class="${layoutCls}">
+    <div class="choices-row narabikae-choices-row">${chips}</div>
     <div class="adv-prompt-sub">こたえを したに かこう</div>
-    <div class="answer-line"></div></div>`;
+    <div class="answer-line narabikae-answer-line"></div></div>`;
   return { html: questionCard(num, inner), answer: made.answerText };
 }
 

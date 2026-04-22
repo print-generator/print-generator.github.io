@@ -69,6 +69,24 @@
   --print-hiragana-adv-col-gap: 0.1em;
   --print-hiragana-adv-trace-letter-spacing: -0.05em;
   --print-hiragana-adv-col-margin-x: 0.5px;
+  /* 並び替え専用（通常表示） */
+  --narabikae-screen-layout-gap: 6px;
+  --narabikae-screen-choice-gap: 8px;
+  --narabikae-screen-choice-font-size: 1.15rem;
+  --narabikae-screen-choice-pad-y: 6px;
+  --narabikae-screen-choice-pad-x: 14px;
+  --narabikae-screen-answer-height: 44px;
+  --narabikae-screen-answer-margin-top: 8px;
+  --narabikae-screen-answer-border-width: 3px;
+  /* 並び替え専用（印刷/PDF） */
+  --print-narabikae-layout-gap: 0.95mm;
+  --print-narabikae-choice-gap: 1.6pt;
+  --print-narabikae-choice-font-size: 12.2pt;
+  --print-narabikae-choice-pad-y: 1.1pt;
+  --print-narabikae-choice-pad-x: 6.2pt;
+  --print-narabikae-answer-height: 28px;
+  --print-narabikae-answer-margin-top: 2.6px;
+  --print-narabikae-answer-border-width: 2.2pt;
 }
 
 html { scroll-behavior: smooth; }
@@ -1364,6 +1382,28 @@ select.setting-select--locked {
   margin-bottom: 1px;
   line-height: 1.18;
 }
+/* 並び替え専用：通常表示は崩れないことを優先して整える */
+.question.narabikae .narabikae-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--narabikae-screen-layout-gap);
+}
+.question.narabikae .narabikae-choices-row {
+  gap: var(--narabikae-screen-choice-gap);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.question.narabikae .narabikae-choices-row .choice-item {
+  font-size: var(--narabikae-screen-choice-font-size);
+  padding: var(--narabikae-screen-choice-pad-y) var(--narabikae-screen-choice-pad-x);
+  line-height: 1.2;
+}
+.question.narabikae .narabikae-answer-line {
+  height: var(--narabikae-screen-answer-height);
+  margin-top: var(--narabikae-screen-answer-margin-top);
+  border-bottom-width: var(--narabikae-screen-answer-border-width);
+  border-bottom-color: var(--primary-dark);
+}
 
 /* 漢字の読み問題だけ少し大きく（書き問題バランスは維持） */
 .question.kanji .kanji-stack--reading-adv .kanji-stack__bottom--kanji {
@@ -1376,6 +1416,21 @@ select.setting-select--locked {
 }
 
 @media (max-width: 768px) {
+  .question.narabikae .narabikae-layout {
+    gap: 5px;
+  }
+  .question.narabikae .narabikae-choices-row {
+    gap: 6px;
+  }
+  .question.narabikae .narabikae-choices-row .choice-item {
+    font-size: 1.02rem;
+    padding: 5px 10px;
+    min-width: 0;
+  }
+  .question.narabikae .narabikae-answer-line {
+    height: 40px;
+    margin-top: 6px;
+  }
   .question.kanji {
     padding: 6px 10px;
     margin-bottom: 6px;
@@ -3846,6 +3901,25 @@ body.lp-pricing-page {
     height: var(--print-answer-line-height) !important;
     margin-top: var(--print-gap-main-to-write) !important;
   }
+  .question-card.question.narabikae .narabikae-layout {
+    gap: var(--print-narabikae-layout-gap) !important;
+  }
+  .question-card.question.narabikae .narabikae-choices-row {
+    gap: var(--print-narabikae-choice-gap) !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+  }
+  .question-card.question.narabikae .narabikae-choices-row .choice-item {
+    font-size: var(--print-narabikae-choice-font-size) !important;
+    padding: var(--print-narabikae-choice-pad-y) var(--print-narabikae-choice-pad-x) !important;
+    line-height: 1.18 !important;
+  }
+  .question-card.question.narabikae .narabikae-answer-line {
+    height: var(--print-narabikae-answer-height) !important;
+    margin-top: var(--print-narabikae-answer-margin-top) !important;
+    border-bottom-width: var(--print-narabikae-answer-border-width) !important;
+    border-bottom-color: #c2410c !important;
+  }
 
   /* 文章問題：全レベル +4 */
   .question-card.question.sentence {
@@ -4456,6 +4530,25 @@ body.lp-pricing-page {
   gap: 1pt !important;
   margin-top: 0.8pt !important;
 }
+.pdf-capturing .question-card.question.narabikae .narabikae-layout {
+  gap: var(--print-narabikae-layout-gap) !important;
+}
+.pdf-capturing .question-card.question.narabikae .narabikae-choices-row {
+  gap: var(--print-narabikae-choice-gap) !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+}
+.pdf-capturing .question-card.question.narabikae .narabikae-choices-row .choice-item {
+  font-size: var(--print-narabikae-choice-font-size) !important;
+  padding: var(--print-narabikae-choice-pad-y) var(--print-narabikae-choice-pad-x) !important;
+  line-height: 1.18 !important;
+}
+.pdf-capturing .question-card.question.narabikae .narabikae-answer-line {
+  height: var(--print-narabikae-answer-height) !important;
+  margin-top: var(--print-narabikae-answer-margin-top) !important;
+  border-bottom-width: var(--print-narabikae-answer-border-width) !important;
+  border-bottom-color: #c2410c !important;
+}
 .pdf-capturing .question.sentence .advanced-compact--sentence .answer-line,
 .pdf-capturing .question.narabikae .advanced-compact--narabikae .answer-line {
   height: var(--print-answer-line-height-compact) !important;
@@ -4630,6 +4723,16 @@ body.pdf-mobile-capture .question.sentence .advanced-compact--sentence,
 body.pdf-mobile-capture .question.narabikae .advanced-compact--narabikae {
   gap: 3px !important;
 }
+body.pdf-mobile-capture .question.narabikae .narabikae-layout {
+  gap: var(--print-narabikae-layout-gap) !important;
+}
+body.pdf-mobile-capture .question.narabikae .narabikae-choices-row {
+  gap: var(--print-narabikae-choice-gap) !important;
+}
+body.pdf-mobile-capture .question.narabikae .narabikae-choices-row .choice-item {
+  font-size: var(--print-narabikae-choice-font-size) !important;
+  padding: var(--print-narabikae-choice-pad-y) var(--print-narabikae-choice-pad-x) !important;
+}
 
 body.pdf-mobile-capture .question.joshi .advanced-compact--joshi .desc-sentence {
   font-size: 14.25pt !important; /* 9.5pt の 1.5倍 */
@@ -4638,8 +4741,14 @@ body.pdf-mobile-capture .question.joshi .advanced-compact--joshi .desc-sentence 
 }
 body.pdf-mobile-capture .question.sentence .advanced-compact--sentence .answer-line,
 body.pdf-mobile-capture .question.narabikae .advanced-compact--narabikae .answer-line {
-  height: 18px !important;
-  margin-top: 1px !important;
+  height: var(--print-narabikae-answer-height) !important;
+  margin-top: var(--print-narabikae-answer-margin-top) !important;
+}
+body.pdf-mobile-capture .question.narabikae .narabikae-answer-line {
+  height: var(--print-narabikae-answer-height) !important;
+  margin-top: var(--print-narabikae-answer-margin-top) !important;
+  border-bottom-width: var(--print-narabikae-answer-border-width) !important;
+  border-bottom-color: #c2410c !important;
 }
 body.pdf-mobile-capture .question.kanji .kanji-stack--reading-adv .kanji-stack__bottom--kanji {
   font-size: 1.08em !important;
