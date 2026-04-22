@@ -4393,14 +4393,37 @@ body.lp-pricing-page {
 /* PC印刷のみ：ページ先頭のタイトル上余白を詰める（通常表示/スマホPDFには影響させない） */
 @media print and (min-width: 769px) {
   .a4-sheet {
-    padding-top: 1.2mm !important;
+    /* 既定 2.2mm 3mm のうち上だけさらに詰める（左右・下は維持） */
+    padding-top: 0.15mm !important;
+    padding-right: 3mm !important;
+    padding-bottom: 2.2mm !important;
+    padding-left: 3mm !important;
   }
   .print-page--first .print-header {
     margin-top: 0 !important;
     padding-top: 0 !important;
+    margin-bottom: 0.35mm !important;
+    padding-bottom: 0.35mm !important;
+  }
+  .print-page--first .print-header-main-row {
+    gap: 2px 10px !important;
+  }
+  .print-page--first .print-instruction {
+    margin-top: 0 !important;
+    padding-top: 2pt !important;
   }
   .print-page--continuation .print-continuation-strip {
     margin-top: 0 !important;
+    padding-top: 0 !important;
+    padding-right: 6pt !important;
+    padding-bottom: 4pt !important;
+    padding-left: 6pt !important;
+  }
+  .print-page--continuation .print-continuation-title {
+    margin-top: 0 !important;
+  }
+  .print-page--continuation .print-continuation-hint {
+    margin-top: 1pt !important;
   }
 }
 
