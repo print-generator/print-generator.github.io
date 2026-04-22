@@ -1026,7 +1026,7 @@ function buildPrintHeader(meta, showName, showDate) {
         <div class="print-title-row">
           <div class="print-title-block">
             <div class="print-category">${meta.emoji} ${meta.titleLabel} ／ ${meta.badge} ${meta.desc}</div>
-            <h1 class="print-title"><span class="print-title-main">${meta.genreLabel}</span><span class="print-title-suffix"> ${meta.levelLabel} の れんしゅう</span></h1>
+            <h1 class="print-title"><span class="print-title-main">${meta.genreLabel}</span><span class="print-title-suffix"> ${meta.levelLabel}</span></h1>
           </div>
           <img src="images/logo.png" class="print-logo print-logo--header" alt="" width="48" height="48" />
         </div>

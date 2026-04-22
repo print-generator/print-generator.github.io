@@ -1298,12 +1298,90 @@ select.setting-select--locked {
   padding: 7px 11px; font-size: .85rem; color: var(--primary-dark); font-weight: 600; margin-bottom: 12px;
 }
 @media screen {
-  /* サイト内プレビューは上部補助情報を簡略化して崩れを防ぐ */
+  /* 通常表示は印刷内容に寄せる。見た目崩れは screen 側だけで吸収 */
+  .print-header-main-row {
+    align-items: flex-start;
+    gap: 10px 14px;
+  }
+  .print-header-left {
+    flex: 1 1 46%;
+    max-width: 56%;
+  }
+  .print-title-row {
+    align-items: flex-start;
+    gap: 7px 10px;
+  }
+  .print-title-block {
+    min-width: 0;
+  }
   .print-title-block .print-category {
-    display: none;
+    display: block;
+    font-size: clamp(0.62rem, 1.5vw, 0.74rem);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.22;
   }
   .print-title-block .print-title-suffix {
-    display: none;
+    display: inline;
+  }
+  .print-header-fields {
+    grid-template-columns: minmax(10rem, 1fr) auto;
+    gap: 8px 10px;
+    max-width: 52%;
+    align-items: flex-end;
+  }
+  .print-header-field {
+    font-size: 0.94rem;
+    gap: 6px;
+  }
+  .print-field-line--name {
+    min-height: 36px;
+    height: 36px;
+  }
+  .print-date-blank--month,
+  .print-date-blank--day {
+    width: 3rem;
+    min-width: 2.6rem;
+    height: 36px;
+  }
+  .print-date-suffix {
+    font-size: 0.92rem;
+    padding-bottom: 1px;
+  }
+}
+
+@media screen and (max-width: 860px) {
+  .print-header-main-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .print-header-left {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+  .print-header-fields {
+    flex: 1 1 100%;
+    max-width: 100%;
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 6px 0;
+  }
+  .print-header-field {
+    font-size: 0.86rem;
+  }
+  .print-header-field--date {
+    justify-content: flex-end;
+  }
+  .print-date-blank--month,
+  .print-date-blank--day {
+    width: 2.7rem;
+    min-width: 2.4rem;
+    height: 32px;
+  }
+  .print-field-line--name {
+    min-height: 32px;
+    height: 32px;
   }
 }
 .questions-grid { display: flex; flex-direction: column; gap: 8px; flex: 1; }
