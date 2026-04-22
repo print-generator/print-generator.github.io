@@ -81,11 +81,11 @@
   /* 並び替え専用（印刷/PDF） */
   --print-narabikae-layout-gap: 0.95mm;
   --print-narabikae-choice-gap: 1.6pt;
-  --print-narabikae-choice-font-size: 12.2pt;
+  --print-narabikae-choice-font-size: 13.1pt;
   --print-narabikae-choice-pad-y: 1.1pt;
   --print-narabikae-choice-pad-x: 6.2pt;
-  --print-narabikae-answer-height: 28px;
-  --print-narabikae-answer-margin-top: 2.6px;
+  --print-narabikae-answer-height: 30px;
+  --print-narabikae-answer-margin-top: 2.8px;
   --print-narabikae-answer-border-width: 2.2pt;
 }
 
@@ -1420,11 +1420,11 @@ select.setting-select--locked {
     gap: 5px;
   }
   .question.narabikae .narabikae-choices-row {
-    gap: 6px;
+    gap: 5px;
   }
   .question.narabikae .narabikae-choices-row .choice-item {
     font-size: 1.02rem;
-    padding: 5px 10px;
+    padding: 4px 9px;
     min-width: 0;
   }
   .question.narabikae .narabikae-answer-line {
