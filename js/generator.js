@@ -222,9 +222,9 @@ const PRINT_CARD_COUNT_PRESETS = {
     advanced: { first: 11, rest: 11 },
   },
   narabikae: {
-    beginner: { first: 6, rest: 7 },
-    intermediate: { first: 7, rest: 7 },
-    advanced: { first: 7, rest: 8 },
+    beginner: { first: 9, rest: 10 },
+    intermediate: { first: 9, rest: 10 },
+    advanced: { first: 9, rest: 10 },
   },
   custom: {
     beginner: { first: 6, rest: 7 },
@@ -628,6 +628,10 @@ function measurePrintPackSizes(cardHtmls, header, instr, continuationStrip, foot
   if (!n) return [];
   /* 50音上級：ページ枚数はプリセット固定（first:6 / rest:7）。実測貪欲パックは使わない */
   if (ctx && ctx.content === 'hiragana' && ctx.level === 'advanced') {
+    return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload || {});
+  }
+  /* 並べ替え：ページ枚数は固定（first:9 / rest:10）。実測貪欲パックは使わない */
+  if (ctx && ctx.content === 'narabikae') {
     return getFallbackPrintChunkSizes(n, ctx.content, ctx.level, ctx.customPayload || {});
   }
   if (ctx && (ctx.content === 'maze' || ctx.content === 'maze_hiragana')) {

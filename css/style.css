@@ -1201,8 +1201,8 @@ select.setting-select--locked {
 .print-header-field {
   display: flex;
   align-items: flex-end;
-  gap: 6px;
-  font-size: 0.82rem;
+  gap: 8px;
+  font-size: 1.62rem;
   flex-shrink: 0;
 }
 .print-header-field--name {
@@ -1227,8 +1227,8 @@ select.setting-select--locked {
   border-bottom: 1.5px solid #999;
   display: inline-block;
   vertical-align: bottom;
-  min-height: 40px;
-  height: 40px;
+  min-height: 54px;
+  height: 54px;
   box-sizing: border-box;
 }
 .print-field-line--name {
@@ -1246,22 +1246,23 @@ select.setting-select--locked {
   border-bottom: 1.5px solid #999;
   display: inline-block;
   vertical-align: bottom;
-  height: 40px;
+  height: 54px;
   box-sizing: border-box;
 }
 .print-date-blank--month {
-  width: 3.8rem;
-  min-width: 3.2rem;
+  width: 4.8rem;
+  min-width: 4.2rem;
 }
 .print-date-blank--day {
-  width: 3.8rem;
-  min-width: 3.2rem;
+  width: 4.8rem;
+  min-width: 4.2rem;
 }
 .print-date-suffix {
   font-weight: 600;
   color: var(--text-sub);
   line-height: 1.2;
-  padding-bottom: 1px;
+  font-size: 1em;
+  padding-bottom: 2px;
 }
 /* プリント上部のジャンル行：1行固定（印刷の縦幅節約・レイアウト安定） */
 .print-title-block .print-category {
@@ -3147,10 +3148,10 @@ body.lp-pricing-page {
     grid-template-columns: 1fr;
     justify-content: stretch;
     align-items: flex-end;
-    gap: 4px 0;
+    gap: 8px 0;
   }
   .print-header-field {
-    font-size: 0.62rem;
+    font-size: 1.24rem;
     gap: 3px;
   }
   .print-header-field--name {
@@ -3167,8 +3168,8 @@ body.lp-pricing-page {
   .print-field-line--name {
     min-width: 0;
     max-width: none;
-    min-height: 30px;
-    height: 30px;
+    min-height: 40px;
+    height: 40px;
   }
   .print-header-field--date {
     flex: 1 1 auto;
@@ -3176,12 +3177,12 @@ body.lp-pricing-page {
   }
   .print-date-blank--month,
   .print-date-blank--day {
-    width: 1.9rem;
-    min-width: 1.6rem;
-    height: 30px;
+    width: 2.5rem;
+    min-width: 2.2rem;
+    height: 40px;
   }
   .print-date-suffix {
-    font-size: 0.58rem;
+    font-size: 1.06rem;
     padding-bottom: 0;
   }
   .print-info-block { align-items: flex-start; }
@@ -4103,38 +4104,38 @@ body.lp-pricing-page {
     gap: 8pt !important;
   }
   .print-header-fields {
-    gap: 8pt 12pt !important;
+    gap: 10pt 14pt !important;
     max-width: 80% !important;
     grid-template-columns: minmax(70mm, 1fr) auto !important;
     width: 100% !important;
   }
   .print-header-field {
-    font-size: 7.5pt !important;
+    font-size: 15pt !important;
   }
   .print-header-field--date {
     min-width: 32mm !important;
     justify-self: end !important;
   }
   .print-field-line--name {
-    min-height: 12mm !important;
-    height: 12mm !important;
+    min-height: 16mm !important;
+    height: 16mm !important;
     min-width: 70mm !important;
     max-width: none !important;
     width: 100% !important;
     border-bottom: 1.5pt solid #999 !important;
   }
   .print-date-blank {
-    min-height: 12mm !important;
-    height: 12mm !important;
+    min-height: 16mm !important;
+    height: 16mm !important;
     border-bottom: 1.5pt solid #999 !important;
   }
   .print-date-blank--month,
   .print-date-blank--day {
-    width: 13mm !important;
-    min-width: 11mm !important;
+    width: 17mm !important;
+    min-width: 15mm !important;
   }
   .print-date-suffix {
-    font-size: 7.5pt !important;
+    font-size: 15pt !important;
   }
   .info-line {
     width: 52mm !important;
@@ -4640,20 +4641,36 @@ body.pdf-mobile-capture .maze-card--hiragana .maze-answer-box {
 body.pdf-mobile-capture .print-header-fields {
   grid-template-columns: minmax(0, 1fr) auto !important;
   width: 100% !important;
+  gap: 8px 10px !important;
 }
 body.pdf-mobile-capture .print-header-field--name {
   flex: 0 1 50% !important;
   max-width: 50% !important;
   min-width: 0 !important;
 }
+body.pdf-mobile-capture .print-header-field {
+  font-size: 1.1rem !important;
+  gap: 6px !important;
+}
 body.pdf-mobile-capture .print-field-line--name {
   width: 100% !important;
   min-width: 0 !important;
+  min-height: 42px !important;
+  height: 42px !important;
 }
 body.pdf-mobile-capture .print-header-field--date {
   flex: 0 1 auto !important;
   min-width: 0 !important;
   justify-self: end !important;
+}
+body.pdf-mobile-capture .print-date-blank--month,
+body.pdf-mobile-capture .print-date-blank--day {
+  width: 3rem !important;
+  min-width: 2.7rem !important;
+  height: 42px !important;
+}
+body.pdf-mobile-capture .print-date-suffix {
+  font-size: 1.05rem !important;
 }
 body.pdf-mobile-capture .write-box,
 body.pdf-mobile-capture .write-box-tight,
