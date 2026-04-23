@@ -1412,14 +1412,25 @@ if (document.readyState === 'loading') {
     applyPlanTierToUI();
     refreshHistoryEntryActions();
     initMobileGenStickyBar();
+    updatePrintPdfButtonsByDevice();
     if (window.innerWidth <= 768) closeAllFaqItems();
   });
 } else {
   applyPlanTierToUI();
   refreshHistoryEntryActions();
   initMobileGenStickyBar();
+  updatePrintPdfButtonsByDevice();
   if (window.innerWidth <= 768) closeAllFaqItems();
 }
+
+window.addEventListener(
+  'resize',
+  () => {
+    clearTimeout(window.__printPdfButtonsResizeTimer);
+    window.__printPdfButtonsResizeTimer = setTimeout(updatePrintPdfButtonsByDevice, 120);
+  },
+  { passive: true }
+);
 
 document.getElementById('trialNoticeCloseBtn')?.addEventListener('click', () => {
   updateTrialNotice(false);
@@ -1592,6 +1603,7 @@ function generatePrint() {
 
       const section = document.getElementById('previewSection');
       section.style.display = 'block';
+      updatePrintPdfButtonsByDevice();
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       saveSuccessfulGenerationToHistory({
         content,
@@ -1624,7 +1636,7 @@ function generatePrint() {
 ════════════════════════════════════════ */
 function printSheet() {
   if (shouldUseMobilePdfHint()) {
-    alert('スマホでは直接印刷できない場合があります。「PDF保存」から保存してご利用ください。');
+    alert('スマホ・タブレットでは直接印刷できない場合があります。「PDF保存」から保存してご利用ください。');
     return;
   }
   window.print();
@@ -1635,13 +1647,46 @@ function printSheet() {
    ・PC：印刷ダイアログ経由（ベクターに近い）
    ・スマホ：html2canvas + jsPDF（window.print 禁止回避）
 ════════════════════════════════════════ */
-/** 狭い画面またはモバイル UA ならスマホ扱い */
-function shouldUseMobilePdfHint() {
+function getDeviceTypeFlags() {
+  let coarsePointer = false;
   try {
-    if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) return true;
-  } catch (e) { /* ignore */ }
-  const ua = navigator.userAgent || '';
-  return /iPhone|iPod|iPad|Android/i.test(ua);
+    coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  } catch (e) {
+    coarsePointer = false;
+  }
+  const touchPoints = Number(navigator.maxTouchPoints || 0);
+  const isTouchDevice = coarsePointer || touchPoints > 0;
+  const isIPad = navigator.platform === 'MacIntel' && touchPoints > 1;
+  const isMobile = window.innerWidth <= 768;
+  const isTablet = (window.innerWidth > 768 && window.innerWidth <= 1180 && isTouchDevice) || isIPad;
+  const isDesktop = !isMobile && !isTablet;
+  return {
+    isTouchDevice,
+    isIPad,
+    isMobile,
+    isTablet,
+    isDesktop,
+  };
+}
+
+function updatePrintPdfButtonsByDevice() {
+  const actions = document.querySelector('.preview-actions');
+  if (!actions) return;
+  const printBtn = actions.querySelector('.btn-print');
+  const pdfBtn = actions.querySelector('.btn-pdf');
+  const { isDesktop } = getDeviceTypeFlags();
+  if (printBtn) {
+    printBtn.style.display = isDesktop ? '' : 'none';
+  }
+  if (pdfBtn) {
+    pdfBtn.style.display = '';
+  }
+}
+
+/** モバイル/タブレット（iPad含む）はPDF保存導線を使う */
+function shouldUseMobilePdfHint() {
+  const { isMobile, isTablet } = getDeviceTypeFlags();
+  return isMobile || isTablet;
 }
 
 async function savePDF() {
