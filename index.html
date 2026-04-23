@@ -192,16 +192,15 @@
         </div>
 
         <div class="flow-block flow-block--conditional" id="katakanaToggleRow" hidden>
-          <p class="flow-field-label">五十音のオプション</p>
-          <label class="flow-check" for="includeKatakana">
-            <input type="checkbox" id="includeKatakana" class="setting-checkbox" checked />
-            <span>カタカナを含める</span>
-          </label>
-          <p class="flow-hint" id="katakanaToggleHint">有料版でONにできます</p>
+          <p class="flow-field-label">文字種</p>
+          <div class="pill-duo" id="kanaModePills" role="group" aria-label="文字種">
+            <button type="button" class="pill-duo-btn active" data-kana-mode="hiragana" id="kanaModeHiragana" aria-pressed="true">ひらがな</button>
+            <button type="button" class="pill-duo-btn" data-kana-mode="katakana" id="kanaModeKatakana" aria-pressed="false">カタカナ</button>
+          </div>
           <p class="flow-field-label flow-field-label--spaced">出題モード</p>
           <div class="pill-duo" id="hiraganaOrderPills" role="group" aria-label="五十音の出題順">
-            <button type="button" class="pill-duo-btn active" data-order="random" id="hiraganaOrderRandom" aria-pressed="true">ランダム</button>
-            <button type="button" class="pill-duo-btn" data-order="sequential" id="hiraganaOrderSequential" aria-pressed="false">あ〜わ順</button>
+            <button type="button" class="pill-duo-btn active" data-order="aiueo" id="hiraganaOrderAiueo" aria-pressed="true">あいうえお順</button>
+            <button type="button" class="pill-duo-btn" data-order="special" id="hiraganaOrderSpecial" aria-pressed="false">拗音、長音、促音</button>
           </div>
         </div>
 

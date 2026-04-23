@@ -36,6 +36,26 @@ function pickHiraganaBeginnerSetsOrdered(sets, count) {
   return out;
 }
 
+function getHiraganaBeginnerAiueoSets() {
+  const all = APP_DATA.hiragana.beginner_sets || [];
+  return all.slice(0, 10);
+}
+
+function getHiraganaBeginnerSpecialSets() {
+  return [
+    { group: '拗音（きゃ・きゅ・きょ）', chars: ['きゃ', 'きゅ', 'きょ', 'ぎゃ', 'ぎゅ'] },
+    { group: '拗音（しゃ・しゅ・しょ）', chars: ['しゃ', 'しゅ', 'しょ', 'じゃ', 'じゅ'] },
+    { group: '拗音（ちゃ・ちゅ・ちょ）', chars: ['ちゃ', 'ちゅ', 'ちょ', 'にゃ', 'にゅ'] },
+    { group: '拗音（ひゃ・みゃ・りゃ）', chars: ['ひゃ', 'ひゅ', 'ひょ', 'みゃ', 'みゅ'] },
+    { group: '拗音（りゃ・びゃ・ぴゃ）', chars: ['りゃ', 'りゅ', 'りょ', 'ぴゃ', 'ぴゅ'] },
+    { group: '促音（っ）を使うことば', chars: ['きって', 'がっこう', 'きっぷ', 'ざっし', 'きって'] },
+    { group: '長音（ー）を使うことば', chars: ['けーき', 'こーひー', 'すーぱー', 'ちーず', 'めーたー'] },
+    { group: '長音（おう・えい）', chars: ['おとうさん', 'こうえん', 'せんせい', 'えいご', 'おおきい'] },
+    { group: '促音＋拗音のことば', chars: ['きゃっぷ', 'しゅっぱつ', 'きゅうけい', 'がっき', 'ちょっき'] },
+    { group: '拗音・促音・長音の復習', chars: ['きょう', 'がっこう', 'きゅうしょく', 'しゅうかん', 'びょういん'] },
+  ];
+}
+
 function hasKatakana(text) {
   return /[\u30A0-\u30FF]/.test(String(text || ''));
 }
@@ -1461,33 +1481,17 @@ function buildJoshiAdvanced(count, _cw) {
    ==================================================== */
 
 function buildHiraganaBeginner(count, customPayload, allowKatakana, kanaMode) {
-  const setsPool = APP_DATA.hiragana.beginner_sets;
-  const order =
-    customPayload && customPayload.hiraganaSetOrder === 'random' ? 'random' : 'sequential';
-  const rawSets =
-    order === 'random'
-      ? pickRandom(setsPool, count)
-      : pickHiraganaBeginnerSetsOrdered(setsPool, count);
-  /* 出題モードは UI の kanaMode を優先（ひらがなのみ／カタカナのみ／ミックス）。未指定時のみ checkbox 相当でフォールバック */
-  const km = kanaMode || 'mix';
-  let mode;
-  if (km === 'hiragana' || km === 'katakana' || km === 'mix') {
-    mode = km;
-  } else {
-    mode = allowKatakana ? km : 'hiragana';
-  }
-  const sets = rawSets.map((set, i) => {
-    if (mode === 'katakana') return mapBeginnerSetToKatakana(set);
-    if (mode === 'mix') {
-      const useKata = i % 2 === 1;
-      return useKata ? mapBeginnerSetToKatakana(set) : set;
-    }
-    return set;
-  });
+  const mode = kanaMode === 'katakana' ? 'katakana' : 'hiragana';
+  const orderRaw = (customPayload && customPayload.hiraganaSetOrder) || 'aiueo';
+  const order = orderRaw === 'special' ? 'special' : 'aiueo';
+  const setsPool = order === 'special'
+    ? getHiraganaBeginnerSpecialSets()
+    : getHiraganaBeginnerAiueoSets();
+  const rawSets = pickHiraganaBeginnerSetsOrdered(setsPool, count);
+  const sets = rawSets.map((set) => (mode === 'katakana' ? mapBeginnerSetToKatakana(set) : set));
   const answers = sets.map((set) => `${set.group}：${set.chars.join('・')}`);
   const cards = sets.map((set, i) => {
-    const katakana =
-      mode === 'katakana' || (mode === 'mix' && i % 2 === 1);
+    const katakana = mode === 'katakana';
     const groupCount = set.chars.length;
     const cellsHtml = set.chars
       .map((c) => buildBeginnerTraceCells(c, katakana))
