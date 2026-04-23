@@ -1955,7 +1955,7 @@ select.setting-select--locked {
   display: none !important;
 }
 .question.hiragana .gojuon-basic-row .gojuon-basic-grid {
-  gap: 6px !important;
+  gap: 12px !important;
   justify-content: flex-start;
 }
 .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-cell {
@@ -1973,14 +1973,16 @@ select.setting-select--locked {
   width: 138px !important;
   height: 138px !important;
   border-width: 3px !important;
+  border-color: #9ca3af !important;
   border-radius: 4px !important;
+  margin-right: 0 !important;
 }
 .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-write--small {
   width: 90px !important;
   height: 90px !important;
 }
 .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-yoon-pair {
-  gap: 4px !important;
+  gap: 8px !important;
 }
 .trace-second-row { margin-top: 5px; }
 .trace-second-label { font-size: .72rem; color: var(--text-sub); }
