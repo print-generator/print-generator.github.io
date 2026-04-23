@@ -1497,8 +1497,9 @@ function buildHiraganaBeginner(count, customPayload, allowKatakana, kanaMode) {
       .map((c) => buildBeginnerTraceCells(c, katakana))
       .join('');
     const inner = `
-      <div class="hira-group-label">${set.group}</div>
-      <div class="${beginnerGridClass(groupCount)}">${cellsHtml}</div>`;
+      <div class="gojuon-basic-row">
+        <div class="${beginnerGridClass(groupCount)} gojuon-basic-grid">${cellsHtml}</div>
+      </div>`;
     return questionCard(i + 1, inner);
   });
   return { cardHtmls: cards, answers };

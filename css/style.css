@@ -1950,6 +1950,41 @@ select.setting-select--locked {
 .question-card-content .hira-group-label + .hiragana-grid--beginner-compact {
   margin-top: 1px;
 }
+/* 50音 初級のみ: 見本文字・マスを大きくし、連続練習しやすい見た目にする */
+.question.hiragana .gojuon-basic-row .hira-group-label {
+  display: none !important;
+}
+.question.hiragana .gojuon-basic-row .gojuon-basic-grid {
+  gap: 0 !important;
+  justify-content: flex-start;
+}
+.question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-cell {
+  gap: 2px !important;
+}
+.question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace {
+  font-size: 5.8rem !important;
+  line-height: 0.92 !important;
+  border-bottom-width: 3px !important;
+}
+.question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace--small {
+  font-size: 3.2rem !important;
+}
+.question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-write {
+  width: 138px !important;
+  height: 138px !important;
+  border-width: 3px !important;
+  border-radius: 4px !important;
+}
+.question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-write--small {
+  width: 90px !important;
+  height: 90px !important;
+}
+.question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-cell:not(:last-child) .hira-write {
+  border-right-width: 1px !important;
+}
+.question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-yoon-pair {
+  gap: 0 !important;
+}
 .trace-second-row { margin-top: 5px; }
 .trace-second-label { font-size: .72rem; color: var(--text-sub); }
 .write-box-inline { margin-left: 5px; }
