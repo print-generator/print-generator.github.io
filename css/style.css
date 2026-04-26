@@ -5067,6 +5067,9 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
 .plan-pitch-text-mobile {
   display: none;
 }
+.plan-line-btn-text-mobile {
+  display: none;
+}
 .plan-pitch-line {
   font-size: 0.88rem;
   color: var(--text-sub);
@@ -5818,10 +5821,10 @@ body.plan-pro #contentOptions .genre-card .genre-card-badge {
 }
 
 @media (max-width: 768px) {
-  #planModal .plan-modal-pitch .plan-line-btn {
+  #planModal .plan-modal-pitch .modal-note--soft {
     display: none !important;
   }
-  #planModal .plan-modal-pitch .modal-note--soft {
+  #planModal .plan-modal-pitch .plan-pitch-line {
     display: none !important;
   }
   #planModal .plan-pitch-text-desktop {
@@ -5830,9 +5833,28 @@ body.plan-pro #contentOptions .genre-card .genre-card-badge {
   #planModal .plan-pitch-text-mobile {
     display: inline !important;
   }
+  #planModal .plan-line-btn-text-desktop {
+    display: none !important;
+  }
+  #planModal .plan-line-btn-text-mobile {
+    display: inline !important;
+  }
+  #planModal .plan-modal-pitch .plan-line-btn {
+    display: flex !important;
+    width: 100%;
+    max-width: 100%;
+    margin: 10px auto 18px;
+    padding: 14px 18px;
+    font-size: 1.02rem;
+    font-weight: 800;
+    border-radius: 12px;
+  }
   #planModal .modal-footer--plan {
     gap: 8px;
     padding: 12px 14px;
+  }
+  #planModal .modal-footer--plan .modal-pro-app-btn {
+    display: none !important;
   }
   #planModal .modal-close-btn,
   #planModal .modal-detail-btn,
