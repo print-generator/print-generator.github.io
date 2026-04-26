@@ -64,7 +64,7 @@ const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 3;
 /** ひらがな迷路の最大問題数（PDF 負荷軽減・planRules と一致） */
 const MAZE_HIRAGANA_MAX_QUESTIONS = PlanCore?.MAZE_HIRAGANA_MAX_QUESTIONS ?? 10;
 /** 有料ジャンル体験の対象（案内文言の共通化） */
-const PREMIUM_TRIAL_GENRE_LABEL = '文章問題・並び替え・ひらがな迷路';
+const PREMIUM_TRIAL_GENRE_LABEL = '文章問題・並び替え・ひらがな迷路・好きな単語';
 const LS_FREE_GEN_TOTAL_KEY = 'homePrint_freeGenTotal_v2';
 const LS_FREE_GEN_DATE_KEY = 'homePrint_freeGenDateJst_v2';
 /** 旧「通算1回」体験フラグ（日次 trial へ移行時に参照） */
@@ -221,14 +221,14 @@ function markPremiumTrialUsedTodayForGenre(genre) {
 
 /** 有料ジャンル体験の対象ジャンルか（判定・マークの共通化） */
 function isPremiumTrialGenre(content) {
-  return content === 'sentence' || content === 'narabikae' || content === 'maze_hiragana';
+  return content === 'sentence' || content === 'narabikae' || content === 'maze_hiragana' || content === 'custom';
 }
 
 /**
  * 無料体験カードの見た目（本日分消化済みのみ終了表示。未使用時は DOM からラベルを除去して誤表示を防ぐ）
  */
 function refreshPremiumTrialGenreCards() {
-  document.querySelectorAll('.content-btn--trial').forEach((btn) => {
+  document.querySelectorAll('#contentOptions .content-btn').forEach((btn) => {
     const g = btn.dataset.value;
     if (!g || !isPremiumTrialGenre(g)) return;
     const exhausted = !isProUser && isPremiumTrialUsedToday(g) === true;
@@ -557,13 +557,13 @@ function refreshCustomWordControl() {
   if (levelCard) levelCard.hidden = isCustom;
   if (!show) {
     if (hint) {
-      hint.textContent = isProUser
-        ? '「カスタム問題」を選ぶと入力できます（最大15文字）。'
-        : 'カスタム問題は有料版で利用できます。';
+      hint.textContent = '「好きな単語」を選ぶと入力できます（最大15文字）。';
     }
   } else {
     if (hint) {
-      hint.textContent = '1単語15文字まで。入力した単語はすべて問題に反映されます。';
+      hint.textContent = isProUser || !isPremiumTrialUsedToday('custom')
+        ? '1単語15文字まで。入力した単語はすべて問題に反映されます。'
+        : '本日の無料体験は終了しました。続けて使うには有料プランをご利用ください。';
     }
   }
 }
@@ -600,12 +600,12 @@ function buildCustomWordRow(value = '', inputId = '', placeholderIndex = 0) {
   row.appendChild(input);
   row.appendChild(removeBtn);
   row.addEventListener('click', () => {
-    if (!isProUser) openFeatureLockedModal('custom');
+    if (!isProUser && isPremiumTrialUsedToday('custom')) showPremiumGenreTrialExhaustedNotice();
   });
   input.addEventListener('focus', () => {
-    if (!isProUser) {
+    if (!isProUser && isPremiumTrialUsedToday('custom')) {
       input.blur();
-      openFeatureLockedModal('custom');
+      showPremiumGenreTrialExhaustedNotice();
     }
   });
   return row;
@@ -628,8 +628,8 @@ function ensureCustomWordInputsReady() {
   refreshCustomWordButtons();
 
   addBtn.addEventListener('click', () => {
-    if (!isProUser) {
-      openFeatureLockedModal('custom');
+    if (!isProUser && isPremiumTrialUsedToday('custom')) {
+      showPremiumGenreTrialExhaustedNotice();
       return;
     }
     if (list.children.length >= CUSTOM_WORD_MAX_COUNT) return;
@@ -1206,14 +1206,6 @@ function applyPlanTierToUI() {
   document.body.classList.toggle('plan-free', !isProUser);
   updatePlanBadge();
   updatePlanPromoVisibility();
-  if (!isProUser && selectedContent === 'custom') {
-    selectedContent = 'joshi';
-    document.querySelectorAll('.content-btn').forEach((b) => {
-      const on = b.dataset.value === 'joshi';
-      b.classList.toggle('active', on);
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
-  }
   refreshCustomWordControl();
   refreshLevelButtons();
   refreshAnswerSheetRow();
@@ -1233,8 +1225,8 @@ function applyPlanTierToUI() {
   refreshCustomWordButtons();
   const customBtn = document.getElementById('contentBtnCustom');
   if (customBtn) {
-    customBtn.classList.toggle('content-btn--locked', !isProUser);
-    customBtn.setAttribute('aria-disabled', !isProUser ? 'true' : 'false');
+    customBtn.classList.remove('content-btn--locked');
+    customBtn.setAttribute('aria-disabled', 'false');
   }
   refreshGenreCardPlanBadgesVisibility();
   refreshPremiumTrialGenreCards();
@@ -1262,10 +1254,6 @@ document.querySelectorAll('.content-btn').forEach(btn => {
     const pick = btn.dataset.value;
     if (!isProUser && isPremiumTrialGenre(pick) && isPremiumTrialUsedToday(pick)) {
       showPremiumGenreTrialExhaustedNotice();
-      return;
-    }
-    if (!isProUser && btn.dataset.value === 'custom') {
-      openFeatureLockedModal('custom');
       return;
     }
     document.querySelectorAll('.content-btn').forEach(b => {
@@ -1485,8 +1473,15 @@ function generatePrint() {
         return;
       }
       if (gate.kind === 'custom_locked') {
-        openFeatureLockedModal('custom');
-        return;
+        if (content === 'custom') {
+          if (premiumTrialUsedTodayGate) {
+            showPremiumGenreTrialExhaustedNotice();
+            return;
+          }
+        } else {
+          openFeatureLockedModal('custom');
+          return;
+        }
       }
       /* 旧 bundle が maze_hiragana_locked を返す場合も、体験終了と同じ案内に統一 */
       if (gate.kind === 'premium_trial_exhausted' || gate.kind === 'maze_hiragana_locked') {
@@ -1503,10 +1498,6 @@ function generatePrint() {
     }
     if (level === 'advanced') {
       openPlanModal('上級は有料版で利用可能です');
-      return;
-    }
-    if (content === 'custom') {
-      openFeatureLockedModal('custom');
       return;
     }
     if (premiumTrialUsedTodayGate) {
