@@ -5064,6 +5064,9 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
   line-height: 1.65;
   font-size: 0.92rem;
 }
+.plan-pitch-text-mobile {
+  display: none;
+}
 .plan-pitch-line {
   font-size: 0.88rem;
   color: var(--text-sub);
@@ -5815,6 +5818,29 @@ body.plan-pro #contentOptions .genre-card .genre-card-badge {
 }
 
 @media (max-width: 768px) {
+  #planModal .plan-modal-pitch .plan-line-btn {
+    display: none !important;
+  }
+  #planModal .plan-modal-pitch .modal-note--soft {
+    display: none !important;
+  }
+  #planModal .plan-pitch-text-desktop {
+    display: none !important;
+  }
+  #planModal .plan-pitch-text-mobile {
+    display: inline !important;
+  }
+  #planModal .modal-footer--plan {
+    gap: 8px;
+    padding: 12px 14px;
+  }
+  #planModal .modal-close-btn,
+  #planModal .modal-detail-btn,
+  #planModal .modal-pro-app-btn {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
   /* 固定バーと重ならず最下部までスクロールできるよう余白（表示中のみ） */
   html.has-mobile-gen-sticky-pad body {
     padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
