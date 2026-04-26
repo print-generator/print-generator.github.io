@@ -60,7 +60,7 @@ function getLevelLabel(level, content) {
 const PlanCore = typeof window !== 'undefined' ? window.PlanCore : undefined;
 
 /** 無料版のみカウント（planRules と一致） */
-const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 4;
+const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 5;
 /** ひらがな迷路の最大問題数（PDF 負荷軽減・planRules と一致） */
 const MAZE_HIRAGANA_MAX_QUESTIONS = PlanCore?.MAZE_HIRAGANA_MAX_QUESTIONS ?? 10;
 /** 有料ジャンル体験の対象（案内文言の共通化） */
@@ -276,7 +276,7 @@ function resolveQuestionCountForPrint(content, level) {
   } else if (isProUser) {
     resolved = PRO_QUESTION_COUNT_OPTIONS.includes(n) ? n : 5;
   } else {
-    resolved = 5;
+    resolved = n === 10 ? 10 : 5;
   }
   return clampMazeHiraganaQuestionCount(content, resolved);
 }
@@ -290,7 +290,10 @@ function refreshQuestionCountUI() {
   const fixedHiraganaBeginner = selectedContent === 'hiragana' && level === 'beginner';
   const isMazeH = selectedContent === 'maze_hiragana';
 
-  if (sel && !isProUser) sel.value = '5';
+  if (sel && !isProUser) {
+    const cur = parseInt(sel.value, 10);
+    sel.value = cur === 10 ? '10' : '5';
+  }
   if (sel && isMazeH) {
     const cur = parseInt(sel.value, 10) || 5;
     if (cur > MAZE_HIRAGANA_MAX_QUESTIONS) sel.value = String(MAZE_HIRAGANA_MAX_QUESTIONS);
@@ -303,7 +306,7 @@ function refreshQuestionCountUI() {
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     const n = parseInt(q, 10);
     let disabled = false;
-    if (!isProUser && n !== 5) disabled = true;
+    if (!isProUser && n !== 5 && n !== 10) disabled = true;
     if (isProUser && fixedHiraganaBeginner) disabled = true;
     if (isProUser && isMazeH && n > MAZE_HIRAGANA_MAX_QUESTIONS) disabled = true;
     btn.disabled = disabled;
@@ -316,7 +319,7 @@ function refreshQuestionCountUI() {
     } else if (isMazeH && isProUser) {
       hint.textContent = `ひらがな迷路は最大${MAZE_HIRAGANA_MAX_QUESTIONS}問までです（PDF負荷軽減のため）。`;
     } else if (!isProUser) {
-      hint.textContent = '無料プランは5問で生成されます。';
+      hint.textContent = '無料プランは5問・10問から選べます。';
     } else {
       hint.textContent = '5〜20問から選べます。';
     }
@@ -493,7 +496,7 @@ function updatePlanBadge() {
   el.textContent = isProUser ? '有料版をご利用中です' : '無料版利用中';
   el.title = isProUser
     ? 'すべての機能が利用可能です'
-    : '【有料版】月額300円・回数無制限・1枚5問（五十音・初級のみ10問）・上級モード・解答付き';
+    : '【有料版】月額300円・回数無制限・1枚5〜25問（五十音・初級のみ10問）・上級モード・解答付き';
   el.classList.toggle('plan-badge--pro', isProUser);
   el.classList.toggle('plan-badge--free', !isProUser);
 }

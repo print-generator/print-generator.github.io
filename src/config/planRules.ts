@@ -10,7 +10,7 @@ import type {
 } from '../types';
 
 /** 無料：1日あたりの生成回数上限（app.js の localStorage と値を一致させる） */
-export const FREE_GENERATION_LIMIT = 4;
+export const FREE_GENERATION_LIMIT = 5;
 
 /** ひらがな迷路：PDF 負荷軽減のため 1 生成あたりの上限（無料・有料共通） */
 export const MAZE_HIRAGANA_MAX_QUESTIONS = 10;
@@ -66,7 +66,7 @@ export function validatePlan(options: GenerateOptions): void {
   if (o.questionCount < 1) {
     throw new PlanRuleError('問題数が不正です', 'INVALID_COUNT');
   }
-  let max = o.isPro ? Math.max(...PRO_QUESTION_COUNT_OPTIONS) : 5;
+  let max = o.isPro ? Math.max(...PRO_QUESTION_COUNT_OPTIONS) : 10;
   if (o.genre === 'maze_hiragana') {
     max = Math.min(max, MAZE_HIRAGANA_MAX_QUESTIONS);
   }
@@ -89,7 +89,8 @@ export function resolveQuestionCount(input: ResolveQuestionCountInput): number {
       n = 5;
     }
   } else {
-    n = 5;
+    const sel = input.selectedProCount;
+    n = sel === 10 ? 10 : 5;
   }
   if (input.genre === 'maze_hiragana') {
     return Math.min(n, MAZE_HIRAGANA_MAX_QUESTIONS);
