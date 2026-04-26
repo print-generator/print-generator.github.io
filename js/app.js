@@ -1456,8 +1456,15 @@ function generatePrint() {
     });
     if (!gate.ok) {
       if (gate.kind === 'quota') {
-        openPlanModal(gate.message || '');
-        return;
+        const usedNow = getFreeGenerationsUsed();
+        if (usedNow >= FREE_GENERATION_LIMIT) {
+          openPlanModal(
+            gate.message ||
+              `無料版は1日${FREE_GENERATION_LIMIT}回までです。有料版（月額300円・回数無制限）をご利用ください。`
+          );
+          return;
+        }
+        /* PlanCore 側の古い上限値に引っ張られないよう、アプリ側の定数を最終優先 */
       }
       if (gate.kind === 'advanced_locked') {
         openPlanModal(gate.message || '');
