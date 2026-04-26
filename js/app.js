@@ -60,7 +60,7 @@ function getLevelLabel(level, content) {
 const PlanCore = typeof window !== 'undefined' ? window.PlanCore : undefined;
 
 /** 無料版のみカウント（planRules と一致） */
-const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 3;
+const FREE_GENERATION_LIMIT = PlanCore?.FREE_GENERATION_LIMIT ?? 4;
 /** ひらがな迷路の最大問題数（PDF 負荷軽減・planRules と一致） */
 const MAZE_HIRAGANA_MAX_QUESTIONS = PlanCore?.MAZE_HIRAGANA_MAX_QUESTIONS ?? 10;
 /** 有料ジャンル体験の対象（案内文言の共通化） */
@@ -233,30 +233,21 @@ function refreshPremiumTrialGenreCards() {
     if (!g || !isPremiumTrialGenre(g)) return;
     const exhausted = !isProUser && isPremiumTrialUsedToday(g) === true;
     btn.classList.toggle('genre-card--trial-exhausted-today', exhausted);
-    const existing = btn.querySelector('.genre-trial-day-badge');
-    if (!exhausted) {
-      existing?.remove();
-      btn.removeAttribute('aria-label');
-      return;
-    }
-    let badge = btn.querySelector('.genre-trial-day-badge');
-    if (!badge) {
-      badge = document.createElement('span');
-      badge.className = 'genre-trial-day-badge';
-      badge.setAttribute('aria-hidden', 'true');
-      btn.appendChild(badge);
-    }
-    badge.textContent = '本日の無料体験は終了';
-    btn.setAttribute(
-      'aria-label',
-      `${btn.querySelector('.genre-card-name')?.textContent?.trim() || ''}（本日の無料体験は終了）`
-    );
+    btn.querySelector('.genre-trial-day-badge')?.remove();
+    btn.removeAttribute('aria-label');
   });
 }
 
 /** 有料版ではジャンル右上の「無料／有料／体験」バッジを出さない */
 function refreshGenreCardPlanBadgesVisibility() {
   document.querySelectorAll('#contentOptions .genre-card .genre-card-badge').forEach((el) => {
+    if (
+      el.classList.contains('genre-card-badge--free') ||
+      el.classList.contains('genre-card-badge--trial')
+    ) {
+      el.hidden = true;
+      return;
+    }
     el.hidden = !!isProUser;
   });
 }

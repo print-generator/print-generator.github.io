@@ -10,7 +10,7 @@ import type {
 } from '../types';
 
 /** 無料：1日あたりの生成回数上限（app.js の localStorage と値を一致させる） */
-export const FREE_GENERATION_LIMIT = 3;
+export const FREE_GENERATION_LIMIT = 4;
 
 /** ひらがな迷路：PDF 負荷軽減のため 1 生成あたりの上限（無料・有料共通） */
 export const MAZE_HIRAGANA_MAX_QUESTIONS = 10;
