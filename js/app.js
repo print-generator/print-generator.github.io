@@ -241,10 +241,7 @@ function refreshPremiumTrialGenreCards() {
 /** 有料版ではジャンル右上の「無料／有料／体験」バッジを出さない */
 function refreshGenreCardPlanBadgesVisibility() {
   document.querySelectorAll('#contentOptions .genre-card .genre-card-badge').forEach((el) => {
-    if (
-      el.classList.contains('genre-card-badge--free') ||
-      el.classList.contains('genre-card-badge--trial')
-    ) {
+    if (el.classList.contains('genre-card-badge--free')) {
       el.hidden = true;
       return;
     }
