@@ -3908,6 +3908,7 @@ body.lp-pricing-page {
   }
   .question-card.question.joshi:has(.advanced-compact--joshi) .joshi-inline-blank {
     min-width: 9.2em !important;
+    margin-left: -0.5em !important;
     line-height: 1.2 !important;
   }
   .questions-grid > .question-card.question.joshi:has(.advanced-compact--joshi):not(:last-child) {
@@ -4622,6 +4623,7 @@ body.lp-pricing-page {
 }
 .pdf-capturing .question-card.question.joshi:has(.advanced-compact--joshi) .joshi-inline-blank {
   min-width: 9.2em !important;
+  margin-left: -0.5em !important;
   letter-spacing: 0.1em !important;
   line-height: 1.2 !important;
 }
