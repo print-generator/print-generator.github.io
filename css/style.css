@@ -1997,22 +1997,22 @@ select.setting-select--locked {
 /* スマホ画面の生成直後プレビュー専用：50音 初級の重なり防止 */
 @media screen and (max-width: 768px) {
   .question-card.question.hiragana:has(.gojuon-basic-row) .question-card-content {
-    gap: 6px;
+    gap: 8px;
   }
   .question.hiragana .gojuon-basic-row .gojuon-basic-grid {
-    column-gap: 8px !important;
-    row-gap: 7px !important;
+    column-gap: 10px !important;
+    row-gap: 9px !important;
   }
   .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-cell {
-    gap: 3px !important;
+    gap: 4px !important;
   }
   .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace {
-    font-size: 2.9rem !important;
+    font-size: 0.95rem !important;
     line-height: 1 !important;
-    margin-bottom: 2px !important;
+    margin-bottom: 4px !important;
   }
   .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace--small {
-    font-size: 1.6rem !important;
+    font-size: 0.62rem !important;
   }
   .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-write {
     width: 100px !important;
