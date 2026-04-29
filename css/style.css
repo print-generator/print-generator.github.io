@@ -3899,7 +3899,7 @@ body.lp-pricing-page {
     margin-bottom: 7.5px !important; /* 約2mm */
   }
   .question-card.question.joshi .advanced-compact--joshi {
-    gap: 0.65mm !important;
+    gap: 0.45mm !important;
   }
   .question-card.question.joshi .advanced-compact--joshi .desc-sentence {
     font-size: 18pt !important;
@@ -3908,7 +3908,8 @@ body.lp-pricing-page {
   }
   .question-card.question.joshi:has(.advanced-compact--joshi) .joshi-inline-blank {
     min-width: 9.2em !important;
-    margin-left: -0.5em !important;
+    margin-left: -0.75em !important;
+    margin-right: -0.35em !important;
     line-height: 1.2 !important;
   }
   .questions-grid > .question-card.question.joshi:has(.advanced-compact--joshi):not(:last-child) {
@@ -4623,7 +4624,8 @@ body.lp-pricing-page {
 }
 .pdf-capturing .question-card.question.joshi:has(.advanced-compact--joshi) .joshi-inline-blank {
   min-width: 9.2em !important;
-  margin-left: -0.5em !important;
+  margin-left: -0.75em !important;
+  margin-right: -0.35em !important;
   letter-spacing: 0.1em !important;
   line-height: 1.2 !important;
 }
