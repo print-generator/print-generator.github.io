@@ -1994,6 +1994,41 @@ select.setting-select--locked {
 .write-box-inline { margin-left: 5px; }
 .hint-line { font-size: .74rem; color: var(--text-sub); margin-bottom: 3px; }
 
+/* スマホ画面の生成直後プレビュー専用：50音 初級の重なり防止 */
+@media screen and (max-width: 768px) {
+  .question-card.question.hiragana:has(.gojuon-basic-row) .question-card-content {
+    gap: 6px;
+  }
+  .question.hiragana .gojuon-basic-row .gojuon-basic-grid {
+    column-gap: 8px !important;
+    row-gap: 7px !important;
+  }
+  .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-cell {
+    gap: 3px !important;
+  }
+  .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace {
+    font-size: 2.9rem !important;
+    line-height: 1 !important;
+    margin-bottom: 2px !important;
+  }
+  .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace--small {
+    font-size: 1.6rem !important;
+  }
+  .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-write {
+    width: 100px !important;
+    height: 100px !important;
+    margin-left: 1px !important;
+    margin-right: 1px !important;
+  }
+  .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-write--small {
+    width: 66px !important;
+    height: 66px !important;
+  }
+  .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-yoon-pair {
+    gap: 6px !important;
+  }
+}
+
 .emoji-question-row {
   display: flex;
   align-items: flex-start;
