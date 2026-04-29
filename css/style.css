@@ -3892,21 +3892,26 @@ body.lp-pricing-page {
     margin-bottom: 0.12mm !important;
   }
 
-  /* 助詞・上級（PC @media print）：本文約1.5倍＋カード・段落を攻めて詰める */
+  /* 助詞・上級（PC @media print）：本文を拡大しつつ、行間とカード間余白を確保 */
   .question-card.question.joshi:has(.advanced-compact--joshi) {
     padding: 0.45pt 1.6pt !important;
     align-items: start !important;
+    margin-bottom: 7.5px !important; /* 約2mm */
   }
   .question-card.question.joshi .advanced-compact--joshi {
-    gap: 0.25mm !important;
+    gap: 0.65mm !important;
   }
   .question-card.question.joshi .advanced-compact--joshi .desc-sentence {
-    font-size: 14.25pt !important;
-    line-height: 1.16 !important;
+    font-size: 15pt !important;
+    line-height: 1.24 !important;
     margin-bottom: 0 !important;
   }
+  .question-card.question.joshi:has(.advanced-compact--joshi) .joshi-inline-blank {
+    min-width: 8.6em !important;
+    line-height: 1.2 !important;
+  }
   .questions-grid > .question-card.question.joshi:has(.advanced-compact--joshi):not(:last-child) {
-    margin-bottom: 0.12mm !important;
+    margin-bottom: 7.5px !important; /* 約2mm */
   }
 
   /* 50音：PDFモバイル出力と同等（中級/上級を拡大） */
@@ -4596,8 +4601,8 @@ body.lp-pricing-page {
 }
 
 .pdf-capturing .question.joshi .advanced-compact--joshi .desc-sentence {
-  font-size: 14.25pt !important; /* 9.5pt の 1.5倍 */
-  line-height: 1.25 !important;
+  font-size: 15pt !important;
+  line-height: 1.24 !important;
   margin-bottom: 0 !important;
 }
 .pdf-capturing .question-card.question.joshi:has(.choice-sentence) .choice-sentence {
@@ -4609,12 +4614,16 @@ body.lp-pricing-page {
   padding: 1.6pt 9.8pt !important;
 }
 .pdf-capturing .question-card.question.joshi:has(.advanced-compact--joshi) .desc-sentence {
-  font-size: 19pt !important; /* 助詞上級: 約2倍 */
+  font-size: 15pt !important;
   line-height: 1.24 !important;
 }
+.pdf-capturing .question-card.question.joshi:has(.advanced-compact--joshi) {
+  margin-bottom: 7.5px !important; /* 約2mm */
+}
 .pdf-capturing .question-card.question.joshi:has(.advanced-compact--joshi) .joshi-inline-blank {
-  min-width: 8.4em !important;
+  min-width: 8.6em !important;
   letter-spacing: 0.1em !important;
+  line-height: 1.2 !important;
 }
 .pdf-capturing .question-card.question.hiragana:has(.emoji-question-row:not(.emoji-question-row--tight)) .choice-item {
   font-size: 18pt !important; /* 50音中級: 前回設定からさらに約1.5倍 */
