@@ -216,7 +216,7 @@ const PRINT_CARD_COUNT_PRESETS = {
     /* 中級：PC実測向け +1 枚／ページ（769px+CSS と整合） */
     intermediate: { first: 10, rest: 11 },
     /* 上級：詰めレイアウトで1ページに多め（フォールバック） */
-    advanced: { first: 11, rest: 11 },
+    advanced: { first: 15, rest: 15 },
   },
   hiragana: {
     beginner: { first: 4, rest: 5 },

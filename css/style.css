@@ -1437,6 +1437,9 @@ select.setting-select--locked {
   flex-direction: column;
   gap: 3px;
 }
+.question.joshi .advanced-compact--joshi {
+  gap: 5px;
+}
 .question.joshi .advanced-compact--joshi .desc-sentence,
 .question.sentence .advanced-compact--sentence .choice-sentence,
 .question.narabikae .advanced-compact--narabikae .emoji-question-prompt {
