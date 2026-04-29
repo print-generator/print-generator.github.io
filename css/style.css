@@ -4352,10 +4352,10 @@ body.lp-pricing-page {
     row-gap: 1.8mm !important;
   }
   .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace {
-    font-size: 17pt !important;
+    font-size: 13pt !important;
   }
   .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace--small {
-    font-size: 10.5pt !important;
+    font-size: 8pt !important;
   }
   .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-write {
     margin-left: 0.5mm !important;
@@ -4670,6 +4670,13 @@ body.lp-pricing-page {
   border-color: #7b8794 !important;
   margin-top: var(--print-hiragana-advanced-write-margin-top-tight) !important;
   margin-bottom: var(--print-hiragana-advanced-write-margin-bottom-tight) !important;
+}
+/* 50音 初級（PDFキャプチャ）：印刷と同じ縮小率で可読性を維持 */
+.pdf-capturing .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace {
+  font-size: 13pt !important;
+}
+.pdf-capturing .question.hiragana .gojuon-basic-row .gojuon-basic-grid .hira-trace--small {
+  font-size: 8pt !important;
 }
 .pdf-capturing .question-card.question.hiragana:has(.hiragana-advanced-trace-row) .emoji-question-row--tight {
   gap: var(--print-hiragana-adv-row-gap-body) !important;
