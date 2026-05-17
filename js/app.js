@@ -1193,7 +1193,7 @@ function updatePlanPromoVisibility() {
 }
 
 function applyPlanTierToUI() {
-  document.body.classList.toggle('plan-pro', isProUser);
+  document.body.classList.toggle('is-plan-pro', isProUser);
   document.body.classList.toggle('plan-free', !isProUser);
   updatePlanBadge();
   updatePlanPromoVisibility();

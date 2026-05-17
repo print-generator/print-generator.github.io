@@ -601,7 +601,7 @@ body {
   line-height: 1.2;
 }
 /* 有料プラン時はジャンル・レベルの「有料」バッジを出さない */
-body.plan-pro .option-pro-badge {
+body.is-plan-pro .option-pro-badge {
   display: none !important;
 }
 body.plan-free .content-btn--custom:not(.active) {
@@ -2473,7 +2473,7 @@ select.setting-select--locked {
   position: relative;
   background: var(--white);
 }
-.plan-pro {
+.plan-card.plan-pro {
   border-color: var(--gold);
   box-shadow: 0 0 0 4px rgba(249,171,0,.12);
 }
@@ -5070,7 +5070,7 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
   color: var(--gold-dark);
   border: 1px solid var(--gold);
 }
-.plan-pro .free-plan-notice {
+body.is-plan-pro .free-plan-notice {
   display: none !important;
 }
 .pro-plan-banner {
@@ -5101,7 +5101,7 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
   color: var(--text-sub);
   font-weight: 600;
 }
-.plan-pro .generate-note#generateUpgradeNote {
+body.is-plan-pro .generate-note#generateUpgradeNote {
   display: none !important;
 }
 .free-plan-notice {
@@ -5539,8 +5539,8 @@ body.pdf-mobile-capture .kanji-masu--kanji::after {
   background: #fce4ec;
   color: #c2185b;
 }
-/* 有料版：ジャンル右上の無料／有料／体験バッジを非表示（body.plan-pro は app.js が付与） */
-body.plan-pro #contentOptions .genre-card .genre-card-badge {
+/* 有料版：ジャンル右上の無料／有料／体験バッジを非表示（body.is-plan-pro は app.js が付与） */
+body.is-plan-pro #contentOptions .genre-card .genre-card-badge {
   display: none !important;
 }
 .genre-card.content-btn--locked {
